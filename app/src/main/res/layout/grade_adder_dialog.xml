@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="4dp">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="16dp"
+        android:paddingLeft="8dp"
+        android:id="@+id/addGradeEditText"
+        android:layout_centerHorizontal="true"
+        android:divider="@android:color/darker_gray">
+    </EditText>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_below="@id/addGradeEditText"
+        android:id="@+id/separatorDialog1"
+        android:visibility="visible"
+        android:background="@android:color/darker_gray"/>
+
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/dialogSpinner"
+
+        android:padding="4dp"
+        android:layout_margin="8dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/separatorDialog1"
+        style="?android:attr/dropDownSpinnerStyle"
+        android:outlineProvider="none"
+        android:elevation="4dp">
+    </Spinner>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:minWidth="64dp"
+        android:layout_height="48dp"
+
+        android:padding="8dp"
+        android:layout_margin="8dp"
+
+        android:gravity="center"
+        android:layout_below="@id/dialogSpinner"
+        android:layout_alignParentRight="true"
+
+        android:text="OK"
+        android:id="@+id/dialogOkButton"
+        style="?android:attr/buttonBarButtonStyle"
+        />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:minWidth="64dp"
+        android:layout_height="48dp"
+
+        android:padding="8dp"
+        android:layout_margin="8dp"
+
+        android:gravity="center"
+        android:layout_below="@id/dialogSpinner"
+        android:layout_toLeftOf="@id/dialogOkButton"
+
+        android:text="Cancel"
+        android:id="@+id/dialogCancelButton"
+        style="?android:attr/buttonBarButtonStyle"
+        />
+
+</RelativeLayout>

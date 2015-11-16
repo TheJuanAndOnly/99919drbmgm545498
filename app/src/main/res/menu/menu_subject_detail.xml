@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+tools:context=".SubjectDetailActivity">
+
+    <item android:id="@+id/action_edit"
+        android:icon="@drawable/ic_mode_edit_white_24dp"
+        android:title="Edit"
+        android:orderInCategory="1"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_settings_white_24dp"
+        android:title="Settings"
+        android:orderInCategory="2"
+        app:showAsAction="always"/>
+
+</menu>
+
+

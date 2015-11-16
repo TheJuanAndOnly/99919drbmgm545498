@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SchoolApp</string>
+    <string name="action_schedule">Schedule</string>
+    <string name="action_new_subject">New Subject</string>
+    <string name="action_new_task">New Task</string>
+    <string name="action_done">Done</string>
+</resources>

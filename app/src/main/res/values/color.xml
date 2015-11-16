@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="black">#000</color>
+    <color name="white">#FFFFFF</color>
+
+    <color name="red">#F44336</color>
+    <color name="red800">#C62828</color>
+
+    <color name="orange">#ff9800</color>
+    <color name="orange700">#F57C00</color>
+    <color name="orange800">#EF6C00</color>
+
+    <color name="green">#4CAF50</color>
+    <color name="green800">#2E7D32</color>
+
+    <color name="blue">#3F51B5</color>
+    <color name="blue800">#283593</color>
+
+    <color name="teal">#009688</color>
+    <color name="teal800">#00695C</color>
+
+    <color name="grey">#607D8B</color>
+    <color name="grey600">#546E7A</color>
+    <color name="grey700">#455A64</color>
+    <color name="grey800">#37474F</color>
+
+    <color name="brown">#795548</color>
+    <color name="brown700">#5D4037</color>
+
+    <color name="pink">#FF4081</color>
+
+    <color name="schedule_fade">#b5000000</color>
+    <color name="schedule_button_fade">#64000000</color>
+
+</resources>
