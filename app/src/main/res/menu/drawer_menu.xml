@@ -5,12 +5,19 @@
         <item android:title="Overview"
             android:id="@+id/nav_item_overview"
             android:icon="@drawable/ic_dvr_white_24dp"/>
+
         <item android:title="Tasks"
             android:id="@+id/nav_item_tasks"
             android:icon="@drawable/ic_event_available_white_24dp"/>
+
+        <item android:title="Notes"
+            android:id="@+id/nav_item_notes"
+            android:icon="@drawable/ic_settings_white_24dp"/>
+
         <item android:title="Settings"
             android:id="@+id/nav_item_settings"
             android:icon="@drawable/ic_settings_white_24dp"/>
+
     </group>
 
 </menu>

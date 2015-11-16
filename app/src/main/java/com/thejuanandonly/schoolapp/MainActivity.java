@@ -32,7 +32,6 @@ import android.widget.Toast;
 import android.widget.Toolbar;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -58,11 +57,11 @@ public class MainActivity extends AppCompatActivity {
         theme();
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        mNavigationView = (NavigationView) findViewById(R.id.nav_view) ;
+        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
 
         mFragmentManager = getSupportFragmentManager();
         mFragmentTransaction = mFragmentManager.beginTransaction();
-        mFragmentTransaction.replace(R.id.containerView,new OverviewFragment()).commit();
+        mFragmentTransaction.replace(R.id.containerView, new OverviewFragment()).commit();
 
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -83,19 +82,27 @@ public class MainActivity extends AppCompatActivity {
                     invalidateOptionsMenu();
                 }
 
-                if (menuItem.getItemId() == R.id.nav_item_settings) {
+                if (menuItem.getItemId() == R.id.nav_item_notes) {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.containerView, new SettingsFragment()).commit();
+                    fragmentTransaction.replace(R.id.containerView, new NotesFragment()).commit();
                     actualFragment = 3;
                     invalidateOptionsMenu();
                 }
+
+                if (menuItem.getItemId() == R.id.nav_item_settings) {
+                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.containerView, new SettingsFragment()).commit();
+                    actualFragment = 4;
+                    invalidateOptionsMenu();
+                }
+
                 return false;
             }
 
         });
         android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout, toolbar,R.string.app_name, R.string.app_name);
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
@@ -116,49 +123,42 @@ public class MainActivity extends AppCompatActivity {
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.orange));
 
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.orange700));
+                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP)
+                    window.setStatusBarColor(getResources().getColor(R.color.orange800));
+                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP)
+                    window.setStatusBarColor(getResources().getColor(R.color.orange700));
 
                 break;
             case 2:
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.green));
 
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.green800));
+                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP)
+                    window.setStatusBarColor(getResources().getColor(R.color.green800));
 
                 break;
             case 3:
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.blue));
 
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.blue800));
+                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP)
+                    window.setStatusBarColor(getResources().getColor(R.color.blue800));
 
                 break;
             case 4:
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.grey));
 
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.grey700));
-
-                break;
-            case 5:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.teal));
-
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.teal800));
-
-                break;
-            case 6:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.brown));
-
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.brown700));
+                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP)
+                    window.setStatusBarColor(getResources().getColor(R.color.grey600));
 
                 break;
             default:
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.red));
 
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.red800));
+                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP)
+                    window.setStatusBarColor(getResources().getColor(R.color.red800));
         }
     }
 
@@ -168,6 +168,8 @@ public class MainActivity extends AppCompatActivity {
             getMenuInflater().inflate(R.menu.menu_overview, menu);
         } else if (actualFragment == 2) {
             getMenuInflater().inflate(R.menu.menu_tasks, menu);
+        } else if (actualFragment == 3) {
+            getMenuInflater().inflate(R.menu.menu_notes, menu);
         } else {
             getMenuInflater().inflate(R.menu.menu_main, menu);
         }
@@ -181,13 +183,15 @@ public class MainActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_schedule) {
-            Intent startScheduleActivity = new Intent (MainActivity.this, ScheduleActivity.class);
+            Intent startScheduleActivity = new Intent(MainActivity.this, ScheduleActivity.class);
             startActivity(startScheduleActivity);
         } else if (id == R.id.action_new_subject) {
             subjectDialog();
         } else if (id == R.id.action_new_task) {
             Intent TaskAdderActivity = new Intent(MainActivity.this, TaskAdder.class);
             startActivity(TaskAdderActivity);
+        } else if (id == R.id.action_new_note_subject) {
+            notesDialog();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -209,8 +213,10 @@ public class MainActivity extends AppCompatActivity {
             vibrationsCheckBox.setVisibility(View.VISIBLE);
         }
     }
+
     public void soundsNotificationClick(View view) {
     }
+
     public void vibrationsNotificationClick(View view) {
     }
 
@@ -236,21 +242,46 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             SharedPreferences prefs = getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = prefs.edit();
-                            JSONArray array;
-                            try {
-                                array = new JSONArray(prefs.getString("List", null));
-                            } catch (Exception e) {array = new JSONArray();}
+                            JSONArray set = new JSONArray(prefs.getString("List", null));
 
-                            for (int i = 0; i < array.length(); i++) {
-                                try {
-                                    SharedPreferences preferences = getSharedPreferences("Subject" + array.get(i), Context.MODE_PRIVATE);
-                                    SharedPreferences.Editor editor2 = preferences.edit();
-                                    editor2.clear().apply();
-                                } catch (JSONException e) {}
+                            for (int i = 0; i < set.length(); i++) {
+                                SharedPreferences preferences = getSharedPreferences("Subject" + set.get(i), Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor2 = preferences.edit();
+                                editor2.clear().apply();
                             }
                             editor.clear().apply();
 
-                        } catch (NullPointerException e) {}
+                        } catch (Exception e) {
+                        }
+
+                        try {
+                            SharedPreferences prefs_notes = getSharedPreferences("ListOfSubjectsNotes", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = prefs_notes.edit();
+                            JSONArray set_notes = new JSONArray(prefs_notes.getString("ListNotes", null));
+                            for (int i = 0; i < set_notes.length(); i++) {
+                                SharedPreferences preferences = getSharedPreferences("SubjectNotes" + set_notes.get(i), Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor2 = preferences.edit();
+                                editor2.clear().apply();
+                            }
+                            editor.clear().apply();
+
+                        } catch (Exception e) {
+                        }
+
+                        try {
+                            SharedPreferences prefs_groupName = getSharedPreferences("ListOfSubjectsGroupName", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor editor_groupName = prefs_groupName.edit();
+                            JSONArray set_groupName = new JSONArray(prefs_groupName.getString("ListGroupName", null));
+
+                            for (int i = 0; i < set_groupName.length(); i++) {
+                                SharedPreferences preferences_groupName = getSharedPreferences("SubjectGroupName" + set_groupName.get(i), Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor2_groupName = preferences_groupName.edit();
+                                editor2_groupName.clear().apply();
+                            }
+                            editor_groupName.clear().apply();
+
+                        } catch (Exception e) {
+                        }
 
                         Toast.makeText(MainActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
                     }
@@ -263,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
         builder.show();
     }
 
-    public void subjectDialog(){
+    public void subjectDialog() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Add a subject");
@@ -278,7 +309,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String subjectInput = input.getText().toString();
+
                 saveSubject(subjectInput);
+
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -289,24 +322,28 @@ public class MainActivity extends AppCompatActivity {
         });
 
         builder.show();
-
     }
 
-    public void saveSubject(String subject){
+    public void saveSubject(String subject) {
+
+        JSONArray set = new JSONArray();
+
         SharedPreferences prefs = getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
-        JSONArray m_listItems;
+        ArrayList<String> m_listItems = new ArrayList<>();
+        int arrayLength = 0;
         try {
-            m_listItems = new JSONArray(prefs.getString("List", null));
-        }catch (Exception e) {m_listItems = new JSONArray();}
+             set = new JSONArray(prefs.getString("List", null));
+
+        } catch (Exception e) {
+        }
 
 
-        if(subject != null && subject.length() > 0) {
-            if (!m_listItems.toString().contains(subject)) {
-                m_listItems.put(subject);
-            }else {
-                Toast.makeText(this, "This Subject already exists", Toast.LENGTH_LONG).show();
-                subjectDialog();
-            }
+        if (subject != null && subject.length() > 0) {
+
+            try {
+                set.put(arrayLength, subject);
+            } catch (Exception e) {}
+
         } else {
             Toast.makeText(this, "Don't leave the space blank!", Toast.LENGTH_LONG).show();
             subjectDialog();
@@ -320,9 +357,70 @@ public class MainActivity extends AppCompatActivity {
         //Zoznam predmetov
         SharedPreferences arrayPrefs = getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
         SharedPreferences.Editor arrayPrefsEditor = arrayPrefs.edit();
-        arrayPrefsEditor.putString("List", m_listItems.toString()).apply();
+        arrayPrefsEditor.putString("List", set.toString()).apply();
+
 
         OverviewFragment.reset(this);
     }
 
+    public void notesDialog() {
+        AlertDialog.Builder builder_notes = new AlertDialog.Builder(this);
+        builder_notes.setTitle("Add a subject");
+
+        final EditText input_notes = new EditText(this);
+        input_notes.setHint("Subject name");
+        input_notes.setPadding(50, 50, 50, 30);
+        input_notes.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+        builder_notes.setView(input_notes);
+
+        builder_notes.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String subjectInputNotes = input_notes.getText().toString();
+
+                saveSubjectNotes(subjectInputNotes);
+                NotesFragment.reset(MainActivity.this);
+            }
+        });
+        builder_notes.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder_notes.show();
+
+    }
+
+    private void saveSubjectNotes(String subjectNotes) {
+        SharedPreferences prefs_notes = getSharedPreferences("ListOfSubjectsNotes", Context.MODE_PRIVATE);
+        ArrayList<String> m_listItems_notes = new ArrayList<>();
+        int arrayLength = 0;
+        JSONArray set_notes = new JSONArray();
+        try {
+            set_notes = new JSONArray(prefs_notes.getString("ListNotes", null));
+        } catch (Exception e) {
+        }
+
+
+        if (subjectNotes != null && subjectNotes.length() > 0) {
+            set_notes.put(subjectNotes);
+        } else {
+            Toast.makeText(this, "Don't leave the space blank!", Toast.LENGTH_LONG).show();
+            notesDialog();
+        }
+
+        //SP pre kazdy predmet
+        SharedPreferences preferences_notes = getSharedPreferences("SubjectNotes" + subjectNotes, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor_notes = preferences_notes.edit();
+        editor_notes.putString("subjectNotes", subjectNotes).apply();
+
+        //Zoznam predmetov
+        SharedPreferences arrayPrefs_notes = getSharedPreferences("ListOfSubjectsNotes", Context.MODE_PRIVATE);
+        SharedPreferences.Editor arrayPrefsEditor_notes = arrayPrefs_notes.edit();
+        arrayPrefsEditor_notes.putString("ListNotes", set_notes.toString()).apply();
+
+        NotesFragment.reset(this);
+    }
 }

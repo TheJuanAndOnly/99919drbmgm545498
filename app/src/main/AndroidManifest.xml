@@ -36,9 +36,13 @@
             android:name=".TaskAdder"
             app:theme="@style/ToolBarStyle">
         </activity>
-        <activity
-            android:name=".SubjectDetailActivity"
-            />
+
+        <activity android:name=".SubjectDetailActivity"></activity>
+
+        <activity android:name=".PictureGroupActivity"></activity>
+
+        <activity android:name=".NotesDetailActivity"></activity>
+
 
     </application>
 
