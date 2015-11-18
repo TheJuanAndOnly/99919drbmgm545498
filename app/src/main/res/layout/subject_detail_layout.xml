@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:background="#cacaca">
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:fitsSystemWindows="true">
 
     <android.support.v7.widget.Toolbar
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -17,95 +17,131 @@
         android:elevation="10dp"/>
 
     <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
         android:layout_below="@id/subjectDetailToolbar">
 
-
-        <RelativeLayout
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:paddingRight="@dimen/activity_horizontal_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:layout_margin="6dp"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/gradeLayout"
-            android:background="@color/white">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Grades"
-                android:layout_marginBottom="4dp"
-                android:id="@+id/gradeTextView"
-                style="@style/TextAppearance.AppCompat.Headline"/>
-
-            <Button
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:background="@drawable/ic_add_black_24dp"
-                android:id="@+id/gradePlusButton"
-                android:onClick="addGrade" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="4dp"
-                android:layout_marginBottom="8dp"
-                android:text="Average:"
-                android:id="@+id/averageTextView"
-                android:textColor="@color/grey800"
-                android:layout_below="@id/gradeTextView"
-                style="@style/TextAppearance.AppCompat.Subhead"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:id="@+id/separatorDetail1"
-                android:layout_below="@id/averageTextView"
-                android:background="@android:color/darker_gray"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"/>
-
-            <ListView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:id="@+id/categoryListView"
-                android:layout_below="@id/separatorDetail1"
-                android:divider="@android:color/transparent"
-                android:dividerHeight="0.5dp">
-            </ListView>
-
-            <Button
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@id/categoryListView"
-                android:background="@drawable/ic_add_black_24dp"
-                android:id="@+id/addCategory"
-                android:onClick="addCategory"
-                android:visibility="gone"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:id="@+id/separatorDetail"
-                android:layout_below="@id/addCategory"
-                android:background="@android:color/darker_gray"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:background="#cacaca">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/separatorDetail"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp">
+                android:background="@color/white"
+
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="4dp"
+
+                android:id="@+id/firstLayout"
+                android:onClick="titleClick">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="Grades"
+                    android:layout_marginBottom="4dp"
+                    android:id="@+id/gradeTextView"
+                    style="@style/TextAppearance.AppCompat.Headline"/>
+
+                <Button
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/ic_add_black_24dp"
+                    android:id="@+id/gradePlusButton"
+                    android:onClick="addGrade" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="4dp"
+                    android:layout_marginBottom="8dp"
+                    android:text="Average:"
+                    android:id="@+id/averageTextView"
+                    android:textColor="@color/grey800"
+                    android:layout_below="@id/gradeTextView"
+                    style="@style/TextAppearance.AppCompat.Subhead"/>
+
+                <Button
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@id/averageTextView"
+                    android:background="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:id="@+id/rollDownButton"
+                    android:onClick="titleClick"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/firstLayout"
+                android:id="@+id/secondLayout"
+                android:background="@color/white"
+
+                android:paddingTop="4dp"
+                android:paddingBottom="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+
+                android:visibility="gone">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:id="@+id/separatorDetail1"
+                    android:background="@android:color/darker_gray"/>
+
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:id="@+id/categoryListView"
+                    android:layout_below="@id/separatorDetail1"
+                    android:divider="@android:color/transparent"
+                    android:dividerHeight="0.5dp">
+                </ListView>
+
+                <Button
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@id/categoryListView"
+                    android:background="@drawable/ic_add_black_24dp"
+                    android:id="@+id/addCategory"
+                    android:onClick="addCategory"
+                    android:visibility="gone"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:id="@+id/separatorDetail"
+                    android:layout_below="@id/addCategory"
+                    android:background="@android:color/darker_gray"
+                    android:layout_marginBottom="8dp"/>
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/secondLayout"
+                android:layout_marginTop="8dp"
+                android:padding="16dp"
+                android:id="@+id/thirdLayout"
+                android:background="@color/white">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -119,7 +155,7 @@
 
             </RelativeLayout>
 
-        </RelativeLayout>
+        </LinearLayout>
 
     </ScrollView>
 

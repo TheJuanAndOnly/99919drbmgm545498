@@ -2,6 +2,7 @@ package com.thejuanandonly.schoolapp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
 import android.renderscript.ScriptGroup;
 import android.text.InputType;
 import android.view.LayoutInflater;
@@ -41,18 +42,50 @@ public class CustomDialogLvAdapter extends ArrayAdapter<Grade> {
         EditText editText  = (EditText) convertView.findViewById(R.id.settingsLVEditText);
         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
 
+
         SharedPreferences prefs = getContext().getSharedPreferences("Subject" + SubjectDetailActivity.currentSubject, Context.MODE_PRIVATE);
-        JSONArray arrayOfPercentages;
+        JSONArray arrayOfPercentages = new JSONArray(),
+                    arrayOfCategories = new JSONArray();
         try {
             arrayOfPercentages = new JSONArray(prefs.getString("ListOfPercentages", null));
             editText.setText(arrayOfPercentages.getString(position));
         }catch (Exception e) {
-            JSONArray arrayOfCategories;
+
             try {
                 arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
-            }catch (Exception ex){arrayOfCategories = new JSONArray();}
+            }catch (Exception ex){
+                arrayOfCategories = new JSONArray();
+            }
             editText.setText(String.valueOf(100 / arrayOfCategories.length()));
         }
+
+        int count = 0;
+        for (int i = 0; i < arrayOfPercentages.length(); i++){
+
+
+
+            try {
+                //Toast.makeText(getContext(), arrayOfPercentages.getString(i), Toast.LENGTH_SHORT).show();
+                if (arrayOfPercentages.getInt(i) != 0){
+                    count++;
+                }
+            }catch (JSONException e) {}
+        }
+
+        try {
+            if (editText.getText().toString().equals("0")) {
+                editText.getBackground().setColorFilter(getContext().getResources().getColor(R.color.grey), PorterDuff.Mode.SRC_ATOP);
+            }
+            else if (editText.getText().toString().equals(String.valueOf(100 / count))) {
+                editText.getBackground().setColorFilter(getContext().getResources().getColor(R.color.green), PorterDuff.Mode.SRC_ATOP);
+            }
+            else {
+                editText.getBackground().setColorFilter(getContext().getResources().getColor(R.color.red), PorterDuff.Mode.SRC_ATOP);
+            }
+        }catch (Exception e){}
+
+
+
 
         return convertView;
     }
