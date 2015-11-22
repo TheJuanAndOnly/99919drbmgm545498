@@ -28,7 +28,6 @@ import java.util.Set;
 public class OverviewFragment extends Fragment {
 
     ListView lv;
-    ArrayAdapter<String> m_adapter;
     android.support.v7.widget.Toolbar toolbar;
     static View v;
     public static Context overviewFragmentContext;

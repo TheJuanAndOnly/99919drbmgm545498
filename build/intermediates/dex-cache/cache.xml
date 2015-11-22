@@ -2,11 +2,11 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\Daniel\Documents\GitHub\MySchoolAppv1.2\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.0.1\jars\classes.jar"
+        jar="C:\Users\Daniel\Documents\GitHub\MySchoolAppv1.2\app\build\intermediates\exploded-aar\com.amirarcane.recent-images\recentimages\1.0.0\jars\classes.jar"
         jumboMode="false"
         revision="23.0.1"
-        sha1="d86429b0f0b3f3cafbeb78dda1b9d89119ccb05d">
-        <dex dex="C:\Users\Daniel\Documents\GitHub\MySchoolAppv1.2\app\build\intermediates\pre-dexed\debug\classes-398ee142ae20522ee58445ae02e73ed99d3071e1.jar" />
+        sha1="302e0a2fe777109ad17d6441c124f04452fc37ef">
+        <dex dex="C:\Users\Daniel\Documents\GitHub\MySchoolAppv1.2\app\build\intermediates\pre-dexed\debug\classes-0e10e6a51303496591661c7c81d38ac9d27c1342.jar" />
     </item>
     <item
         jar="C:\Users\Daniel\Documents\GitHub\MySchoolAppv1.2\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.1\jars\libs\internal_impl-23.0.1.jar"
@@ -35,6 +35,13 @@
         revision="23.0.1"
         sha1="1fce89a6428c51467090d7f424e4c9c3dbd55f7e">
         <dex dex="C:\Users\Daniel\Documents\GitHub\MySchoolAppv1.2\app\build\intermediates\pre-dexed\debug\support-annotations-23.0.1-624f6853fcf9ff6d647c0ddab0f64c982433398a.jar" />
+    </item>
+    <item
+        jar="C:\Users\Daniel\Documents\GitHub\MySchoolAppv1.2\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.0.1\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="d86429b0f0b3f3cafbeb78dda1b9d89119ccb05d">
+        <dex dex="C:\Users\Daniel\Documents\GitHub\MySchoolAppv1.2\app\build\intermediates\pre-dexed\debug\classes-398ee142ae20522ee58445ae02e73ed99d3071e1.jar" />
     </item>
 
 </items>

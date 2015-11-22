@@ -1,13 +1,18 @@
 package com.thejuanandonly.schoolapp;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -19,6 +24,15 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import com.amirarcane.recentimages.RecentImages;
+import com.amirarcane.recentimages.thumbnailOptions.ImageAdapter;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * Created by Daniel on 11/7/2015.
  */
@@ -29,10 +43,9 @@ public class PictureGroupActivity extends AppCompatActivity {
     private Menu menu;
     android.support.v7.widget.Toolbar toolbar;
     private static int RESULT_LOAD_IMAGE = 1;
-    GridView gridView;
-    public static String picture;
     public static Uri selectedImage;
-
+    public static ArrayList<Bitmap> ALofSelectedImgs = new ArrayList<>();
+    String picture;
 
 
     @Override
@@ -48,13 +61,14 @@ public class PictureGroupActivity extends AppCompatActivity {
         String subject_notes = getIntent().getExtras().getString("subjectGroupName", null);
         toolbar.setTitle(subject_notes);
 
+        RecentImages ri = new RecentImages();
+        ImageAdapter adapter = ri.getAdapter(PictureGroupActivity.this);
+
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        GridView gridView = (GridView)findViewById(R.id.picture_group_gridView);
+        GridView gridView = (GridView) findViewById(R.id.picture_group_gridView);
         gridView.setAdapter(new ImageGridAdapter(this));
-
-        gridView.invalidateViews();
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -62,8 +76,6 @@ public class PictureGroupActivity extends AppCompatActivity {
                 Toast.makeText(PictureGroupActivity.this, "You clicked " + position, Toast.LENGTH_SHORT).show();
             }
         });
-
-
     }
 
 
@@ -77,19 +89,12 @@ public class PictureGroupActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        String picturePath = loadPath();
 
         if (id == R.id.addPictureFolder) {
-            if (picturePath != null) {
-                Toast.makeText(this, "Click the plus button to add pictures", Toast.LENGTH_LONG).show();
 
-                        Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        startActivityForResult(i, RESULT_LOAD_IMAGE);
-                    } else {
+                Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(i, RESULT_LOAD_IMAGE);
 
-                        Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        startActivityForResult(i, RESULT_LOAD_IMAGE);
-                    }
         } else if (id == android.R.id.home) {
             onBackPressed();
         }
@@ -99,31 +104,60 @@ public class PictureGroupActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        gridView = (GridView)findViewById(R.id.picture_group_gridView);
 
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
-            selectedImage = data.getData();
-            String[] filePathColumn = {MediaStore.Images.Media.DATA};
-            Toast.makeText(PictureGroupActivity.this, "selectedImage ma hodnotu: " + selectedImage, Toast.LENGTH_SHORT).show();
 
+            selectedImage = data.getData();
+            Uri selectedImage = data.getData();
+
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            picture = cursor.getString(columnIndex);
+            cursor.close();
+
+            ALofSelectedImgs.add(BitmapScaled(picture, 100, 100));
+
+            Intent restart   = getIntent();
+            finish();
+            startActivity(restart);
 
         }
+
+
     }
 
+    private Bitmap BitmapScaled(String picturePath, int width, int height) {
+        BitmapFactory.Options sizeOptions = new BitmapFactory.Options();
+        sizeOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(picturePath, sizeOptions);
 
-    /*
-    public void savePath(String string){
-        SharedPreferences prefs = getSharedPreferences("PicturePath", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString("Path", string).apply();
+        int inSampleSize = calculateInSampleSize(sizeOptions, width, height);
+
+        sizeOptions.inJustDecodeBounds = false;
+        sizeOptions.inSampleSize = inSampleSize;
+
+        return BitmapFactory.decodeFile(picturePath, sizeOptions);
     }
 
-    */
+    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int SizeSample = 1;
 
-    public String loadPath() {
-        SharedPreferences prefs = getSharedPreferences("PicturePath", Context.MODE_PRIVATE);
-        return prefs.getString("Path", null);
+        if (height > reqHeight || width > reqWidth) {
+
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+
+            SizeSample = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+
+        return SizeSample;
     }
+
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

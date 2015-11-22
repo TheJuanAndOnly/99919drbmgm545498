@@ -104,6 +104,7 @@ public class NotesFragment extends Fragment {
             lv_notes.setAdapter(m_adapter_notes);
             m_adapter_notes.notifyDataSetChanged();
 
+
         } catch (Exception e) {
             Toast.makeText(getContext(), "To add a subject click on the plus button", Toast.LENGTH_SHORT).show();
         }

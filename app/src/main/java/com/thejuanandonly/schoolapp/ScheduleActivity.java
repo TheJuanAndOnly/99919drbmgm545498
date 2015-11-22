@@ -112,11 +112,3 @@ public class ScheduleActivity extends Activity {
         editor.putString("Path", string).apply();
     }
 }
-
-
-
-
-
-
-
-
