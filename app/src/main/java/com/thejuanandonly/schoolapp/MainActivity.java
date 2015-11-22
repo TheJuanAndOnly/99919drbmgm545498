@@ -123,42 +123,49 @@ public class MainActivity extends AppCompatActivity {
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.orange));
 
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.orange800));
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.orange700));
+                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.orange700));
 
                 break;
             case 2:
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.green));
 
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.green800));
+                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.green800));
 
                 break;
             case 3:
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.blue));
 
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.blue800));
+                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.blue800));
 
                 break;
             case 4:
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.grey));
 
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.grey600));
+                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.grey700));
+
+                break;
+            case 5:
+
+                toolbar.setBackgroundColor(getResources().getColor(R.color.teal));
+
+                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.teal800));
+
+                break;
+            case 6:
+
+                toolbar.setBackgroundColor(getResources().getColor(R.color.brown));
+
+                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.brown700));
 
                 break;
             default:
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.red));
 
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.red800));
+                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.red800));
         }
     }
 
@@ -330,7 +337,6 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
         ArrayList<String> m_listItems = new ArrayList<>();
-        int arrayLength = 0;
         try {
              set = new JSONArray(prefs.getString("List", null));
 
@@ -341,7 +347,7 @@ public class MainActivity extends AppCompatActivity {
         if (subject != null && subject.length() > 0) {
 
             try {
-                set.put(arrayLength, subject);
+                set.put(subject);
             } catch (Exception e) {}
 
         } else {
@@ -396,13 +402,12 @@ public class MainActivity extends AppCompatActivity {
     private void saveSubjectNotes(String subjectNotes) {
         SharedPreferences prefs_notes = getSharedPreferences("ListOfSubjectsNotes", Context.MODE_PRIVATE);
         ArrayList<String> m_listItems_notes = new ArrayList<>();
-        int arrayLength = 0;
         JSONArray set_notes = new JSONArray();
+
         try {
             set_notes = new JSONArray(prefs_notes.getString("ListNotes", null));
         } catch (Exception e) {
         }
-
 
         if (subjectNotes != null && subjectNotes.length() > 0) {
             set_notes.put(subjectNotes);

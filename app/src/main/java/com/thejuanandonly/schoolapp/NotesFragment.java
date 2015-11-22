@@ -51,16 +51,17 @@ public class NotesFragment extends Fragment {
 
                 SharedPreferences arrayPrefs_notes = getActivity().getSharedPreferences("ListOfSubjectsNotes", Context.MODE_PRIVATE);
                 JSONArray NotesArray = new JSONArray();
+                String selected = "";
                 try {
                     NotesArray = new JSONArray(arrayPrefs_notes.getString("ListNotes", null));
+                    selected = NotesArray.getString(position);
                 } catch (Exception e) {
                 }
 
-                Toast.makeText(getContext(), "You selected : " + position, Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getActivity(), NotesDetailActivity.class);
 
-
-                Intent intent = new Intent(getActivity(), PictureGroupActivity.class);
-
+                intent.putExtra("note", selected);
+                intent.putExtra("position", position);
 
                 try {
                     intent.putExtra("subjectNotes", NotesArray.getString(position));
@@ -92,11 +93,9 @@ public class NotesFragment extends Fragment {
 
             for (int i = 0; i < set_notes.length(); i++) {
                 try {
-                    arrayList = new ArrayList<String>();
                     arrayList.add(set_notes.getString(i));
                 } catch (JSONException e) {}
             }
-
 
             lv_notes = (ListView) getView().findViewById(R.id.SubjectListView_Notes);
             m_adapter_notes = new ArrayAdapter<String>(getActivity().getApplicationContext(), R.layout.subjectadder_textview_layout, arrayList);
@@ -106,7 +105,7 @@ public class NotesFragment extends Fragment {
 
 
         } catch (Exception e) {
-            Toast.makeText(getContext(), "To add a subject click on the plus button", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "To add a note click on the plus button", Toast.LENGTH_SHORT).show();
         }
 
         super.onResume();
@@ -114,26 +113,29 @@ public class NotesFragment extends Fragment {
 
     public static void reset(Context context){
         SharedPreferences arrayPrefs_notes = context.getSharedPreferences("ListOfSubjectsNotes", Context.MODE_PRIVATE);
-        JSONArray list_notes = new JSONArray();
+        JSONArray set_notes = new JSONArray();
+        ArrayList<String> arrayList = new ArrayList<String>();
+
         try {
             try {
-                list_notes = new JSONArray(arrayPrefs_notes.getString("ListNotes", null));
+                set_notes = new JSONArray(arrayPrefs_notes.getString("ListNotes", null));
             } catch (Exception e) {}
 
-            for (int i = 0; i < list_notes.length(); i++) {
+            for (int i = 0; i < set_notes.length(); i++) {
                 try {
-                    ArrayList<String> arrayList = new ArrayList<String>();
-                    arrayList.add(list_notes.getString(i));
-                    ListView lv_notes = (ListView) v.findViewById(R.id.SubjectListView);
-                    ArrayAdapter<String> m_adapter_notes = new ArrayAdapter<String>(context.getApplicationContext(), R.layout.subjectadder_textview_layout, arrayList);
-                    lv_notes.setAdapter(m_adapter_notes);
+                    arrayList.add(set_notes.getString(i));
                 } catch (JSONException e) {}
             }
 
+            ListView lv_notes = (ListView) v.findViewById(R.id.SubjectListView_Notes)
+                    ;
+            ArrayAdapter m_adapter_notes = new ArrayAdapter<String>(context, R.layout.subjectadder_textview_layout, arrayList);
 
+            lv_notes.setAdapter(m_adapter_notes);
+            m_adapter_notes.notifyDataSetChanged();
 
-        } catch (NullPointerException e) {
-            Toast.makeText(context, "To add a subject click on the plus button", Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(context, "To add a note click on the plus button", Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.DataSetObserver;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -156,7 +157,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
             listView.setLayoutParams(params);
             listView.requestLayout();
         }else {
-            params.height =  5 * (screenHeight / (screenHeight/113)) + 50;
+            params.height =  5 * (screenHeight / (screenHeight/113)) + 40;
             //params.height =  5 * item.getMeasuredHeight();
             listView.setLayoutParams(params);
             listView.requestLayout();
@@ -179,12 +180,14 @@ public class SubjectDetailActivity extends AppCompatActivity {
             int count = 0;
 
             for (int i = 0; i < arrayOfPercentages.length(); i++){
+
+
+
                 count += arrayOfPercentages.getInt(i);
             }
 
-            if (count != 100){
+            if (count != 100 && count != 0){
                 Toast.makeText(this, "The total must equal 100!", Toast.LENGTH_LONG).show();
-
                 settingsDialog();
             }
 
@@ -492,8 +495,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
                 saveCategory(newCategory, grades);
 
-                settingsDialog();
-
                 dialog.dismiss();
             }
         });
@@ -510,10 +511,14 @@ public class SubjectDetailActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
-        JSONArray arrayOfCategories;
+        JSONArray arrayOfCategories, arrayOfPercentages;
         try {
             arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
-        }catch (Exception e) {arrayOfCategories = new JSONArray();}
+            arrayOfPercentages = new JSONArray(prefs.getString("ListOfPercentages", null));
+        }catch (Exception e) {
+            arrayOfCategories = new JSONArray();
+            arrayOfPercentages = new JSONArray();
+        }
 
         if (!arrayOfCategories.toString().contains(name)){
             arrayOfCategories.put(name);
@@ -567,6 +572,9 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 }
                 break;
         }
+
+        arrayOfPercentages.put(String.valueOf(100 / (arrayOfPercentages.length() + 1)));
+        editor.putString("ListOfPercentages", arrayOfPercentages.toString());
 
         editor.putString(name + "Grades" + gradeType, arrayOfGrades.toString());
         editor.apply();
@@ -735,6 +743,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, strings);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
+
         SharedPreferences spinnerPrefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
         int pos = spinnerPrefs.getInt("GradeType", 0);
         spinner.setSelection(pos);
@@ -913,5 +922,25 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
                 if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.red800));
         }
+    }
+
+    public void titleClick(View view) {
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.secondLayout);
+        Button rollDownButton = (Button) findViewById(R.id.rollDownButton);
+
+        int visibility = relativeLayout.getVisibility();
+
+        if (visibility == 8) {
+            relativeLayout.setVisibility(View.VISIBLE);
+            rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_black_24dp);
+        }
+        else {
+            relativeLayout.setVisibility(View.GONE);
+            rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_down_black_24dp);
+        }
+
+
+
+
     }
 }

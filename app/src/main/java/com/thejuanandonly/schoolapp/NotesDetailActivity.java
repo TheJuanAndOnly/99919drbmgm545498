@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
@@ -43,7 +44,7 @@ import java.util.Set;
 public class NotesDetailActivity extends AppCompatActivity {
 
     public static Context initialContext;
-    public static String currentSubject;
+    public static String currentNote;
     android.support.v7.widget.Toolbar toolbar;
     private Menu menu;
     ListView lv_detail;
@@ -56,16 +57,16 @@ public class NotesDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.notes_detail_layout);
         initialContext = getApplicationContext();
-        currentSubject = getIntent().getExtras().getString("subjectNotes", null);
+        currentNote = getIntent().getExtras().getString("subjectNotes", null);
 
         theme();
-        String subject = getIntent().getExtras().getString("subjectNotes", null);
-        toolbar.setTitle(subject);
+        String note = getIntent().getExtras().getString("note", "SchoolApp");
+        toolbar.setTitle(note);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        SharedPreferences prefs = getSharedPreferences("SubjectGroupName" + getIntent().getExtras().getString("subjectNotes", null), Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("SubjectGroupName" + getIntent().getExtras().getString("notes", null), Context.MODE_PRIVATE);
         try {
             arrayOfCategories = new JSONArray(prefs.getString("ListOfSubjectsNotes", null));
         } catch (Exception e) {
@@ -85,6 +86,27 @@ public class NotesDetailActivity extends AppCompatActivity {
         }
 
         setListView();
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                SharedPreferences prefs = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getExtras().getString("note", null), Context.MODE_PRIVATE);
+                JSONArray jsonArray = new JSONArray();
+                String subCategory = "";
+                try {
+                    jsonArray = new JSONArray(prefs.getString("ListGroupName", null));
+                    subCategory = jsonArray.getString(position);
+                } catch (Exception e) {
+                }
+
+                Intent intent = new Intent(getApplicationContext(), PictureGroupActivity.class);
+                intent.putExtra("subNote", subCategory);
+
+                startActivity(intent);
+            }
+        });
+
     }
 
 
@@ -99,7 +121,6 @@ public class NotesDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-
             if (id == R.id.addPictureFolder) {
                 pictureGroupNameDialog();
             } else if (id == android.R.id.home) {
@@ -111,8 +132,27 @@ public class NotesDetailActivity extends AppCompatActivity {
 
     public void setListView() {
 
-         listView = (ListView) findViewById(R.id.PictureGroupListView);
+        listView = (ListView) findViewById(R.id.PictureGroupListView);
 
+        SharedPreferences prefs = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getExtras().getString("note", null), Context.MODE_PRIVATE);
+        JSONArray jsonArray = new JSONArray();
+        try {
+            jsonArray = new JSONArray(prefs.getString("ListGroupName", null));
+        } catch (Exception e) {
+        }
+
+        ArrayList<String> arrayList = new ArrayList<String>();
+
+        for (int i = 0; i < jsonArray.length(); i++){
+            try {
+                arrayList.add(jsonArray.getString(i));
+            }catch (Exception e){
+            }
+        }
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.subjectadder_textview_layout, arrayList);
+
+        listView.setAdapter(arrayAdapter);
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -124,43 +164,56 @@ public class NotesDetailActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
-        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.subjectDetailToolbar);
+        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.notesDetailToolbar);
 
         switch (theme) {
             case 1:
+
                 toolbar.setBackgroundColor(getResources().getColor(R.color.orange));
 
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.orange800));
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.orange700));
 
                 break;
             case 2:
+
                 toolbar.setBackgroundColor(getResources().getColor(R.color.green));
 
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.green800));
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.green800));
 
                 break;
             case 3:
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.blue));
 
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.blue800));
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.blue800));
 
                 break;
             case 4:
+
                 toolbar.setBackgroundColor(getResources().getColor(R.color.grey));
 
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.grey600));
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.grey700));
+
+                break;
+            case 5:
+
+                toolbar.setBackgroundColor(getResources().getColor(R.color.teal));
+
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.teal800));
+
+                break;
+            case 6:
+
+                toolbar.setBackgroundColor(getResources().getColor(R.color.brown));
+
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.brown700));
 
                 break;
             default:
+
                 toolbar.setBackgroundColor(getResources().getColor(R.color.red));
 
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.red800));
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.red800));
         }
     }
 
@@ -168,7 +221,7 @@ public class NotesDetailActivity extends AppCompatActivity {
     public void pictureGroupNameDialog() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Add a subject");
+        builder.setTitle("Add a Picture Group");
 
         final EditText input = new EditText(this);
         input.setHint("Subject name");
@@ -197,19 +250,16 @@ public class NotesDetailActivity extends AppCompatActivity {
 
     public void savePictureGroupName(String subject) {
 
-        SharedPreferences prefs = getSharedPreferences("ListOfSubjectsGroupName", Context.MODE_PRIVATE);
-        ArrayList<String> m_listItems = new ArrayList<>();
-        int arrayLength = 0;
+        SharedPreferences prefs = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getExtras().getString("note", null), Context.MODE_PRIVATE);
+        JSONArray jsonArray = new JSONArray();
         try {
-            Set<String> set = new HashSet<String>(prefs.getStringSet("ListGroupName", null));
-            m_listItems = new ArrayList<String>(set);
-            arrayLength = m_listItems.size();
-        } catch (NullPointerException e) {
+            jsonArray = new JSONArray(prefs.getString("ListGroupName", null));
+        } catch (Exception e) {
         }
 
 
         if (subject != null && subject.length() > 0) {
-            m_listItems.add(arrayLength, subject);
+            jsonArray.put(subject);
         } else {
             Toast.makeText(this, "Don't leave the space blank!", Toast.LENGTH_LONG).show();
             pictureGroupNameDialog();
@@ -221,36 +271,11 @@ public class NotesDetailActivity extends AppCompatActivity {
         editor.putString("subjectGroupName", subject).apply();
 
         //Zoznam predmetov
-        SharedPreferences arrayPrefs = getSharedPreferences("ListOfSubjectsGroupName", Context.MODE_PRIVATE);
+        SharedPreferences arrayPrefs = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getExtras().getString("note", null), Context.MODE_PRIVATE);
         SharedPreferences.Editor arrayPrefsEditor = arrayPrefs.edit();
-        Set<String> set = new HashSet<String>();
-        set.addAll(m_listItems);
-        arrayPrefsEditor.putStringSet("ListGroupName", set).apply();
+        arrayPrefsEditor.putString("ListGroupName", jsonArray.toString()).apply();
 
 
-        Intent restart = getIntent();
-        finish();
-        startActivity(restart);
+        setListView();
     }
-
-    @Override
-    public void onResume() {
-
-        SharedPreferences arrayPrefs = getApplication().getSharedPreferences("ListOfSubjectGroupName", Context.MODE_PRIVATE);
-        Set<String> set = arrayPrefs.getStringSet("ListGroupName", null);
-
-        try {
-            ArrayList<String> arrayList = new ArrayList<String>(set);
-
-            listView = (ListView) findViewById(R.id.SubjectListView);
-            m_adapter_detail = new ArrayAdapter<String>(getApplication().getApplicationContext(), R.layout.subjectadder_textview_layout, arrayList);
-            lv_detail.setAdapter(m_adapter_detail);
-
-        } catch (NullPointerException e) {
-            Toast.makeText(getApplicationContext(), "To add a subject click on the plus button", Toast.LENGTH_SHORT).show();
-        }
-
-        super.onResume();
-    }
-
 }
