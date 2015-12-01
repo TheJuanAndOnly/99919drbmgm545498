@@ -14,17 +14,25 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.Toast;
+
+import org.json.JSONArray;
+
+import java.util.Set;
 
 
 public class TaskAdder extends ActionBarActivity {
 
+    private EditText nameTask, whatTask;
     private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.task_adder_activity);
+        nameTask = (EditText) findViewById(R.id.editText_nameTask);
+        whatTask = (EditText) findViewById(R.id.editText_whatTask);
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
@@ -50,8 +58,7 @@ public class TaskAdder extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_done) {
-            finish();
-            return true;
+            addTask();
         } else if (id == android.R.id.home) {
             onBackPressed();
         }
@@ -105,6 +112,41 @@ public class TaskAdder extends ActionBarActivity {
 
                 if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
                     window.setStatusBarColor(getResources().getColor(R.color.red800));
+        }
+
+    }
+
+    public JSONArray arrayName;
+    public JSONArray arrayWhat;
+    public int numberOfTask;
+    public void addTask() {
+
+        if (nameTask.getText().toString() != null && nameTask.getText().toString().length() > 0 && whatTask.getText().toString() != null && whatTask.getText().toString().length() > 0) {
+            SharedPreferences prefs = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            numberOfTask = prefs.getInt("NumberOfTask", 0);
+            numberOfTask++;
+
+            try {
+                arrayName = new JSONArray(prefs.getString("TaskName", null));
+                arrayWhat = new JSONArray(prefs.getString("TaskWhat", null));
+            } catch (Exception e) {
+                arrayName = new JSONArray();
+                arrayWhat = new JSONArray();
+
+            }
+
+            arrayName.put(nameTask.getText().toString());
+            arrayWhat.put(whatTask.getText().toString());
+
+            editor.putString("TaskName", arrayName.toString()).apply();
+            editor.putString("TaskWhat", arrayWhat.toString()).apply();
+            finish();
+
+            editor.putInt("NumberOfTask", numberOfTask).apply();
+            editor.commit();
+        } else {
+            Toast.makeText(this, "Don't leave the space blank!", Toast.LENGTH_LONG).show();
         }
 
     }

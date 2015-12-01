@@ -234,6 +234,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void deleteAll(View view) {
         deleteDialogBox();
+        SharedPreferences preferences = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+        preferences.edit().clear().commit();
     }
 
     public void deleteDialogBox() {
