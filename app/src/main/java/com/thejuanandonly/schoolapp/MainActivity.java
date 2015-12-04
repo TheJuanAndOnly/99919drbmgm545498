@@ -236,6 +236,10 @@ public class MainActivity extends AppCompatActivity {
         deleteDialogBox();
         SharedPreferences preferences = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
         preferences.edit().clear().commit();
+
+        SharedPreferences prefs = getSharedPreferences("ListOfDoneTasks", Context.MODE_PRIVATE);
+        prefs.edit().clear().commit();
+
     }
 
     public void deleteDialogBox() {
@@ -429,5 +433,9 @@ public class MainActivity extends AppCompatActivity {
         arrayPrefsEditor_notes.putString("ListNotes", set_notes.toString()).apply();
 
         NotesFragment.reset(this);
+    }
+
+    public void refresh() {
+        this.recreate();
     }
 }

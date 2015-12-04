@@ -5,26 +5,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.PopupMenu;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ExpandableListView;
-import android.widget.ExpandableListView.OnChildClickListener;
-import android.widget.Toast;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
 public class TodoTasksTabFragment extends Fragment {
 
@@ -107,7 +99,9 @@ public class TodoTasksTabFragment extends Fragment {
 
         String stringName = "";
         String[] stringWhat = {};
+
         groupList.clear();
+
         for (int taskToShow = 0; taskToShow < numberOfTask; taskToShow++) {
             try {
                 stringName = arrayName.getString(taskToShow);
