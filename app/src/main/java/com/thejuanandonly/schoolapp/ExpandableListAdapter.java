@@ -7,6 +7,7 @@ import java.util.Map;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -54,7 +55,39 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         item.setText(TaskWhat);
 
+        ImageView imgEdit = (ImageView) convertView.findViewById(R.id.imgEdit);
         ImageView imgDone = (ImageView) convertView.findViewById(R.id.imgDone);
+
+        imgEdit.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences prefs = context.getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+                JSONArray arrayName, arrayWhat;
+
+                try {
+                    arrayName = new JSONArray(prefs.getString("TaskName", null));
+                    arrayWhat = new JSONArray(prefs.getString("TaskWhat", null));
+                } catch (Exception e) {
+                    arrayName = new JSONArray();
+                    arrayWhat = new JSONArray();
+                }
+
+                String stringName = "";
+                String[] stringWhat = {};
+
+                try {
+                    stringName = arrayName.getString(groupPosition);
+                    stringWhat = new String[]{arrayWhat.getString(groupPosition)};
+                } catch (Exception e) {
+                }
+
+                Intent TaskAdderActivity = new Intent(context, TaskAdder.class);
+                TaskAdderActivity.putExtra("EditTaskName", stringName);
+                TaskAdderActivity.putExtra("EditTaskWhat", stringWhat[0]);
+                context.startActivity(TaskAdderActivity);
+            }
+        });
+
         imgDone.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

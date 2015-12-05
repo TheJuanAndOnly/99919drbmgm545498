@@ -40,27 +40,11 @@
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/ExpandableListAdapterDone.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="114" column="41" selection-start-line="114" selection-start-column="41" selection-end-line="114" selection-end-column="41" />
+              <caret line="185" column="0" selection-start-line="176" selection-start-column="16" selection-end-line="189" selection-end-column="36" />
               <folding>
-                <element signature="e#2084#4282#0" expanded="true" />
-                <element signature="e#2972#2980#0" expanded="true" />
-                <element signature="e#3412#3420#0" expanded="true" />
-                <element signature="e#4281#4282#0" expanded="true" />
                 <element signature="e#4324#7886#0" expanded="true" />
-                <element signature="e#6174#6182#0" expanded="true" />
-                <element signature="e#6614#6622#0" expanded="true" />
                 <element signature="e#7885#7886#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ScheduleActivity.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/ScheduleActivity.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7129032">
-              <caret line="33" column="69" selection-start-line="33" selection-start-column="69" selection-end-line="33" selection-end-column="69" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -69,14 +53,13 @@
         <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/ExpandableListAdapter.java">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="134" column="36" selection-start-line="134" selection-start-column="36" selection-end-line="134" selection-end-column="36" />
+              <caret line="85" column="74" selection-start-line="85" selection-start-column="74" selection-end-line="85" selection-end-column="74" />
               <folding>
-                <element signature="imports" expanded="true" />
                 <element signature="method#getChild#0;class#ExpandableListAdapter#0" expanded="false" />
-                <element signature="e#1933#5427#0" expanded="true" />
-                <element signature="e#3763#3771#0" expanded="true" />
-                <element signature="e#4175#4183#0" expanded="true" />
-                <element signature="e#5426#5427#0" expanded="true" />
+                <element signature="e#2045#3259#0" expanded="true" />
+                <element signature="e#3258#3259#0" expanded="true" />
+                <element signature="e#3298#6792#0" expanded="true" />
+                <element signature="e#6791#6792#0" expanded="true" />
                 <element signature="method#getChildrenCount#0;class#ExpandableListAdapter#0" expanded="false" />
                 <element signature="method#getGroupView#0;class#ExpandableListAdapter#0" expanded="false" />
               </folding>
@@ -84,29 +67,29 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="child_item_done.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/child_item_done.xml">
+      <file leaf-file-name="TaskAdder.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/TaskAdder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-6.448276">
-              <caret line="38" column="26" selection-start-line="38" selection-start-column="26" selection-end-line="38" selection-end-column="57" />
-              <folding />
+            <state vertical-scroll-proportion="-1.0290322">
+              <caret line="174" column="0" selection-start-line="174" selection-start-column="0" selection-end-line="174" selection-end-column="0" />
+              <folding>
+                <element signature="e#6797#6805#0" expanded="true" />
+                <element signature="e#7168#7176#0" expanded="true" />
+              </folding>
             </state>
-          </provider>
-          <provider editor-type-id="android-designer">
-            <state />
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="child_item.xml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/child_item.xml">
+      <file leaf-file-name="MainActivity.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-7.62069">
-              <caret line="38" column="57" selection-start-line="38" selection-start-column="57" selection-end-line="38" selection-end-column="57" />
-              <folding />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="197" column="12" selection-start-line="197" selection-start-column="12" selection-end-line="198" selection-end-column="45" />
+              <folding>
+                <element signature="e#17597#17598#0" expanded="true" />
+                <element signature="e#17628#17629#0" expanded="true" />
+              </folding>
             </state>
-          </provider>
-          <provider editor-type-id="android-designer">
-            <state />
           </provider>
         </entry>
       </file>
@@ -1576,13 +1559,24 @@
         <option value="$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/DoneTasksTabFragment.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/TodoTasksTabFragment.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/MainActivity.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/ExpandableListAdapter.java" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/child_item_done.xml" />
         <option value="$PROJECT_DIR$/app/src/main/res/layout/child_item.xml" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/ExpandableListAdapterDone.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/ScheduleActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/ExpandableListAdapter.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/TaskAdder.java" />
       </list>
     </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="Bundled (Maven 3)" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="MavenProjectNavigator">
+    <treeState />
   </component>
   <component name="NamedScopeManager">
     <order />
@@ -1616,6 +1610,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scratches" />
       <pane id="AndroidView">
         <subPane>
           <PATH>
@@ -1652,7 +1647,7 @@
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="layout" />
+              <option name="myItemId" value="menu" />
               <option name="myItemType" value="com.android.tools.idea.navigator.nodes.AndroidResFolderTypeNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1700,10 +1695,9 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scratches" />
-      <pane id="ProjectPane" />
       <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="ProjectPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1878,7 +1872,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3295082" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -1887,8 +1881,8 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Android Monitor" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.44590163" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32980332" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Android Monitor" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.44590163" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -1962,47 +1956,16 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/TodoTasksTabFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="127" column="37" selection-start-line="127" selection-start-column="37" selection-end-line="127" selection-end-column="37" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#912#913#0" expanded="true" />
-            <element signature="e#962#963#0" expanded="true" />
-            <element signature="e#1658#1659#0" expanded="true" />
-            <element signature="e#1726#1727#0" expanded="true" />
-            <element signature="method#loadChild#0;class#TodoTasksTabFragment#0" expanded="false" />
-            <element signature="method#setGroupIndicatorToRight#0;class#TodoTasksTabFragment#0" expanded="false" />
-            <element signature="method#getDipsFromPixel#0;class#TodoTasksTabFragment#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/DoneTasksTabFragment.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="118" column="25" selection-start-line="118" selection-start-column="25" selection-end-line="118" selection-end-column="25" />
-          <folding>
-            <element signature="method#loadChild#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#setGroupIndicatorToRight#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#getDipsFromPixel#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#onResume#0;class#DoneTasksTabFragment#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/ExpandableListAdapter.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
             <element signature="method#getChild#0;class#ExpandableListAdapter#0" expanded="false" />
-            <element signature="e#1933#5427#0" expanded="true" />
-            <element signature="e#3763#3771#0" expanded="true" />
-            <element signature="e#4175#4183#0" expanded="true" />
-            <element signature="e#5426#5427#0" expanded="true" />
+            <element signature="e#2045#3259#0" expanded="true" />
+            <element signature="e#3258#3259#0" expanded="true" />
+            <element signature="e#3298#6792#0" expanded="true" />
+            <element signature="e#6791#6792#0" expanded="true" />
             <element signature="method#getChildrenCount#0;class#ExpandableListAdapter#0" expanded="false" />
             <element signature="method#getGroupView#0;class#ExpandableListAdapter#0" expanded="false" />
           </folding>
@@ -2040,16 +2003,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="127" column="43" selection-start-line="127" selection-start-column="43" selection-end-line="127" selection-end-column="43" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#912#913#0" expanded="true" />
-            <element signature="e#962#963#0" expanded="true" />
-            <element signature="e#1658#1659#0" expanded="true" />
-            <element signature="e#1726#1727#0" expanded="true" />
-            <element signature="method#loadChild#0;class#TodoTasksTabFragment#0" expanded="false" />
-            <element signature="method#setGroupIndicatorToRight#0;class#TodoTasksTabFragment#0" expanded="false" />
-            <element signature="method#getDipsFromPixel#0;class#TodoTasksTabFragment#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2058,12 +2011,11 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
             <element signature="method#getChild#0;class#ExpandableListAdapter#0" expanded="false" />
-            <element signature="e#1933#5427#0" expanded="true" />
-            <element signature="e#3763#3771#0" expanded="true" />
-            <element signature="e#4175#4183#0" expanded="true" />
-            <element signature="e#5426#5427#0" expanded="true" />
+            <element signature="e#2045#3259#0" expanded="true" />
+            <element signature="e#3258#3259#0" expanded="true" />
+            <element signature="e#3298#6792#0" expanded="true" />
+            <element signature="e#6791#6792#0" expanded="true" />
             <element signature="method#getChildrenCount#0;class#ExpandableListAdapter#0" expanded="false" />
             <element signature="method#getGroupView#0;class#ExpandableListAdapter#0" expanded="false" />
           </folding>
@@ -2074,12 +2026,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="114" column="80" selection-start-line="114" selection-start-column="80" selection-end-line="114" selection-end-column="80" />
-          <folding>
-            <element signature="method#loadChild#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#setGroupIndicatorToRight#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#getDipsFromPixel#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#onResume#0;class#DoneTasksTabFragment#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2114,16 +2060,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="49" column="0" selection-start-line="49" selection-start-column="0" selection-end-line="49" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#912#913#0" expanded="true" />
-            <element signature="e#962#963#0" expanded="true" />
-            <element signature="e#1658#1659#0" expanded="true" />
-            <element signature="e#1726#1727#0" expanded="true" />
-            <element signature="method#loadChild#0;class#TodoTasksTabFragment#0" expanded="false" />
-            <element signature="method#setGroupIndicatorToRight#0;class#TodoTasksTabFragment#0" expanded="false" />
-            <element signature="method#getDipsFromPixel#0;class#TodoTasksTabFragment#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2132,12 +2068,11 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
             <element signature="method#getChild#0;class#ExpandableListAdapter#0" expanded="false" />
-            <element signature="e#1933#5427#0" expanded="true" />
-            <element signature="e#3763#3771#0" expanded="true" />
-            <element signature="e#4175#4183#0" expanded="true" />
-            <element signature="e#5426#5427#0" expanded="true" />
+            <element signature="e#2045#3259#0" expanded="true" />
+            <element signature="e#3258#3259#0" expanded="true" />
+            <element signature="e#3298#6792#0" expanded="true" />
+            <element signature="e#6791#6792#0" expanded="true" />
             <element signature="method#getChildrenCount#0;class#ExpandableListAdapter#0" expanded="false" />
             <element signature="method#getGroupView#0;class#ExpandableListAdapter#0" expanded="false" />
           </folding>
@@ -2148,12 +2083,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="112" column="52" selection-start-line="112" selection-start-column="52" selection-end-line="112" selection-end-column="52" />
-          <folding>
-            <element signature="method#loadChild#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#setGroupIndicatorToRight#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#getDipsFromPixel#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#onResume#0;class#DoneTasksTabFragment#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2196,16 +2125,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="38" column="28" selection-start-line="0" selection-start-column="0" selection-end-line="124" selection-end-column="1" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#912#913#0" expanded="true" />
-            <element signature="e#962#963#0" expanded="true" />
-            <element signature="e#1658#1659#0" expanded="true" />
-            <element signature="e#1726#1727#0" expanded="true" />
-            <element signature="method#loadChild#0;class#TodoTasksTabFragment#0" expanded="false" />
-            <element signature="method#setGroupIndicatorToRight#0;class#TodoTasksTabFragment#0" expanded="false" />
-            <element signature="method#getDipsFromPixel#0;class#TodoTasksTabFragment#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2214,12 +2133,11 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
             <element signature="method#getChild#0;class#ExpandableListAdapter#0" expanded="false" />
-            <element signature="e#1933#5427#0" expanded="true" />
-            <element signature="e#3763#3771#0" expanded="true" />
-            <element signature="e#4175#4183#0" expanded="true" />
-            <element signature="e#5426#5427#0" expanded="true" />
+            <element signature="e#2045#3259#0" expanded="true" />
+            <element signature="e#3258#3259#0" expanded="true" />
+            <element signature="e#3298#6792#0" expanded="true" />
+            <element signature="e#6791#6792#0" expanded="true" />
             <element signature="method#getChildrenCount#0;class#ExpandableListAdapter#0" expanded="false" />
             <element signature="method#getGroupView#0;class#ExpandableListAdapter#0" expanded="false" />
           </folding>
@@ -2230,12 +2148,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="112" column="52" selection-start-line="112" selection-start-column="52" selection-end-line="112" selection-end-column="52" />
-          <folding>
-            <element signature="method#loadChild#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#setGroupIndicatorToRight#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#getDipsFromPixel#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#onResume#0;class#DoneTasksTabFragment#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2278,16 +2190,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="31" column="18" selection-start-line="31" selection-start-column="17" selection-end-line="31" selection-end-column="18" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#912#913#0" expanded="true" />
-            <element signature="e#962#963#0" expanded="true" />
-            <element signature="e#1658#1659#0" expanded="true" />
-            <element signature="e#1726#1727#0" expanded="true" />
-            <element signature="method#loadChild#0;class#TodoTasksTabFragment#0" expanded="false" />
-            <element signature="method#setGroupIndicatorToRight#0;class#TodoTasksTabFragment#0" expanded="false" />
-            <element signature="method#getDipsFromPixel#0;class#TodoTasksTabFragment#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2296,12 +2198,11 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
             <element signature="method#getChild#0;class#ExpandableListAdapter#0" expanded="false" />
-            <element signature="e#1933#5427#0" expanded="true" />
-            <element signature="e#3763#3771#0" expanded="true" />
-            <element signature="e#4175#4183#0" expanded="true" />
-            <element signature="e#5426#5427#0" expanded="true" />
+            <element signature="e#2045#3259#0" expanded="true" />
+            <element signature="e#3258#3259#0" expanded="true" />
+            <element signature="e#3298#6792#0" expanded="true" />
+            <element signature="e#6791#6792#0" expanded="true" />
             <element signature="method#getChildrenCount#0;class#ExpandableListAdapter#0" expanded="false" />
             <element signature="method#getGroupView#0;class#ExpandableListAdapter#0" expanded="false" />
           </folding>
@@ -2334,12 +2235,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
-          <folding>
-            <element signature="method#loadChild#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#setGroupIndicatorToRight#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#getDipsFromPixel#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#onResume#0;class#DoneTasksTabFragment#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2347,16 +2242,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="31" column="18" selection-start-line="31" selection-start-column="17" selection-end-line="31" selection-end-column="18" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#912#913#0" expanded="true" />
-            <element signature="e#962#963#0" expanded="true" />
-            <element signature="e#1658#1659#0" expanded="true" />
-            <element signature="e#1726#1727#0" expanded="true" />
-            <element signature="method#loadChild#0;class#TodoTasksTabFragment#0" expanded="false" />
-            <element signature="method#setGroupIndicatorToRight#0;class#TodoTasksTabFragment#0" expanded="false" />
-            <element signature="method#getDipsFromPixel#0;class#TodoTasksTabFragment#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2365,12 +2250,11 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="imports" expanded="true" />
             <element signature="method#getChild#0;class#ExpandableListAdapter#0" expanded="false" />
-            <element signature="e#1933#5427#0" expanded="true" />
-            <element signature="e#3763#3771#0" expanded="true" />
-            <element signature="e#4175#4183#0" expanded="true" />
-            <element signature="e#5426#5427#0" expanded="true" />
+            <element signature="e#2045#3259#0" expanded="true" />
+            <element signature="e#3258#3259#0" expanded="true" />
+            <element signature="e#3298#6792#0" expanded="true" />
+            <element signature="e#6791#6792#0" expanded="true" />
             <element signature="method#getChildrenCount#0;class#ExpandableListAdapter#0" expanded="false" />
             <element signature="method#getGroupView#0;class#ExpandableListAdapter#0" expanded="false" />
           </folding>
@@ -2403,12 +2287,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="9" column="13" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
-          <folding>
-            <element signature="method#loadChild#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#setGroupIndicatorToRight#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#getDipsFromPixel#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#onResume#0;class#DoneTasksTabFragment#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2451,13 +2329,6 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/TaskAdder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7302405">
-          <caret line="141" column="71" selection-start-line="141" selection-start-column="71" selection-end-line="141" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/tasks_layout.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -2484,12 +2355,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="22" column="4" selection-start-line="22" selection-start-column="4" selection-end-line="22" selection-end-column="4" />
-          <folding>
-            <element signature="method#loadChild#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#setGroupIndicatorToRight#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#getDipsFromPixel#0;class#DoneTasksTabFragment#0" expanded="false" />
-            <element signature="method#onResume#0;class#DoneTasksTabFragment#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -2497,53 +2362,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.61612904">
           <caret line="117" column="5" selection-start-line="117" selection-start-column="5" selection-end-line="117" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#912#913#0" expanded="true" />
-            <element signature="e#962#963#0" expanded="true" />
-            <element signature="e#1658#1659#0" expanded="true" />
-            <element signature="e#1726#1727#0" expanded="true" />
-            <element signature="method#loadChild#0;class#TodoTasksTabFragment#0" expanded="false" />
-            <element signature="method#setGroupIndicatorToRight#0;class#TodoTasksTabFragment#0" expanded="false" />
-            <element signature="method#getDipsFromPixel#0;class#TodoTasksTabFragment#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/MainActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.67096776">
-          <caret line="437" column="11" selection-start-line="437" selection-start-column="11" selection-end-line="437" selection-end-column="11" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#13685#13872#0" expanded="true" />
-            <element signature="e#13871#13872#0" expanded="true" />
-            <element signature="e#17597#17598#0" expanded="true" />
-            <element signature="e#17628#17629#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/ExpandableListAdapter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="134" column="36" selection-start-line="134" selection-start-column="36" selection-end-line="134" selection-end-column="36" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="method#getChild#0;class#ExpandableListAdapter#0" expanded="false" />
-            <element signature="e#1933#5427#0" expanded="true" />
-            <element signature="e#3763#3771#0" expanded="true" />
-            <element signature="e#4175#4183#0" expanded="true" />
-            <element signature="e#5426#5427#0" expanded="true" />
-            <element signature="method#getChildrenCount#0;class#ExpandableListAdapter#0" expanded="false" />
-            <element signature="method#getGroupView#0;class#ExpandableListAdapter#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/child_item_done.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-6.448276">
+        <state vertical-scroll-proportion="0.0">
           <caret line="38" column="26" selection-start-line="38" selection-start-column="26" selection-end-line="38" selection-end-column="57" />
           <folding />
         </state>
@@ -2554,7 +2378,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/child_item.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-7.62069">
+        <state vertical-scroll-proportion="0.0">
           <caret line="38" column="57" selection-start-line="38" selection-start-column="57" selection-end-line="38" selection-end-column="57" />
           <folding />
         </state>
@@ -2563,28 +2387,76 @@
         <state />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/ScheduleActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.52577317">
+          <caret line="33" column="69" selection-start-line="33" selection-start-column="69" selection-end-line="33" selection-end-column="69" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/res/menu/menu_tasks.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/TasksFragment.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.25601375">
+          <caret line="15" column="13" selection-start-line="15" selection-start-column="13" selection-end-line="15" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/MainActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="197" column="12" selection-start-line="197" selection-start-column="12" selection-end-line="198" selection-end-column="45" />
+          <folding>
+            <element signature="e#17597#17598#0" expanded="true" />
+            <element signature="e#17628#17629#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/ExpandableListAdapter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="85" column="74" selection-start-line="85" selection-start-column="74" selection-end-line="85" selection-end-column="74" />
+          <folding>
+            <element signature="method#getChild#0;class#ExpandableListAdapter#0" expanded="false" />
+            <element signature="e#2045#3259#0" expanded="true" />
+            <element signature="e#3258#3259#0" expanded="true" />
+            <element signature="e#3298#6792#0" expanded="true" />
+            <element signature="e#6791#6792#0" expanded="true" />
+            <element signature="method#getChildrenCount#0;class#ExpandableListAdapter#0" expanded="false" />
+            <element signature="method#getGroupView#0;class#ExpandableListAdapter#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/ExpandableListAdapterDone.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="114" column="41" selection-start-line="114" selection-start-column="41" selection-end-line="114" selection-end-column="41" />
+          <caret line="185" column="0" selection-start-line="176" selection-start-column="16" selection-end-line="189" selection-end-column="36" />
           <folding>
-            <element signature="e#2084#4282#0" expanded="true" />
-            <element signature="e#2972#2980#0" expanded="true" />
-            <element signature="e#3412#3420#0" expanded="true" />
-            <element signature="e#4281#4282#0" expanded="true" />
             <element signature="e#4324#7886#0" expanded="true" />
-            <element signature="e#6174#6182#0" expanded="true" />
-            <element signature="e#6614#6622#0" expanded="true" />
             <element signature="e#7885#7886#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/ScheduleActivity.java">
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/com/thejuanandonly/schoolapp/TaskAdder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7129032">
-          <caret line="33" column="69" selection-start-line="33" selection-start-column="69" selection-end-line="33" selection-end-column="69" />
-          <folding />
+        <state vertical-scroll-proportion="-1.0290322">
+          <caret line="174" column="0" selection-start-line="174" selection-start-column="0" selection-end-line="174" selection-end-column="0" />
+          <folding>
+            <element signature="e#6797#6805#0" expanded="true" />
+            <element signature="e#7168#7176#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
