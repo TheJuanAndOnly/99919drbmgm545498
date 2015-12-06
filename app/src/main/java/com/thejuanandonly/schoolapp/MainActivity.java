@@ -249,10 +249,10 @@ public class MainActivity extends AppCompatActivity {
                         try {
                             SharedPreferences prefs = getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
                             SharedPreferences.Editor editor = prefs.edit();
-                            JSONArray set = new JSONArray(prefs.getString("List", null));
+                            JSONArray arrayOfSubjects = new JSONArray(prefs.getString("List", null));
 
-                            for (int i = 0; i < set.length(); i++) {
-                                SharedPreferences preferences = getSharedPreferences("Subject" + set.get(i), Context.MODE_PRIVATE);
+                            for (int i = 0; i < arrayOfSubjects.length(); i++) {
+                                SharedPreferences preferences = getSharedPreferences("Subject" + arrayOfSubjects.get(i), Context.MODE_PRIVATE);
                                 SharedPreferences.Editor editor2 = preferences.edit();
                                 editor2.clear().apply();
                             }

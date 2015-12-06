@@ -85,7 +85,6 @@ android:fitsSystemWindows="true">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/firstLayout"
                 android:id="@+id/secondLayout"
                 android:background="@color/white"
 
@@ -99,14 +98,15 @@ android:fitsSystemWindows="true">
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:layout_marginBottom="5dp"
                     android:id="@+id/separatorDetail1"
                     android:background="@android:color/darker_gray"/>
 
                 <ListView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
                     android:id="@+id/categoryListView"
                     android:layout_below="@id/separatorDetail1"
                     android:divider="@android:color/transparent"
@@ -118,6 +118,11 @@ android:fitsSystemWindows="true">
                     android:layout_height="24dp"
                     android:layout_alignParentLeft="true"
                     android:layout_below="@id/categoryListView"
+
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginBottom="5dp"
+
                     android:background="@drawable/ic_add_black_24dp"
                     android:id="@+id/addCategory"
                     android:onClick="addCategory"
@@ -127,6 +132,7 @@ android:fitsSystemWindows="true">
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:id="@+id/separatorDetail"
+                    android:layout_marginTop="5dp"
                     android:layout_below="@id/addCategory"
                     android:background="@android:color/darker_gray"
                     android:layout_marginBottom="8dp"/>
@@ -137,21 +143,98 @@ android:fitsSystemWindows="true">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/secondLayout"
                 android:layout_marginTop="8dp"
-                android:padding="16dp"
+                android:paddingLeft="16dp"
+                android:paddingBottom="4dp"
                 android:id="@+id/thirdLayout"
-                android:background="@color/white">
+                android:background="@color/white"
+                android:onClick="titleClick">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Grades"
+                    android:text="Prediction"
+                    android:layout_marginTop="16dp"
                     android:layout_marginBottom="4dp"
-                    android:id="@+id/extrasTextView"
+                    android:id="@+id/predictionTextView"
                     android:textSize="20sp"
                     style="@style/TextAppearance.AppCompat.Headline"
                     />
+
+                <Button
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@id/predictionTextView"
+                    android:background="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:id="@+id/rollDownButton2"
+                    android:onClick="titleClick"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:background="@drawable/ic_navigate_before_black_24dp"
+                        android:id="@+id/ttwSubtractBtn"
+                        android:onClick="testsToWriteBtn"/>
+
+                    <!-- Stop auto focusing the EditText -->
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="@android:color/transparent"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true">
+                    </LinearLayout>
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="20dp"
+                        android:id="@+id/testsToWriteEditText"
+                        android:gravity="center"
+                        android:inputType="number"
+                        style="?android:attr/editTextStyle"
+                        android:text="1"
+                        android:maxLength="1"/>
+
+                    <Button
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:background="@drawable/ic_navigate_next_black_24dp"
+                        android:id="@+id/ttwAddBtn"
+                        android:onClick="testsToWriteBtn"/>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="270dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="16dp"
+                android:id="@+id/fourthLayout"
+                android:background="@color/white"
+                android:visibility="gone">
+
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:id="@+id/predictionListView"
+                    android:divider="@android:color/transparent"
+                    android:dividerHeight="4dp">
+                </ListView>
 
             </RelativeLayout>
 

@@ -16,14 +16,17 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +39,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
@@ -51,6 +55,7 @@ import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by Robo on 10/22/2015.
@@ -61,7 +66,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
     android.support.v7.widget.Toolbar toolbar;
     private Menu menu;
     public static int menuButtonChange = 1;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,8 +97,21 @@ public class SubjectDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "Add a category", Toast.LENGTH_SHORT).show();
         }
 
-        setListView();
+        setAvgTv();
     }
+
+    public void setAvgTv(){
+        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
+
+        TextView averageTV = (TextView) findViewById(R.id.averageTextView);
+        int gradeType = prefs.getInt("GradeType" , 0);
+        if (gradeType == 2){
+            averageTV.setText("GPA: " + prefs.getString("AvgGrade", "0"));
+        }else {
+            averageTV.setText("Average: " + prefs.getString("AvgGrade", "0"));
+        }
+    }
+
 //////////////////////////////////////////////////////////////////////////
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -135,9 +152,9 @@ public class SubjectDetailActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
-        ArrayList<Grade> arrayOfGrades = Grade.getGrades();
+        ArrayList<Grade> arrayListOfGrades = Grade.getGrades();
 
-        CustomGradeAdapter adapter = new CustomGradeAdapter(this, arrayOfGrades);
+        CustomGradeAdapter adapter = new CustomGradeAdapter(this, arrayListOfGrades);
 
         ListView listView = (ListView) findViewById(R.id.categoryListView);
         listView.setAdapter(adapter);
@@ -152,47 +169,103 @@ public class SubjectDetailActivity extends AppCompatActivity {
         int screenWidth = displayMetrics.widthPixels;
         int screenHeight = displayMetrics.heightPixels;
 
-        if (adapter.getCount() <= 5) {
-            params.height = adapter.getCount() * (screenHeight / (screenHeight/113));
-            listView.setLayoutParams(params);
-            listView.requestLayout();
-        }else {
-            params.height =  5 * (screenHeight / (screenHeight/113)) + 40;
-            //params.height =  5 * item.getMeasuredHeight();
-            listView.setLayoutParams(params);
-            listView.requestLayout();
-        }
+        params.height = adapter.getCount() * (screenHeight / (screenHeight/113));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
 
-        editor.putString("AvgGrade", countAverage()).apply();
 
-        TextView averageTV = (TextView) findViewById(R.id.averageTextView);
         int gradeType = prefs.getInt("GradeType" , 0);
-        if (gradeType == 2){
-            averageTV.setText("GPA: " + countAverage());
-        }else {
-            averageTV.setText("Average: " + countAverage());
-        }
 
+        editor.putString("AvgGrade", String.valueOf(countAverage())).apply();
 
         try{
             JSONArray arrayOfPercentages = new JSONArray(prefs.getString("ListOfPercentages", null));
+            JSONArray arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
 
             int count = 0;
+            boolean isNonZeroCategory = false,
+                    isIgnoredCategory = false;
 
             for (int i = 0; i < arrayOfPercentages.length(); i++){
+                try {
+                    count += arrayOfPercentages.getInt(i);
+                }catch (JSONException ex){
+                    count += 0;
+                }
 
+            }
 
+            for (int i = 0; i < arrayOfCategories.length(); i++){
 
-                count += arrayOfPercentages.getInt(i);
+                JSONArray arrayOfGrades = new JSONArray();
+                try {
+                    arrayOfGrades = new JSONArray(prefs.getString(arrayOfCategories.getString(i) + "Grades" + gradeType, null));
+                }catch (NullPointerException ex){
+                }
+
+                int percentage = 0;
+                try {
+                    percentage = arrayOfPercentages.getInt(i);
+                }catch (JSONException e) {}
+
+                if (arrayOfGrades.length() == 0 && percentage != 0){
+                    isNonZeroCategory = true;
+                }
+                else if (arrayOfGrades.length() != 0 && percentage == 0){
+                    isIgnoredCategory = true;
+                }
             }
 
             if (count != 100 && count != 0){
-                Toast.makeText(this, "The total must equal 100!", Toast.LENGTH_LONG).show();
-                settingsDialog();
+
+                final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "The total must equal 100!", Snackbar.LENGTH_INDEFINITE);
+                snackbar.show();
+                snackbar.setAction("Settings", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        settingsDialog();
+
+                        snackbar.dismiss();
+                    }
+                });
+
+            }else if (isNonZeroCategory){
+
+                final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "In order for all empty categories to be ignored, set their values to 0", Snackbar.LENGTH_INDEFINITE);
+                snackbar.show();
+                snackbar.setAction("Settings", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        settingsDialog();
+
+                        snackbar.dismiss();
+                    }
+                });
+
+            }else if(isIgnoredCategory){
+
+                final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Some categories containing grades are ignored. Set their values", Snackbar.LENGTH_INDEFINITE);
+                snackbar.show();
+                snackbar.setAction("Settings", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        settingsDialog();
+
+                        snackbar.dismiss();
+                    }
+                });
             }
 
-        }catch (Exception e){}
 
+        }catch (Exception e){
+            Log.e("debug", e.toString());
+        }
+
+        setAvgTv();
+        setPredictionListView();
     }
 //////////////////////////////////////////////////////////////////////////
     public void addGrade(View view) {
@@ -274,6 +347,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
         }catch (Exception e) {
             jsonArray = new JSONArray();
         }
+
+        grade = grade + "*";
         char[] chars = grade.toCharArray();
         switch (gradeType){
             case 1:
@@ -286,7 +361,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                         if (percentage == -1) percentage = 0;
                         percentage = (percentage * 10) + num;
 
-                    }else if (percentage != -1){
+                    }else if (percentage != -1 || i+1 == chars.length){
                         jsonArray.put(String.valueOf(percentage));
                         percentage = -1;
                     }
@@ -299,10 +374,12 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
                         String string = String.valueOf(chars[i]);
 
-                        int j = i + 1;
-                        if (chars[j] == '+' || chars[j] == '-'){
-                            string += String.valueOf(chars[j]);
-                        }
+                        try {
+                            int j = i + 1;
+                            if (chars[j] == '+' || chars[j] == '-'){
+                                string += String.valueOf(chars[j]);
+                            }
+                        }catch (IndexOutOfBoundsException e){}
 
                         jsonArray.put(string);
                     }
@@ -323,7 +400,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         setListView();
     }
 //////////////////////////////////////////////////////////////////////////
-    public String countAverage(){
+    public double countAverage(){
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
         JSONArray arrayOfCategories, arrayOfPercentages;
         try {
@@ -342,18 +419,14 @@ public class SubjectDetailActivity extends AppCompatActivity {
             }catch (JSONException e) {}
             semiAverage.add(countSemiAverage(s));
         }
+
         double average = 0;
         for(int i = 0; i < semiAverage.size(); i++) {
-            if (semiAverage.get(i) == 0) {
-                semiAverage.remove(i);
-                i--;
-            }
-            else {
-                double temp = semiAverage.get(i);
-                try {
-                    temp = temp / (100 / arrayOfPercentages.getDouble(i));
-                }catch (JSONException e) {}
-                average += temp;
+
+            try {
+                average += semiAverage.get(i) / (100 / arrayOfPercentages.getDouble(i));
+            }catch (JSONException e){
+                Log.e("debug", e.toString());
             }
         }
 
@@ -361,10 +434,10 @@ public class SubjectDetailActivity extends AppCompatActivity {
         average = Double.valueOf(df.format(average));
 
         if (String.valueOf(average).equals("NaN")){
-            return "";
+            return 0;
         }
         else {
-            return String.valueOf(average);
+            return average;
         }
     }
 
@@ -397,66 +470,92 @@ public class SubjectDetailActivity extends AppCompatActivity {
                     string = jsonArray.getString(i);
                 } catch (JSONException e) {}
 
-                switch (string){
-                    case "A+":
-                        average += 4.33;
-                        break;
-
-                    case "A":
-                        average += 4;
-                        break;
-
-                    case "A-":
-                        average += 4 - 0.33 ;
-                        break;
-
-                    case "B+":
-                        average += 3 + 0.33;
-                        break;
-
-                    case "B":
-                        average += 3;
-                        break;
-
-                    case "B-":
-                        average += 3 - 0.33;
-                        break;
-
-                    case "C+":
-                        average += 2 + 0.33;
-                        break;
-
-                    case "C":
-                        average += 2;
-                        break;
-
-                    case "C-":
-                        average += 2 - 0.33;
-                        break;
-
-                    case "D+":
-                        average += 1 + 0.33;
-                        break;
-
-                    case "D":
-                        average += 1;
-                        break;
-
-                    case "D-":
-                        average += 1 - 0.33;
-                        break;
-
-                    case "F":
-                        average += 0;
-                        break;
-                }
+                average += letterToNumber(string);
 
             }
             if (average != 0) {
                 average /= jsonArray.length();
             }
         }
+
         return average;
+    }
+
+    public double letterToNumber(String letter){
+        switch (letter){
+            case "A+":
+                return 4.33;
+
+            case "A":
+                return 4;
+
+            case "A-":
+                return 4 - 0.33 ;
+
+            case "B+":
+                return 3 + 0.33;
+
+            case "B":
+                return 3;
+
+            case "B-":
+                return 3 - 0.33;
+
+            case "C+":
+                return 2 + 0.33;
+
+            case "C":
+                return 2;
+
+            case "C-":
+                return 2 - 0.33;
+
+            case "D+":
+                return  + 0.33;
+
+            case "D":
+                return 1;
+
+            case "D-":
+                return 1 - 0.33;
+
+            case "F":
+                return 0;
+
+            default:
+                return 0;
+        }
+    }
+    public String numberToLetter(double letter){
+        if (letter == 4.33) {
+            return "A+";
+        } else if (letter == 4) {
+            return "A";
+        } else if (letter == 3.67) {
+            return "A-";
+        } else if (letter == 3.33) {
+            return "B+";
+        } else if (letter == 3) {
+            return "B";
+        } else if (letter == 2.67) {
+            return "B-";
+        } else if (letter == 2.33) {
+            return "C+";
+        } else if (letter == 2) {
+            return "C";
+        } else if (letter == 1.67) {
+            return "C-";
+        } else if (letter == 1.33) {
+            return "D+";
+        } else if (letter == 1) {
+            return "D";
+        } else if (letter == 0.67) {
+            return "D-";
+        } else if (letter == 0) {
+            return "F";
+        } else {
+            return "";
+        }
     }
 //////////////////////////////////////////////////////////////////////////
     public void addCategory(View view) {
@@ -520,10 +619,32 @@ public class SubjectDetailActivity extends AppCompatActivity {
             arrayOfPercentages = new JSONArray();
         }
 
-        if (!arrayOfCategories.toString().contains(name)){
+
+        if (arrayOfCategories.length() == 0){
             arrayOfCategories.put(name);
             editor.putString("ListOfCategories", arrayOfCategories.toString());
+
+            arrayOfPercentages.put(String.valueOf(100 / (arrayOfPercentages.length() + 1)));
+            editor.putString("ListOfPercentages", arrayOfPercentages.toString());
         }
+        else {
+            for (int i = 0; i < arrayOfCategories.length(); i++) {
+
+                try {
+                    if (!arrayOfCategories.getString(i).equals(name)) {
+                        arrayOfCategories.put(name);
+                        editor.putString("ListOfCategories", arrayOfCategories.toString());
+
+                        arrayOfPercentages.put(String.valueOf(100 / (arrayOfPercentages.length() + 1)));
+                        editor.putString("ListOfPercentages", arrayOfPercentages.toString());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
         char[] chars = gradesString.toCharArray();
         JSONArray arrayOfGrades = new JSONArray();
 
@@ -572,9 +693,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 }
                 break;
         }
-
-        arrayOfPercentages.put(String.valueOf(100 / (arrayOfPercentages.length() + 1)));
-        editor.putString("ListOfPercentages", arrayOfPercentages.toString());
 
         editor.putString(name + "Grades" + gradeType, arrayOfGrades.toString());
         editor.apply();
@@ -799,6 +917,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+
+                setListView();
             }
         });
 
@@ -923,24 +1043,199 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.red800));
         }
     }
-
+//////////////////////////////////////////////////////////////////////////
     public void titleClick(View view) {
-        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.secondLayout);
-        Button rollDownButton = (Button) findViewById(R.id.rollDownButton);
+
+        RelativeLayout relativeLayout;
+        Button rollDownButton;
+
+        if (view == findViewById(R.id.rollDownButton) || view == findViewById(R.id.firstLayout)) {
+            relativeLayout = (RelativeLayout) findViewById(R.id.secondLayout);
+            rollDownButton = (Button) findViewById(R.id.rollDownButton);
+        }
+        else {
+            relativeLayout = (RelativeLayout) findViewById(R.id.fourthLayout);
+            rollDownButton = (Button) findViewById(R.id.rollDownButton2);
+        }
 
         int visibility = relativeLayout.getVisibility();
-
         if (visibility == 8) {
             relativeLayout.setVisibility(View.VISIBLE);
             rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_black_24dp);
-        }
-        else {
+        } else {
             relativeLayout.setVisibility(View.GONE);
             rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_down_black_24dp);
         }
 
+        setListView();
+    }
 
+    public void testsToWriteBtn(View view) {
+        EditText editText = (EditText) findViewById(R.id.testsToWriteEditText);
+
+        if (view == findViewById(R.id.ttwAddBtn)){
+            if (Integer.parseInt(editText.getText().toString()) < 9) {
+                int ttw = Integer.parseInt(editText.getText().toString()) + 1;
+                editText.setText(String.valueOf(ttw));
+            }
+        }else {
+            if (Integer.parseInt(editText.getText().toString()) > 0) {
+                int ttw = Integer.parseInt(editText.getText().toString()) - 1;
+                editText.setText(String.valueOf(ttw));
+            }
+        }
+    }
+
+    public void setPredictionListView(){
+
+        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject"), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        JSONArray arrayOfCategories = new JSONArray();
+        try {
+            arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
+        } catch (Exception e) {
+            Log.e("debug0", e.toString());
+        }
+
+        int gradeType = prefs.getInt("GradeType", 0);
+
+        ArrayList<Double> avgsAfter = new ArrayList<Double>();
+
+        for (int i = 0; i < arrayOfCategories.length(); i++) {
+
+            JSONArray arrayOfGrades = new JSONArray();
+            try {
+                arrayOfGrades = new JSONArray(prefs.getString(arrayOfCategories.getString(i) + "Grades" + gradeType, ""));
+            } catch (Exception e) {
+                Log.e("debug1", e.toString());
+            }
+
+
+            switch (gradeType){
+
+                case 0:
+
+                    for (int j = 1; j <= 5; j++) {
+                        arrayOfGrades.put(String.valueOf(j));
+
+                        try {
+                            editor.putString(arrayOfCategories.getString(i) + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+                        } catch (JSONException e) {
+                            Log.e("debug2", e.toString());
+                        }
+
+                        avgsAfter.add(countAverage());
+
+                        ArrayList<String> arrayOfGrades2 = new ArrayList<String>();
+
+                        for (int k = 0; k < arrayOfGrades.length(); k++) {
+                            try {
+                                arrayOfGrades2.add(arrayOfGrades.getString(k));
+                            } catch (JSONException e) {
+                                Log.e("debug3", e.toString());
+                            }
+                        }
+                        arrayOfGrades2.remove(arrayOfGrades.length() - 1);
+
+                        arrayOfGrades = new JSONArray(arrayOfGrades2);
+
+                        try {
+                            editor.putString(arrayOfCategories.getString(i) + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+                        } catch (JSONException e) {
+                            Log.e("debug4", e.toString());
+                        }
+                    }
+
+                    break;
+
+                case 1:
+
+                    break;
+
+                case 2:
+
+                    for (double j = 4.33; j > 0;) {
+                        arrayOfGrades.put(numberToLetter(j));
+
+                        try {
+                            editor.putString(arrayOfCategories.getString(i) + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+                        } catch (JSONException e) {
+                            Log.e("debug2", e.toString());
+                        }
+
+                        avgsAfter.add(countAverage());
+
+                        ArrayList<String> arrayOfGrades2 = new ArrayList<String>();
+
+                        for (int k = 0; k < arrayOfGrades.length(); k++) {
+                            try {
+                                arrayOfGrades2.add(arrayOfGrades.getString(k));
+                            } catch (JSONException e) {
+                                Log.e("debug3", e.toString());
+                            }
+                        }
+                        arrayOfGrades2.remove(arrayOfGrades.length() - 1);
+
+                        arrayOfGrades = new JSONArray(arrayOfGrades2);
+
+                        try {
+                            editor.putString(arrayOfCategories.getString(i) + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+                        } catch (JSONException e) {
+                            Log.e("debug4", e.toString());
+                        }
+
+                        if (String.valueOf(j).endsWith(".67")){
+                            j -= 0.34;
+                        }else {
+                            j -= 0.33;
+                        }
+                    }
+                    Log.d("debugC", String.valueOf(avgsAfter));
+
+                    break;
+            }
+
+        }
+
+        int currentGrade = (int) Math.round(Double.parseDouble(prefs.getString("AvgGrade", "1")));
+
+        Log.d("debugA", String.valueOf(avgsAfter));
+
+        String[] strings = {"1", "2", "3", "4", "5"};
+
+        editor.putInt("currentGrade", currentGrade);
+        editor.putString("avgsAfter", new JSONArray(avgsAfter).toString());
+        editor.apply();
+
+        try {
+            strings[currentGrade - 1] = String.valueOf(currentGrade) + " - You are here";
+        }catch (IndexOutOfBoundsException e){
+            Log.e("debug", e.toString());
+        }
+
+        ListView listView = (ListView) findViewById(R.id.predictionListView);
+        PredictionLvAdapter adapter = new PredictionLvAdapter(this, strings);
+        listView.setAdapter(adapter);
+
+        int lvHeight = listView.getPaddingTop() + listView.getPaddingBottom() + listView.getDividerHeight();
+        for (int i = 0; i < adapter.getCount(); i++){
+            View childAt = adapter.getView(i, null, listView);
+
+            LinearLayout linearLayout1 = (LinearLayout) childAt.findViewById(R.id.Linear1);
+
+            lvHeight += 4* (20 * linearLayout1.getChildCount());
+        }
+
+
+
+        RelativeLayout relativeLayout4 = (RelativeLayout) findViewById(R.id.fourthLayout);
+        ViewGroup.LayoutParams params = relativeLayout4.getLayoutParams();
+        params.height = lvHeight;
+        relativeLayout4.setLayoutParams(params);
+        relativeLayout4.requestLayout();
 
 
     }
+
 }
