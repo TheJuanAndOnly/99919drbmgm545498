@@ -2,39 +2,46 @@
 <items version="2" >
 
     <item
-        jar="C:\AndroidStudio\MySchoolAppv1.2\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.0.1\jars\classes.jar"
-        jumboMode="false"
-        revision="23.0.1"
-        sha1="d86429b0f0b3f3cafbeb78dda1b9d89119ccb05d">
-        <dex dex="C:\AndroidStudio\MySchoolAppv1.2\app\build\intermediates\pre-dexed\debug\classes-b9b133279acc9ad087f3f4664eeda30edb879500.jar" />
-    </item>
-    <item
-        jar="E:\Program Files\Android Studio\SDK\extras\android\m2repository\com\android\support\support-annotations\23.0.1\support-annotations-23.0.1.jar"
+        jar="D:\ProgramFiles\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\23.0.1\support-annotations-23.0.1.jar"
         jumboMode="false"
         revision="23.0.1"
         sha1="1fce89a6428c51467090d7f424e4c9c3dbd55f7e">
-        <dex dex="C:\AndroidStudio\MySchoolAppv1.2\app\build\intermediates\pre-dexed\debug\support-annotations-23.0.1-e2e1830632651bf7177be6c937b7666f97d1795f.jar" />
+        <dex dex="D:\Data\MySchoolAppv1.2\app\build\intermediates\pre-dexed\debug\support-annotations-23.0.1-730dbffd774d7ed1b47ba1073744b8baa0d8ec56.jar" />
     </item>
     <item
-        jar="C:\AndroidStudio\MySchoolAppv1.2\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.1\jars\classes.jar"
+        jar="D:\Data\MySchoolAppv1.2\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.0.1\jars\classes.jar"
         jumboMode="false"
         revision="23.0.1"
-        sha1="c31e21b53ff2f74664e498248d01453a32e32d48">
-        <dex dex="C:\AndroidStudio\MySchoolAppv1.2\app\build\intermediates\pre-dexed\debug\classes-666e3824cbb8ea8d132c37cfac0a641d8a1c4632.jar" />
+        sha1="d86429b0f0b3f3cafbeb78dda1b9d89119ccb05d">
+        <dex dex="D:\Data\MySchoolAppv1.2\app\build\intermediates\pre-dexed\debug\classes-2dda50eaee9e2bf91d0185f7c89f715e2d265193.jar" />
     </item>
     <item
-        jar="C:\AndroidStudio\MySchoolAppv1.2\app\build\intermediates\exploded-aar\com.android.support\design\23.0.1\jars\classes.jar"
-        jumboMode="false"
-        revision="23.0.1"
-        sha1="e5c61a3169221a89654ffcaaed47bba51cf071ad">
-        <dex dex="C:\AndroidStudio\MySchoolAppv1.2\app\build\intermediates\pre-dexed\debug\classes-6cdc534e6f7ef028987552a34a93c9244301ffe8.jar" />
-    </item>
-    <item
-        jar="C:\AndroidStudio\MySchoolAppv1.2\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.1\jars\libs\internal_impl-23.0.1.jar"
+        jar="D:\Data\MySchoolAppv1.2\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.1\jars\libs\internal_impl-23.0.1.jar"
         jumboMode="false"
         revision="23.0.1"
         sha1="aa92916125166649d8ad4ba3940c3dd7515596d3">
-        <dex dex="C:\AndroidStudio\MySchoolAppv1.2\app\build\intermediates\pre-dexed\debug\internal_impl-23.0.1-68903eefea5247f9655019ed4e265337388c2148.jar" />
+        <dex dex="D:\Data\MySchoolAppv1.2\app\build\intermediates\pre-dexed\debug\internal_impl-23.0.1-df9379537477cf591a9d224e64ba04428fc8a4af.jar" />
+    </item>
+    <item
+        jar="D:\Data\MySchoolAppv1.2\app\build\intermediates\exploded-aar\com.android.support\design\23.0.1\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="e5c61a3169221a89654ffcaaed47bba51cf071ad">
+        <dex dex="D:\Data\MySchoolAppv1.2\app\build\intermediates\pre-dexed\debug\classes-a9a309600659037fe777442f60c79b5776871687.jar" />
+    </item>
+    <item
+        jar="D:\Data\MySchoolAppv1.2\app\build\intermediates\exploded-aar\com.amirarcane.recent-images\recentimages\1.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="302e0a2fe777109ad17d6441c124f04452fc37ef">
+        <dex dex="D:\Data\MySchoolAppv1.2\app\build\intermediates\pre-dexed\debug\classes-c87ad0ce9addd480a9fb2edecefc91748908aeeb.jar" />
+    </item>
+    <item
+        jar="D:\Data\MySchoolAppv1.2\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.1\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="c31e21b53ff2f74664e498248d01453a32e32d48">
+        <dex dex="D:\Data\MySchoolAppv1.2\app\build\intermediates\pre-dexed\debug\classes-f9d63852d1ddad9b5c0010e5fc987ccd02baf943.jar" />
     </item>
 
 </items>
