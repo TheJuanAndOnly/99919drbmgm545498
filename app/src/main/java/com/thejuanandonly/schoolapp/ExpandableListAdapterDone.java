@@ -117,7 +117,7 @@ public class ExpandableListAdapterDone extends BaseExpandableListAdapter {
                 SharedPreferences prefsDone = context.getSharedPreferences("ListOfDoneTasks", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = prefs.edit();
                 SharedPreferences.Editor editorDone = prefsDone.edit();
-                JSONArray arrayName, arrayWhat,arrayNameDone, arrayWhatDone;
+                JSONArray arrayName, arrayWhat, arrayTime, arrayNameDone, arrayWhatDone, arrayTimeDone;
 
                 int numberOfTask = prefs.getInt("NumberOfTask", 0);
                 numberOfTask++;
@@ -128,25 +128,31 @@ public class ExpandableListAdapterDone extends BaseExpandableListAdapter {
                 try {
                     arrayName = new JSONArray(prefs.getString("TaskName", null));
                     arrayWhat = new JSONArray(prefs.getString("TaskWhat", null));
+                    arrayTime = new JSONArray(prefs.getString("TaskTime", null));
                 } catch (Exception e) {
                     arrayName = new JSONArray();
                     arrayWhat = new JSONArray();
+                    arrayTime = new JSONArray();
                 }
 
                 try {
                     arrayNameDone = new JSONArray(prefsDone.getString("DoneTaskName", null));
                     arrayWhatDone = new JSONArray(prefsDone.getString("DoneTaskWhat", null));
+                    arrayTimeDone = new JSONArray(prefsDone.getString("DoneTaskTime", null));
                 } catch (Exception e) {
                     arrayNameDone = new JSONArray();
                     arrayWhatDone = new JSONArray();
+                    arrayTimeDone = new JSONArray();
                 }
 
                 String stringName = "";
                 String[] stringWhat = {};
+                long timing = 0;
 
                 try {
                     stringName = arrayNameDone.getString(groupPosition);
                     stringWhat = new String[]{arrayWhatDone.getString(groupPosition)};
+                    timing = arrayTimeDone.getLong(groupPosition);
                 } catch (Exception e) {
                 }
 
@@ -174,18 +180,31 @@ public class ExpandableListAdapterDone extends BaseExpandableListAdapter {
                 listWhatDone.remove(groupPosition);
                 arrayWhatDone = new JSONArray(listWhatDone);
 
+                ArrayList<Long> listTimeDone = new ArrayList<Long>();
+                for (int i = 0; i < arrayTimeDone.length(); i++){
+                    try {
+                        listTimeDone.add(arrayTimeDone.getLong(i));
+                    } catch (Exception e) {
+                    }
+                }
+                listTimeDone.remove(groupPosition);
+                arrayTimeDone = new JSONArray(listTimeDone);
+
                 String stringWhatDone = stringWhat[0];
 
                 arrayName.put(stringName);
                 arrayWhat.put(stringWhatDone);
+                arrayTime.put(timing);
 
                 editor.putString("TaskName", arrayName.toString()).apply();
                 editor.putString("TaskWhat", arrayWhat.toString()).apply();
+                editor.putString("TaskTime", arrayTime.toString()).apply();
                 editor.putInt("NumberOfTask", numberOfTask).apply();
                 editor.commit();
 
                 editorDone.putString("DoneTaskName", arrayNameDone.toString()).apply();
                 editorDone.putString("DoneTaskWhat", arrayWhatDone.toString()).apply();
+                editorDone.putString("DoneTaskTime", arrayTimeDone.toString()).apply();
                 editorDone.putInt("NumberOfDoneTask", numberOfDoneTask).apply();
                 editorDone.commit();
 
