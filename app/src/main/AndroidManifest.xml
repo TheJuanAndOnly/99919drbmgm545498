@@ -7,6 +7,8 @@
         android:theme="@style/Widget.AppCompat.PopupWindow">
     </uses-permission>
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher_test"
@@ -43,6 +45,7 @@
 
         <activity android:name=".NotesDetailActivity"></activity>
 
+        <receiver android:process=":remote" android:name=".NotificationRecieverActivity"></receiver>
 
     </application>
 

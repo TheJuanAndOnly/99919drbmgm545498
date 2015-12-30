@@ -1,90 +1,99 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".MainActivity">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
 
-        <include
-            android:id="@+id/tool_bar"
-            layout="@layout/tool_bar">
-        </include>
+    <include
+        android:id="@+id/tool_bar"
+        layout="@layout/tool_bar">
+    </include>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Name your task:"
-            android:id="@+id/textView_nameTask"
-            android:layout_below="@id/tool_bar"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:padding="4dp" />
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/editText_nameTask"
-            android:layout_below="@+id/textView_nameTask"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:inputType="textCapSentences"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="What&apos;s your task:"
-            android:id="@+id/textView_whatTask"
-            android:padding="4dp"
-            android:layout_below="@+id/editText_nameTask"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
-        <EditText
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/editText_whatTask"
-            android:layout_below="@+id/textView_whatTask"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:inputType="textCapSentences"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="When do you want to remind:"
-            android:id="@+id/textView_whenTask"
-            android:padding="4dp"
-            android:layout_below="@+id/editText_whatTask"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true" />
-
-    <Button
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Set day"
-        android:id="@+id/button2"
-        android:layout_centerVertical="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_toRightOf="@+id/textView_whenTask"
-        android:layout_toEndOf="@+id/textView_whenTask" />
+        android:text="Name your task:"
+        android:id="@+id/textView_nameTask"
+        android:padding="4dp"
+        android:layout_below="@+id/tool_bar"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
-    <Button
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Set time"
-        android:id="@+id/button3"
-        android:layout_alignTop="@+id/button2"
+        android:id="@+id/editText_nameTask"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:inputType="textCapSentences"
+        android:layout_below="@+id/textView_nameTask"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_toLeftOf="@+id/button2"
-        android:layout_toStartOf="@+id/button2" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="What&apos;s your task:"
+        android:id="@+id/textView_whatTask"
+        android:padding="4dp"
+        android:layout_below="@+id/editText_nameTask"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText_whatTask"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:inputType="textCapSentences"
+        android:layout_below="@+id/textView_whatTask"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="When do you want to remind:"
+        android:id="@+id/textView_whenTask"
+        android:padding="4dp"
+        android:layout_below="@+id/editText_whatTask"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:id="@+id/lnrTime"
+        android:layout_below="@+id/textView_whenTask"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set time"
+            android:id="@+id/btnTime"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_weight="1"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Set day"
+            android:id="@+id/btnDate"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_weight="1"/>
+    </LinearLayout>
 
 </RelativeLayout>
