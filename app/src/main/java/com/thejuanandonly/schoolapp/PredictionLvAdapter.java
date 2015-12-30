@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,6 +59,8 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
         }
         t1.setText(strings[position]);
 
+        int testsToWrite = prefs.getInt("testsToWrite", 1);
+
         JSONArray arrayOfCategories = new JSONArray();
         try {
             arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
@@ -94,226 +97,525 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
                 break;
         }
 
-        for (int k = 0; k < (avgsAfter.size() / pocetZnamok); k++){
+        if (!prefs.getBoolean("useCategories", false)) {
 
-            for (int i = (pocetZnamok * k); i < ((pocetZnamok * k) + pocetZnamok); i++){
-                int prediction = (int) Math.round(avgsAfter.get(i));
+            int avgsInt = 0;
 
-                ArrayList<String> line = new ArrayList<>();
-                line.add(0, "Get");
-                line.add(1, "0");
-                line.add(2, "from");
-                line.add(3, "Cat");
+            for (int c = 0; c < pocetZnamok; c++) {
 
-                //if (prediction != currentGrade) {                 Keby chcem napisat ze ktoru znamku teraz mas
-
-                boolean ci = false;
-
-                try {
-
-                    switch (gradeType){
+                String sc = "";
+                if (testsToWrite >= 3) {
+                    switch (gradeType) {
                         case 0:
-
-                            if (prediction == (position + 1)) {
-
-                                ci = true;
-
-                                try {
-                                    line.set(1, String.valueOf((i + 1) - (pocetZnamok * k)));
-                                } catch (IndexOutOfBoundsException e) {
-                                    line.add(1, String.valueOf((i + 1) - (pocetZnamok * k)));
-                                }
-
-                                try {
-                                    line.set(2, "from");
-                                } catch (IndexOutOfBoundsException e) {
-                                    line.add(2, "from");
-                                }
-
-                                try {
-                                    line.set(3, arrayOfCategories.getString(k));
-                                } catch (IndexOutOfBoundsException e) {
-                                    line.add(3, arrayOfCategories.getString(k));
-                                }
-                            }
-
+                            sc = String.valueOf(c + 1) + ", ";
                             break;
-
                         case 1:
-
-                            int percentage = (Integer.parseInt(String.valueOf(strings[position].charAt(0))) * 10);
-                            try{
-                                percentage += Integer.parseInt(String.valueOf(strings[position].charAt(1)));
-                            }catch (NumberFormatException e){
-                                percentage /= 10;
-                            }
-
-                            int percentageNext;
-                            try {
-                                percentageNext = (Integer.parseInt(String.valueOf(strings[position - 1].charAt(0))) * 10);
-                                try {
-                                    percentageNext += Integer.parseInt(String.valueOf(strings[position - 1].charAt(1)));
-                                } catch (NumberFormatException e) {
-                                    percentageNext /= 10;
-                                }
-                            }catch (ArrayIndexOutOfBoundsException e){
-                                percentageNext = 100;
-                            }
-
-                            if (prediction >= percentage && prediction < percentageNext) {
-
-                                Log.d("debugBC", String.valueOf(prediction) + ", " + percentage + " - " + percentageNext);
-
-                                ci = true;
-
-                                try {
-                                    line.set(1, String.valueOf((i) - (pocetZnamok * k)));
-                                } catch (IndexOutOfBoundsException e) {
-                                    line.add(1, String.valueOf((i) - (pocetZnamok * k)));
-                                }
-
-                                try {
-                                    line.set(2, "from");
-                                } catch (IndexOutOfBoundsException e) {
-                                    line.add(2, "from");
-                                }
-
-                                try {
-                                    line.set(3, arrayOfCategories.getString(k));
-                                } catch (IndexOutOfBoundsException e) {
-                                    line.add(3, arrayOfCategories.getString(k));
-                                }
-                            }
-
                             break;
-
                         case 2:
-
-                            if (prediction == position) {
-
-                                ci = true;
-
-                                try {
-                                    line.set(1, numberToLetter(alphabeticGradeRound((i) - (pocetZnamok * k))));
-                                } catch (IndexOutOfBoundsException e) {
-                                    line.add(1, numberToLetter(alphabeticGradeRound((i) - (pocetZnamok * k))));
-                                }
-
-                                try {
-                                    line.set(2, "from");
-                                } catch (IndexOutOfBoundsException e) {
-                                    line.add(2, "from");
-                                }
-
-                                try {
-                                    line.set(3, arrayOfCategories.getString(k));
-                                } catch (IndexOutOfBoundsException e) {
-                                    line.add(3, arrayOfCategories.getString(k));
-                                }
-                            }
-
-                            break;
+                            sc = numberToLetter(alphabeticGradeRound(c)) + ", ";
                     }
-
-                } catch (JSONException e){
-                    Log.e("debug", e.toString());
                 }
 
-                if (ci) {
+                for (int d = c; d < pocetZnamok; d++) {
 
-                    try {
-                        if (line.get(3).equals(arrayLists.get(arrayLists.size() - 1).get(3))) {
+                    String sd = "";
+                    if (testsToWrite >= 2) {
+                        switch (gradeType) {
+                            case 0:
+                                sd = String.valueOf(d + 1) + " and ";
+                                break;
+                            case 1:
+                                break;
+                            case 2:
+                                sd = numberToLetter(alphabeticGradeRound(d)) + " and ";
+                        }
+                    }
+
+                    for (int e = d; e < pocetZnamok; e++) {
+
+                        String se = "";
+                        if (testsToWrite >= 1) {
+                            switch (gradeType) {
+                                case 0:
+                                    se = String.valueOf(e + 1);
+                                    break;
+                                case 1:
+                                    break;
+                                case 2:
+                                    se = numberToLetter(alphabeticGradeRound(e));
+                            }
+                        }
+
+                        int prediction = (int) Math.round(avgsAfter.get(avgsInt));
+
+                        ArrayList<String> line = new ArrayList<>();
+                        line.add(0, "Get");
+                        line.add(1, "0");
+                        line.add(2, "");
+                        line.add(3, "");
+
+                        //if (prediction != currentGrade) {                 Keby chcem napisat ze ktoru znamku teraz mas
+
+                        boolean ci = false;
+
+                        try {
 
                             switch (gradeType) {
                                 case 0:
 
-                                    if (arrayLists.get(arrayLists.size() - 1).get(1).length() == 1) {
+                                    if (prediction == (position + 1)) {
 
-                                        line.set(1, (arrayLists.get(arrayLists.size() - 1).get(1) + "/" + line.get(1)));
-                                    }else {
+                                        ci = true;
 
-                                        line.set(1, (arrayLists.get(arrayLists.size() - 1).get(1).charAt(0) + " - " + line.get(1)));
+                                        line.set(1, sc + sd + se);
+
                                     }
+
                                     break;
 
-                                case 1:
+                                /*case 1:
 
-                                    int digits = 1;
-
+                                    int percentage = (Integer.parseInt(String.valueOf(strings[position].charAt(0))) * 10);
                                     try{
+                                        percentage += Integer.parseInt(String.valueOf(strings[position].charAt(1)));
+                                    }catch (NumberFormatException ex){
+                                        percentage /= 10;
+                                    }
 
-                                        int c = Integer.parseInt(String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(1)));
-                                        digits = 2;
+                                    int percentageNext;
+                                    try {
+                                        percentageNext = (Integer.parseInt(String.valueOf(strings[position - 1].charAt(0))) * 10);
+                                        try {
+                                            percentageNext += Integer.parseInt(String.valueOf(strings[position - 1].charAt(1)));
+                                        } catch (NumberFormatException ex) {
+                                            percentageNext /= 10;
+                                        }
+                                    }catch (ArrayIndexOutOfBoundsException ex){
+                                        percentageNext = 100;
+                                    }
 
-                                    }catch (IndexOutOfBoundsException | NumberFormatException e){}
-                                    try{
-                                        int c = Integer.parseInt(String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(2)));
-                                        digits = 3;
+                                    if (prediction >= percentage && prediction < percentageNext) {
 
-                                    }catch (IndexOutOfBoundsException | NumberFormatException e){}
+                                        ci = true;
 
+                                        line.set(1, String.valueOf((i) - (pocetZnamok * k)));
 
+                                        line.set(2, "from");
 
-                                    switch (digits){
-                                        case 1:
+                                        line.set(3, arrayOfCategories.getString(k));
 
-                                            line.set(1, (String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(0)) + " - " + line.get(1) + "%"));
+                                    }
+
+                                    break;*/
+
+                                case 2:
+
+                                    if (prediction == position) {
+
+                                        ci = true;
+
+                                        line.set(1, sc + sd + se);
+
+                                    }
+
+                                    break;
+                                }
+
+                        } catch (Exception ex) {
+                            Log.e("debug", ex.toString());
+                        }
+
+                        if (ci) {
+
+                            try {
+
+                                for (int i = 0; i < testsToWrite; i++) {
+
+                                    boolean bool = false;
+                                    boolean bool2 = false;
+                                    switch (gradeType){
+                                        case 0:
+
+                                            if (testsToWrite == 3){
+
+                                                bool = Character.isDigit(line.get(1).charAt(0)) && Character.isDigit(line.get(1).charAt(3));
+                                                Log.d("debugC", String.valueOf(line.get(1).charAt(0)));
+                                                bool2 = line.get(1).charAt(0) == (arrayLists.get(arrayLists.size() - 1).get(1).charAt(0)) &&
+                                                        line.get(1).charAt(3) == (arrayLists.get(arrayLists.size() - 1).get(1).charAt(3));
+
+                                            }
+                                            else {
+
+                                                bool = Character.isDigit(line.get(1).charAt(0));
+                                                Log.d("debugC", String.valueOf(line.get(1).charAt(0)));
+                                                bool2 = line.get(1).charAt(0) == (arrayLists.get(arrayLists.size() - 1).get(1).charAt(0));
+                                            }
 
                                             break;
+
+                                        /*case 1:
+                                            bool = Character.isDigit(line.get(1).charAt(k));
+                                            bool2 = line.get(1).charAt(k) == (arrayLists.get(arrayLists.size() - 1).get(1).charAt(k));
+
+                                            try {
+                                                Integer.parseInt(String.valueOf(line.get(1).charAt(0)));
+                                            }catch (NumberFormatException ex){}
+                                            try {
+                                                Integer.parseInt(String.valueOf(line.get(1).charAt(1)));
+                                            }catch (NumberFormatException ex){}
+                                            try {
+                                                Integer.parseInt(String.valueOf(line.get(1).charAt(2)));
+                                            }catch (NumberFormatException ex){}
+
+                                            break;*/
+
                                         case 2:
 
-                                            line.set(1, (String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(0)) +
+                                            if (testsToWrite == 3) {
+
+                                                boolean b1 = true;
+                                                if (Character.isLetter(line.get(1).charAt(3))) b1 = true;
+                                                else if (Character.isLetter(line.get(1).charAt(4))) b1 = false;
+
+                                                bool = Character.isLetter(line.get(1).charAt(0)) && (Character.isLetter(line.get(1).charAt(3)) || Character.isLetter(line.get(1).charAt(4)));
+
+                                                if (b1) {
+                                                    bool2 = line.get(1).charAt(0) == (arrayLists.get(arrayLists.size() - 1).get(1).charAt(0)) &&
+                                                            line.get(1).charAt(3) == (arrayLists.get(arrayLists.size() - 1).get(1).charAt(3));
+                                                }else {
+                                                    bool2 = line.get(1).charAt(0) == (arrayLists.get(arrayLists.size() - 1).get(1).charAt(0)) &&
+                                                            line.get(1).charAt(4) == (arrayLists.get(arrayLists.size() - 1).get(1).charAt(4));
+                                                }
+
+                                            }
+                                            else {
+
+                                                bool = Character.isLetter(line.get(1).charAt(0));
+
+                                                bool2 = line.get(1).charAt(0) == (arrayLists.get(arrayLists.size() - 1).get(1).charAt(0));
+                                            }
+
+
+                                            break;
+                                    }
+
+                                    if (bool && bool2) {
+
+                                        switch (gradeType) {
+                                            case 0:
+
+                                                if (arrayLists.get(arrayLists.size() - 1).get(1).contains(" - ")) {
+
+                                                    line.set(1, (arrayLists.get(arrayLists.size() - 1).get(1).substring(0, (arrayLists.get(arrayLists.size() - 1).get(1).length() - 4))
+                                                            + " - " + line.get(1).substring(line.get(1).length() - 1, line.get(1).length())));
+                                                }else {
+
+                                                    line.set(1, (arrayLists.get(arrayLists.size() - 1).get(1)
+                                                            + " - " + line.get(1).substring(line.get(1).length() - 1, line.get(1).length())));
+                                                }
+
+                                                break;
+
+                                            case 1:
+
+                                                int digits = 1;
+
+                                                try {
+
+                                                    int cc = Integer.parseInt(String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(1)));
+                                                    digits = 2;
+
+                                                } catch (IndexOutOfBoundsException | NumberFormatException ex) {
+                                                }
+                                                try {
+                                                    int cc = Integer.parseInt(String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(2)));
+                                                    digits = 3;
+
+                                                } catch (IndexOutOfBoundsException | NumberFormatException ex) {
+                                                }
+
+                                                switch (digits) {
+                                                    case 1:
+
+                                                        line.set(1, (String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(0)) + " - " + line.get(1) + "%"));
+
+                                                        break;
+                                                    case 2:
+
+                                                        line.set(1, (String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(0)) +
+                                                                String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(1)) +
+                                                                " - " + line.get(1) + "%"));
+
+                                                        break;
+                                                    case 3:
+
+                                                        line.set(1, (String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(0)) +
+                                                                String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(1)) +
+                                                                String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(2)) +
+                                                                " - " + line.get(1) + "%"));
+
+                                                        break;
+                                                }
+
+                                                break;
+
+                                            case 2:
+
+                                                if (arrayLists.get(arrayLists.size() - 1).get(1).contains(" - ")) {
+
+                                                    int plus = 0;
+
+                                                    if (arrayLists.get(arrayLists.size() - 1).get(1).charAt(1) == '+' ||
+                                                            arrayLists.get(arrayLists.size() - 1).get(1).charAt(1) == '-'){
+                                                        plus++;
+
+                                                        if (arrayLists.get(arrayLists.size() - 1).get(1).charAt(5) == '+' ||
+                                                                arrayLists.get(arrayLists.size() - 1).get(1).charAt(5) == '-'){
+                                                            plus++;
+                                                        }
+
+                                                    }
+                                                    else if (arrayLists.get(arrayLists.size() - 1).get(1).charAt(4) == '+' ||
+                                                            arrayLists.get(arrayLists.size() - 1).get(1).charAt(4) == '-'){
+                                                        plus++;
+                                                    }
+
+                                                    line.set(1, (arrayLists.get(arrayLists.size() - 1).get(1).substring(0, (arrayLists.get(arrayLists.size() - 1).get(1).length() - 4))
+                                                            + " - " + line.get(1).substring(line.get(1).length() - 1, line.get(1).length())));
+                                                }else {
+
+                                                    line.set(1, (arrayLists.get(arrayLists.size() - 1).get(1)
+                                                            + " - " + line.get(1).substring(line.get(1).length() - 1, line.get(1).length())));
+                                                }
+
+
+                                                if (arrayLists.get(arrayLists.size() - 1).get(1).length() == 1) {
+
+                                                    line.set(1, (arrayLists.get(arrayLists.size() - 1).get(1) + "/" + line.get(1)));
+                                                } else {
+
+                                                    if (arrayLists.get(arrayLists.size() - 1).get(1).charAt(1) == '+' ||
+                                                            arrayLists.get(arrayLists.size() - 1).get(1).charAt(1) == '-') {
+
+                                                        line.set(1, (String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(0)) +
+                                                                String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(1)) +
+                                                                " to " + line.get(1)));
+
+                                                    } else {
+                                                        line.set(1, (arrayLists.get(arrayLists.size() - 1).get(1).charAt(0) + " to " + line.get(1)));
+                                                    }
+                                                }
+                                        }
+
+                                        arrayLists.set(arrayLists.size() - 1, line);
+
+                                    } else {
+                                        arrayLists.add(line);
+                                    }
+
+                                }
+                            } catch (IndexOutOfBoundsException ex) {
+                                arrayLists.add(line);
+                                Log.e("debug", ex.toString());
+                            }
+                        }
+
+                        avgsInt++;
+                    }
+                    if (testsToWrite == 1) break;
+
+                }
+                if (testsToWrite <= 2) break;
+
+            }
+        }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+        else {
+
+            for (int k = 0; k < (avgsAfter.size() / pocetZnamok); k++) {
+
+                for (int i = (pocetZnamok * k); i < ((pocetZnamok * k) + pocetZnamok); i++) {
+                    int prediction = (int) Math.round(avgsAfter.get(i));
+
+                    ArrayList<String> line = new ArrayList<>();
+                    line.add(0, "Get");
+                    line.add(1, "0");
+                    line.add(2, "from");
+                    line.add(3, "Cat");
+
+                    //if (prediction != currentGrade) {                 Keby chcem napisat ze ktoru znamku teraz mas
+
+                    boolean ci = false;
+
+                    try {
+
+                        switch (gradeType) {
+                            case 0:
+
+                                if (prediction == (position + 1)) {
+
+                                    ci = true;
+
+                                    line.set(1, String.valueOf((i + 1) - (pocetZnamok * k)));
+
+                                    line.set(2, "from");
+
+                                    line.set(3, arrayOfCategories.getString(k));
+
+                                }
+
+                                break;
+
+                            case 1:
+
+                                int percentage = (Integer.parseInt(String.valueOf(strings[position].charAt(0))) * 10);
+                                try {
+                                    percentage += Integer.parseInt(String.valueOf(strings[position].charAt(1)));
+                                } catch (NumberFormatException e) {
+                                    percentage /= 10;
+                                }
+
+                                int percentageNext;
+                                try {
+                                    percentageNext = (Integer.parseInt(String.valueOf(strings[position - 1].charAt(0))) * 10);
+                                    try {
+                                        percentageNext += Integer.parseInt(String.valueOf(strings[position - 1].charAt(1)));
+                                    } catch (NumberFormatException e) {
+                                        percentageNext /= 10;
+                                    }
+                                } catch (ArrayIndexOutOfBoundsException e) {
+                                    percentageNext = 100;
+                                }
+
+                                if (prediction >= percentage && prediction < percentageNext) {
+
+                                    ci = true;
+
+                                    line.set(1, String.valueOf((i) - (pocetZnamok * k)));
+
+                                    line.set(2, "from");
+
+                                    line.set(3, arrayOfCategories.getString(k));
+
+                                }
+
+                                break;
+
+                            case 2:
+
+                                if (prediction == position) {
+
+                                    ci = true;
+
+                                    line.set(1, numberToLetter(alphabeticGradeRound((i) - (pocetZnamok * k))));
+
+                                    line.set(2, "from");
+
+                                    line.set(3, arrayOfCategories.getString(k));
+                                }
+
+                                break;
+                        }
+
+                    } catch (JSONException e) {
+                        Log.e("debug", e.toString());
+                    }
+
+                    if (ci) {
+
+                        try {
+                            if (line.get(3).equals(arrayLists.get(arrayLists.size() - 1).get(3))) {
+
+                                switch (gradeType) {
+                                    case 0:
+
+                                        if (arrayLists.get(arrayLists.size() - 1).get(1).length() == 1) {
+
+                                            line.set(1, (arrayLists.get(arrayLists.size() - 1).get(1) + "/" + line.get(1)));
+                                        } else {
+
+                                            line.set(1, (arrayLists.get(arrayLists.size() - 1).get(1).charAt(0) + " - " + line.get(1)));
+                                        }
+                                        break;
+
+                                    case 1:
+
+                                        int digits = 1;
+
+                                        try {
+
+                                            int c = Integer.parseInt(String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(1)));
+                                            digits = 2;
+
+                                        } catch (IndexOutOfBoundsException | NumberFormatException e) {
+                                        }
+                                        try {
+                                            int c = Integer.parseInt(String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(2)));
+                                            digits = 3;
+
+                                        } catch (IndexOutOfBoundsException | NumberFormatException e) {
+                                        }
+
+
+                                        switch (digits) {
+                                            case 1:
+
+                                                line.set(1, (String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(0)) + " - " + line.get(1) + "%"));
+
+                                                break;
+                                            case 2:
+
+                                                line.set(1, (String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(0)) +
                                                         String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(1)) +
                                                         " - " + line.get(1) + "%"));
 
-                                            break;
-                                        case 3:
+                                                break;
+                                            case 3:
 
-                                            line.set(1, (String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(0)) +
+                                                line.set(1, (String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(0)) +
                                                         String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(1)) +
                                                         String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(2)) +
                                                         " - " + line.get(1) + "%"));
 
-                                            break;
-                                    }
-
-                                    Log.d("debugBB", line.toString());
-
-                                    break;
-
-                                case 2:
-
-                                    if (arrayLists.get(arrayLists.size() - 1).get(1).length() == 1) {
-
-                                        line.set(1, (arrayLists.get(arrayLists.size() - 1).get(1) + "/" + line.get(1)));
-                                    }else {
-
-                                        if (arrayLists.get(arrayLists.size() - 1).get(1).charAt(1) == '+' ||
-                                                arrayLists.get(arrayLists.size() - 1).get(1).charAt(1) == '-') {
-
-                                            line.set(1, (String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(0)) +
-                                                    String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(1)) +
-                                                    " to " + line.get(1)));
-
-                                        } else {
-                                            line.set(1, (arrayLists.get(arrayLists.size() - 1).get(1).charAt(0) + " to " + line.get(1)));
+                                                break;
                                         }
-                                    }
+
+                                        break;
+
+                                    case 2:
+
+                                        if (arrayLists.get(arrayLists.size() - 1).get(1).length() == 1) {
+
+                                            line.set(1, (arrayLists.get(arrayLists.size() - 1).get(1) + "/" + line.get(1)));
+                                        } else {
+
+                                            if (arrayLists.get(arrayLists.size() - 1).get(1).charAt(1) == '+' ||
+                                                    arrayLists.get(arrayLists.size() - 1).get(1).charAt(1) == '-') {
+
+                                                line.set(1, (String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(0)) +
+                                                        String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(1)) +
+                                                        " to " + line.get(1)));
+
+                                            } else {
+                                                line.set(1, (arrayLists.get(arrayLists.size() - 1).get(1).charAt(0) + " to " + line.get(1)));
+                                            }
+                                        }
+                                }
+
+                                arrayLists.set(arrayLists.size() - 1, line);
+
+                            } else {
+                                arrayLists.add(line);
                             }
-
-                            arrayLists.set(arrayLists.size() - 1, line);
-
-                        } else {
+                        } catch (IndexOutOfBoundsException e) {
                             arrayLists.add(line);
+                            Log.e("debug", e.toString());
                         }
-                    } catch (IndexOutOfBoundsException e) {
-                        arrayLists.add(line);
-                        Log.e("debug", e.toString());
                     }
                 }
             }
         }
-
 
         LinearLayout linearLayout = (LinearLayout) convertView.findViewById(R.id.Linear1);
         LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -340,6 +642,12 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
             if (i != 0){
                 line.set(0, "or");
             }
+            try {
+                if (line.get(1).charAt(line.get(1).length() - 1) == line.get(1).charAt(line.get(1).length() - 5)){
+
+                    line.set(1, line.get(1).substring(0, line.get(1).length() - 4));
+                }
+            }catch (StringIndexOutOfBoundsException ex) {}
 
             if (!prefs.getBoolean("useCategories", false)) {
 
