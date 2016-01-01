@@ -24,6 +24,7 @@ public class DoneTasksTabFragment extends Fragment {
     List<String> childList;
     Map<String, List<String>> taskWhat;
     ExpandableListView expListView;
+    public static ExpandableListAdapterDone expListAdapterDone;
 
     public SharedPreferences prefs;
     public JSONArray arrayName;
@@ -44,8 +45,8 @@ public class DoneTasksTabFragment extends Fragment {
         createCollection();
 
         expListView = (ExpandableListView) view.findViewById(R.id.taskList);
-        final ExpandableListAdapterDone expListAdapter = new ExpandableListAdapterDone(getActivity(), groupList, taskWhat);
-        expListView.setAdapter(expListAdapter);
+        expListAdapterDone = new ExpandableListAdapterDone(getActivity(), groupList, taskWhat);
+        expListView.setAdapter(expListAdapterDone);
 
         setGroupIndicatorToRight();
 
@@ -116,5 +117,4 @@ public class DoneTasksTabFragment extends Fragment {
 
         super.onResume();
     }
-
 }

@@ -17,7 +17,7 @@ public class TasksFragment extends Fragment {
 
     public static TabLayout tabLayout;
     public static ViewPager viewPager;
-    public static int int_items = 2 ;
+    public static int int_tabs = 2 ;
     android.support.v7.widget.Toolbar toolbar;
 
 
@@ -25,15 +25,15 @@ public class TasksFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View x =  inflater.inflate(R.layout.tasks_layout, null);
+        View view =  inflater.inflate(R.layout.tasks_layout, null);
 
         toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("Tasks");
 
-        tabLayout = (TabLayout) x.findViewById(R.id.tabs);
-        viewPager = (ViewPager) x.findViewById(R.id.viewpager);
+        tabLayout = (TabLayout) view.findViewById(R.id.tabs);
+        viewPager = (ViewPager) view.findViewById(R.id.viewpager);
 
-        viewPager.setAdapter(new MyAdapter(getChildFragmentManager()));
+        viewPager.setAdapter(new PagerAdapter(getChildFragmentManager()));
 
         tabLayout.post(new Runnable() {
             @Override
@@ -43,12 +43,12 @@ public class TasksFragment extends Fragment {
         });
 
         theme();
-        return x;
+        return view;
     }
 
-    class MyAdapter extends FragmentPagerAdapter{
+    class PagerAdapter extends FragmentPagerAdapter{
 
-        public MyAdapter(FragmentManager fm) {
+        public PagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -66,7 +66,7 @@ public class TasksFragment extends Fragment {
         @Override
         public int getCount() {
 
-            return int_items;
+            return int_tabs;
 
         }
 
@@ -132,6 +132,5 @@ public class TasksFragment extends Fragment {
         }
 
     }
-
 }
 

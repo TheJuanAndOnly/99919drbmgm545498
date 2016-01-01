@@ -106,7 +106,7 @@ public class ExpandableListAdapterDone extends BaseExpandableListAdapter {
                 editorDone.putInt("NumberOfDoneTask", numberOfDoneTask).apply();
                 editorDone.commit();
 
-                ((MainActivity) context).refresh();
+                ((MainActivity) context).updateListTasks();
             }
         });
 
@@ -208,7 +208,7 @@ public class ExpandableListAdapterDone extends BaseExpandableListAdapter {
                 editorDone.putInt("NumberOfDoneTask", numberOfDoneTask).apply();
                 editorDone.commit();
 
-                ((MainActivity) context).refresh();
+                ((MainActivity) context).updateListTasks();
             }
         });
         return convertView;

@@ -108,6 +108,24 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onResume() {
+        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+        if (actualFragment == 1) {
+            fragmentTransaction.replace(R.id.containerView, new OverviewFragment()).commit();
+        } else if (actualFragment == 2) {
+            fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
+        } else if (actualFragment == 3) {
+            fragmentTransaction.replace(R.id.containerView, new NotesFragment()).commit();
+        } else if (actualFragment == 4) {
+            fragmentTransaction.replace(R.id.containerView, new SettingsFragment()).commit();
+        }
+
+        Toast.makeText(this, actualFragment+"", Toast.LENGTH_SHORT).show();
+
+        super.onResume();
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void theme() {
         SharedPreferences prefs = getSharedPreferences("themeSave", Context.MODE_PRIVATE);
@@ -435,7 +453,9 @@ public class MainActivity extends AppCompatActivity {
         NotesFragment.reset(this);
     }
 
-    public void refresh() {
-        this.recreate();
+    public void updateListTasks() {
+        FragmentManager mFragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
     }
 }
