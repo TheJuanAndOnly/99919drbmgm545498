@@ -120,8 +120,8 @@ public class TaskAdder extends ActionBarActivity {
 
     private void setTime(int hour, int minute) {
         final Dialog dialog = new Dialog(TaskAdder.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_set_time);
-        dialog.setTitle("Remind time");
         dialog.setCancelable(true);
 
         timePicker = (TimePicker) dialog.findViewById(R.id.timePicker);
@@ -158,8 +158,8 @@ public class TaskAdder extends ActionBarActivity {
 
     private void setDate(int day, int month, int year) {
         final Dialog dialog = new Dialog(TaskAdder.this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_set_date);
-        dialog.setTitle("Remind date");
         dialog.setCancelable(true);
 
         datePicker = (DatePicker) dialog.findViewById(R.id.datePicker);
