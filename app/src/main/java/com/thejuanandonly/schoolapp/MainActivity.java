@@ -2,8 +2,10 @@ package com.thejuanandonly.schoolapp;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -112,8 +114,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         if (actualFragment == 2 && taskAdded == true) {
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), 0);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
             FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
+            fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();;
             taskAdded = false;
         }
         super.onResume();
