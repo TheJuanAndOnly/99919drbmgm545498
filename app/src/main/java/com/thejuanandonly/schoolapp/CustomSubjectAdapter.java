@@ -49,46 +49,10 @@ public class CustomSubjectAdapter extends ArrayAdapter<Subject> {
         TextView separator = (TextView) convertView.findViewById(R.id.separatorLV);
 
         switch (theme) {
-            case 1:
-
-                left.setBackgroundColor(getContext().getResources().getColor(R.color.orange));
-                separator.setBackgroundColor(getContext().getResources().getColor(R.color.orange));
-
-                break;
-            case 2:
-
-                left.setBackgroundColor(getContext().getResources().getColor(R.color.green));
-                separator.setBackgroundColor(getContext().getResources().getColor(R.color.green));
-
-                break;
-            case 3:
-
-                left.setBackgroundColor(getContext().getResources().getColor(R.color.blue));
-                separator.setBackgroundColor(getContext().getResources().getColor(R.color.blue));
-
-                break;
-            case 4:
-
-                left.setBackgroundColor(getContext().getResources().getColor(R.color.grey));
-                separator.setBackgroundColor(getContext().getResources().getColor(R.color.grey));
-
-                break;
-            case 5:
-
-                left.setBackgroundColor(getContext().getResources().getColor(R.color.teal));
-                separator.setBackgroundColor(getContext().getResources().getColor(R.color.teal));
-
-                break;
-            case 6:
-
-                left.setBackgroundColor(getContext().getResources().getColor(R.color.brown));
-                separator.setBackgroundColor(getContext().getResources().getColor(R.color.brown));
-
-                break;
             default:
 
-                left.setBackgroundColor(getContext().getResources().getColor(R.color.red));
-                separator.setBackgroundColor(getContext().getResources().getColor(R.color.red));
+                left.setBackgroundColor(getContext().getResources().getColor(R.color.mainblue));
+                separator.setBackgroundColor(getContext().getResources().getColor(R.color.mainblue));
 
         }
 

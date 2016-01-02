@@ -196,6 +196,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 ((MainActivity) context).updateListTasks();
             }
         });
+
         return convertView;
     }
 
@@ -223,7 +224,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         }
 
         TextView item = (TextView) convertView.findViewById(R.id.taskName);
-        item.setTypeface(null, Typeface.BOLD);
         item.setText(TaskName);
 
         final TextView txtTimer = (TextView) convertView.findViewById(R.id.txtTime);

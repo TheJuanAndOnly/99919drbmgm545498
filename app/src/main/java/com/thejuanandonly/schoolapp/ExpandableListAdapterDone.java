@@ -237,7 +237,6 @@ public class ExpandableListAdapterDone extends BaseExpandableListAdapter {
             convertView = infalInflater.inflate(R.layout.group_item_done, null);
         }
         TextView item = (TextView) convertView.findViewById(R.id.taskName);
-        item.setTypeface(null, Typeface.BOLD);
         item.setText(TaskName);
         return convertView;
     }

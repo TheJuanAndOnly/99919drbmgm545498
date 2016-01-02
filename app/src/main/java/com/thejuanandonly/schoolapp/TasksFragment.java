@@ -12,6 +12,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ExpandableListView;
 
 public class TasksFragment extends Fragment {
 
@@ -89,46 +90,10 @@ public class TasksFragment extends Fragment {
         int theme = prefs.getInt("theme", 0);
 
         switch (theme){
-            case 1:
-
-                tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.orange));
-                tabLayout.setTabTextColors(getResources().getColor(R.color.white), getResources().getColor(R.color.orange));
-
-                break;
-            case 2:
-
-                tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.green));
-                tabLayout.setTabTextColors(getResources().getColor(R.color.white), getResources().getColor(R.color.green));
-
-                break;
-            case 3:
-
-                tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.blue));
-                tabLayout.setTabTextColors(getResources().getColor(R.color.white), getResources().getColor(R.color.blue));
-
-                break;
-            case 4:
-
-                tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.grey));
-                tabLayout.setTabTextColors(getResources().getColor(R.color.white), getResources().getColor(R.color.grey));
-
-                break;
-            case 5:
-
-                tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.teal));
-                tabLayout.setTabTextColors(getResources().getColor(R.color.white), getResources().getColor(R.color.teal));
-
-                break;
-            case 6:
-
-                tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.brown));
-                tabLayout.setTabTextColors(getResources().getColor(R.color.white), getResources().getColor(R.color.brown));
-
-                break;
             default:
 
-                tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.red));
-                tabLayout.setTabTextColors(getResources().getColor(R.color.white), getResources().getColor(R.color.red));
+                tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.lightbluebackground));
+                tabLayout.setTabTextColors(getResources().getColor(R.color.white), getResources().getColor(R.color.lightbluebackground));
         }
 
     }

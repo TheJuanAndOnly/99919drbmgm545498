@@ -234,42 +234,12 @@ public class TaskAdder extends ActionBarActivity {
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.tool_bar);
 
         switch (theme) {
-            case 1:
-                toolbar.setBackgroundColor(getResources().getColor(R.color.orange));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.orange700));
-
-                break;
-            case 2:
-                toolbar.setBackgroundColor(getResources().getColor(R.color.green));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.green800));
-
-                break;
-            case 3:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.blue));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.blue800));
-
-                break;
-            case 4:
-                toolbar.setBackgroundColor(getResources().getColor(R.color.grey));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.grey600));
-
-                break;
             default:
-                toolbar.setBackgroundColor(getResources().getColor(R.color.red));
 
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.red800));
+                toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
+
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.mainblue800));
         }
-
     }
 
     public void addTask() {
@@ -302,6 +272,7 @@ public class TaskAdder extends ActionBarActivity {
             editor.commit();
 
             finish();
+            MainActivity.taskAdded = true;
 
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
             PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), 0);
@@ -375,6 +346,7 @@ public class TaskAdder extends ActionBarActivity {
             editor.commit();
 
             finish();
+            MainActivity.taskAdded = true;
 
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
             PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), 0);

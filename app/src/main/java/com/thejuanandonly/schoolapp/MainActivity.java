@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     public static int api;
     public static int theme;
     public boolean willSend = false;
+    public static boolean taskAdded = false;
     android.support.v7.widget.Toolbar toolbar;
 
     @Override
@@ -110,19 +111,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-        if (actualFragment == 1) {
-            fragmentTransaction.replace(R.id.containerView, new OverviewFragment()).commit();
-        } else if (actualFragment == 2) {
+        if (actualFragment == 2 && taskAdded == true) {
+            FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
-        } else if (actualFragment == 3) {
-            fragmentTransaction.replace(R.id.containerView, new NotesFragment()).commit();
-        } else if (actualFragment == 4) {
-            fragmentTransaction.replace(R.id.containerView, new SettingsFragment()).commit();
+            taskAdded = false;
         }
-
-        Toast.makeText(this, actualFragment+"", Toast.LENGTH_SHORT).show();
-
         super.onResume();
     }
 
@@ -137,53 +130,11 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
         switch (theme) {
-            case 1:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.orange));
-
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.orange700));
-
-                break;
-            case 2:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.green));
-
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.green800));
-
-                break;
-            case 3:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.blue));
-
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.blue800));
-
-                break;
-            case 4:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.grey));
-
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.grey700));
-
-                break;
-            case 5:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.teal));
-
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.teal800));
-
-                break;
-            case 6:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.brown));
-
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.brown700));
-
-                break;
             default:
 
-                toolbar.setBackgroundColor(getResources().getColor(R.color.red));
+                toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
 
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.red800));
+                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.mainblue800));
         }
     }
 

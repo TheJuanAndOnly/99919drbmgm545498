@@ -152,53 +152,11 @@ public class SettingsFragment extends Fragment {
         View view3 = (View) getView().findViewById(R.id.separator3);
 
         switch (theme) {
-            case 1:
-
-                view1.setBackgroundColor(getResources().getColor(R.color.orange));
-                view2.setBackgroundColor(getResources().getColor(R.color.orange));
-                view3.setBackgroundColor(getResources().getColor(R.color.orange));
-
-                break;
-            case 2:
-
-                view1.setBackgroundColor(getResources().getColor(R.color.green));
-                view2.setBackgroundColor(getResources().getColor(R.color.green));
-                view3.setBackgroundColor(getResources().getColor(R.color.green));
-
-                break;
-            case 3:
-
-                view1.setBackgroundColor(getResources().getColor(R.color.blue));
-                view2.setBackgroundColor(getResources().getColor(R.color.blue));
-                view3.setBackgroundColor(getResources().getColor(R.color.blue));
-
-                break;
-            case 4:
-
-                view1.setBackgroundColor(getResources().getColor(R.color.grey));
-                view2.setBackgroundColor(getResources().getColor(R.color.grey));
-                view3.setBackgroundColor(getResources().getColor(R.color.grey));
-
-                break;
-            case 5:
-
-                view1.setBackgroundColor(getResources().getColor(R.color.teal));
-                view2.setBackgroundColor(getResources().getColor(R.color.teal));
-                view3.setBackgroundColor(getResources().getColor(R.color.teal));
-
-                break;
-            case 6:
-
-                view1.setBackgroundColor(getResources().getColor(R.color.brown));
-                view2.setBackgroundColor(getResources().getColor(R.color.brown));
-                view3.setBackgroundColor(getResources().getColor(R.color.brown));
-
-                break;
             default:
 
-                view1.setBackgroundColor(getResources().getColor(R.color.red));
-                view2.setBackgroundColor(getResources().getColor(R.color.red));
-                view3.setBackgroundColor(getResources().getColor(R.color.red));
+                view1.setBackgroundColor(getResources().getColor(R.color.mainblue));
+                view2.setBackgroundColor(getResources().getColor(R.color.mainblue));
+                view3.setBackgroundColor(getResources().getColor(R.color.mainblue));
         }
     }
 
