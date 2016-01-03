@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -202,18 +203,40 @@ public class TaskAdder extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_done) {
-            if (editName != null && editName.length() > 0 && editWhat != null && editWhat.length() > 0) {
-                if (time.getTime() > System.currentTimeMillis()) {
+            if (nameTask.getText().length() > 0 && whatTask.getText().length() > 0 && time.getTime() > System.currentTimeMillis()) {
+                if (editing == true) {
                     editTask();
                 } else {
-                    Toast.makeText(getApplicationContext(), "Please enter valid date and time", Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                if (time.getTime() > System.currentTimeMillis()) {
                     addTask();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Please enter valid date and time", Toast.LENGTH_SHORT).show();
                 }
+            } else if (nameTask.getText().length() == 0 || whatTask.getText().length() == 0) {
+                final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Don't leave the space blank!", Snackbar.LENGTH_INDEFINITE);
+                snackbar.show();
+                snackbar.setAction("Cancel", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        snackbar.dismiss();
+                    }
+                });
+            } else if (nameTask.getText().length() > 0 && whatTask.getText().length() > 0 && time.getTime() <= System.currentTimeMillis()) {
+                final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Enter valid time!", Snackbar.LENGTH_INDEFINITE);
+                snackbar.show();
+                snackbar.setAction("Set time & date", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int yearplus = 0;
+                        if (time.getYear() < 1900) {
+                            yearplus = 1900;
+                        }
+                        setDate(time.getDate(), time.getMonth(), time.getYear() + yearplus);
+                        if (editing == false && time.getTime() == 0) {
+                            time.setTime(System.currentTimeMillis());
+                        }
+                        setTime(time.getHours(), time.getMinutes());
+                        snackbar.dismiss();
+                    }
+                });
+
             }
         } else if (id == android.R.id.home) {
             onBackPressed();
@@ -277,11 +300,6 @@ public class TaskAdder extends ActionBarActivity {
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
             PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), 0);
             alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
-
-        } else if (nameTask.getText().toString() != null && nameTask.getText().toString().length() > 0 && whatTask.getText().toString() != null && whatTask.getText().toString().length() > 0 && btnTime.getText().toString().equals("Set time") || nameTask.getText().toString() != null && nameTask.getText().toString().length() > 0 && whatTask.getText().toString() != null && whatTask.getText().toString().length() > 0 && btnDate.getText().toString().equals("Set day")){
-            Toast.makeText(this, "Please select time when do you want to remind", Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(this, "Don't leave the space blank!", Toast.LENGTH_LONG).show();
         }
 
     }
@@ -352,6 +370,10 @@ public class TaskAdder extends ActionBarActivity {
             PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), 0);
             alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
         }
+    }
+
+    public void snackBar(String string) {
+
     }
 
 }
