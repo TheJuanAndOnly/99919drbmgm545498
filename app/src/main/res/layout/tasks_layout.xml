@@ -6,12 +6,11 @@
     android:orientation="vertical"
     android:layout_height="wrap_content">
 
-
     <android.support.design.widget.TabLayout
         android:id="@+id/tabs"
         app:tabGravity="fill"
         app:tabMode="fixed"
-        android:background="@color/material_blue_grey_800"
+        android:background="@color/mainblue"
         android:layout_width="match_parent"
         android:layout_height="25dp">
     </android.support.design.widget.TabLayout>

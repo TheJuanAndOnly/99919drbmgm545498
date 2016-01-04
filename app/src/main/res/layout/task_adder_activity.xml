@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:background="@color/darkbluebackground">
 
     <include
         android:id="@+id/tool_bar"
@@ -13,42 +13,54 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Name your task:"
+        android:textSize="16sp"
+        android:textColor="@color/white"
         android:id="@+id/textView_nameTask"
         android:padding="4dp"
         android:layout_below="@+id/tool_bar"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="10dp"/>
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/editText_nameTask"
+        android:hint="e.g. Biology test"
+        android:textColorHint="@color/lightbluebackground"
+        android:textColor="@color/white"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
         android:inputType="textCapSentences"
         android:layout_below="@+id/textView_nameTask"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="20dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="What&apos;s your task:"
+        android:textSize="16sp"
+        android:textColor="@color/white"
         android:id="@+id/textView_whatTask"
         android:padding="4dp"
         android:layout_below="@+id/editText_nameTask"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="10dp"/>
 
     <EditText
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:id="@+id/editText_whatTask"
+        android:hint="e.g. Don't forget to learn that very useful things you'll never use!"
+        android:textColorHint="@color/lightbluebackground"
+        android:textColor="@color/white"
+        android:maxLines="8"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
-        android:inputType="textCapSentences"
+        android:inputType="textCapSentences|textMultiLine"
         android:layout_below="@+id/textView_whatTask"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
@@ -59,11 +71,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="When do you want to remind:"
+        android:textSize="16sp"
+        android:textColor="@color/white"
         android:id="@+id/textView_whenTask"
         android:padding="4dp"
-        android:layout_below="@+id/editText_whatTask"
+        android:layout_above="@+id/lnrTime"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="10dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -71,29 +86,40 @@
         android:orientation="horizontal"
         android:weightSum="2"
         android:id="@+id/lnrTime"
-        android:layout_below="@+id/textView_whenTask"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:background="@color/mainblue">
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Set time"
+            android:textColor="@color/white"
             android:id="@+id/btnTime"
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:background="@android:color/transparent"/>
+
+        <ImageView
+            android:layout_width="1dp"
+            android:layout_height="fill_parent"
+            android:background="@color/white"
+            android:layout_margin="10dp"/>
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Set day"
+            android:textColor="@color/white"
             android:id="@+id/btnDate"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:background="@android:color/transparent"/>
     </LinearLayout>
 
 </RelativeLayout>

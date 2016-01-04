@@ -1519,51 +1519,9 @@ public class SubjectDetailActivity extends AppCompatActivity {
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.subjectDetailToolbar);
 
         switch (theme) {
-            case 1:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.orange));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.orange700));
-
-                break;
-            case 2:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.green));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.green800));
-
-                break;
-            case 3:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.blue));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.blue800));
-
-                break;
-            case 4:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.grey));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.grey700));
-
-                break;
-            case 5:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.teal));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.teal800));
-
-                break;
-            case 6:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.brown));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.brown700));
-
-                break;
             default:
 
-                toolbar.setBackgroundColor(getResources().getColor(R.color.red));
+                toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
 
                 if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.red800));
         }

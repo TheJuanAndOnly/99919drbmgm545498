@@ -1,14 +1,13 @@
 package com.thejuanandonly.schoolapp;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.Fragment;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -23,19 +22,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import org.json.JSONArray;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     DrawerLayout mDrawerLayout;
@@ -46,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     public static int api;
     public static int theme;
     public boolean willSend = false;
+    public static boolean taskAdded = false;
     android.support.v7.widget.Toolbar toolbar;
 
     @Override
@@ -110,19 +104,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-        if (actualFragment == 1) {
-            fragmentTransaction.replace(R.id.containerView, new OverviewFragment()).commit();
-        } else if (actualFragment == 2) {
-            fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
-        } else if (actualFragment == 3) {
-            fragmentTransaction.replace(R.id.containerView, new NotesFragment()).commit();
-        } else if (actualFragment == 4) {
-            fragmentTransaction.replace(R.id.containerView, new SettingsFragment()).commit();
+        if (actualFragment == 2 && taskAdded == true) {
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), 0);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
+            FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();;
+            taskAdded = false;
         }
-
-        Toast.makeText(this, actualFragment+"", Toast.LENGTH_SHORT).show();
-
         super.onResume();
     }
 
@@ -137,53 +126,11 @@ public class MainActivity extends AppCompatActivity {
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
         switch (theme) {
-            case 1:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.orange));
-
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.orange700));
-
-                break;
-            case 2:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.green));
-
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.green800));
-
-                break;
-            case 3:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.blue));
-
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.blue800));
-
-                break;
-            case 4:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.grey));
-
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.grey700));
-
-                break;
-            case 5:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.teal));
-
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.teal800));
-
-                break;
-            case 6:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.brown));
-
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.brown700));
-
-                break;
             default:
 
-                toolbar.setBackgroundColor(getResources().getColor(R.color.red));
+                toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
 
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.red800));
+                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.mainblue800));
         }
     }
 
@@ -196,16 +143,13 @@ public class MainActivity extends AppCompatActivity {
         } else if (actualFragment == 3) {
             getMenuInflater().inflate(R.menu.menu_notes, menu);
         } else {
-            getMenuInflater().inflate(R.menu.menu_main, menu);
+            getMenuInflater().inflate(R.menu.menu_settings, menu);
         }
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_schedule) {
             Intent startScheduleActivity = new Intent(MainActivity.this, ScheduleActivity.class);

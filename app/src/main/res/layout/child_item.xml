@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp" >
+    android:padding="10dp"
+    android:background="@color/lightbluebackground">
 
     <TextView
         android:id="@+id/taskWhat"
@@ -11,7 +12,19 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:padding="10dp" />
+        android:padding="10dp"
+        android:textColor="@color/white"
+        android:layout_marginBottom="10dp"/>
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:id="@+id/imgAboveLine"
+        android:background="@color/darkbluebackground"
+        android:layout_above="@+id/linearLayout"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="10dp"/>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -20,25 +33,30 @@
         android:weightSum="2"
         android:layout_below="@+id/taskWhat"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:id="@+id/linearLayout">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/imgEdit"
             android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_manage"
-            android:clickable="true"
-            android:background="@android:color/holo_green_light" />
+            android:src="@drawable/ic_mode_edit_white_24dp"
+            android:clickable="true"/>
+
+        <ImageView
+            android:layout_width="1dp"
+            android:layout_height="fill_parent"
+            android:id="@+id/imgBetweenLine"
+            android:background="@color/darkbluebackground"/>
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/imgDone"
             android:layout_weight="1"
-            android:src="@android:drawable/ic_menu_set_as"
-            android:clickable="true"
-            android:background="@android:color/holo_blue_light"/>
+            android:src="@drawable/ic_arrow_forward_white_24dp"
+            android:clickable="true"/>
 
     </LinearLayout>
 

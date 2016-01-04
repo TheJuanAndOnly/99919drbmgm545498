@@ -3,14 +3,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:background="@color/darkbluebackground">
 
     <TextView
         android:id="@+id/taskName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:paddingLeft="15dp"
         android:paddingRight="30dp"
         android:layout_alignParentTop="true"
@@ -29,7 +30,7 @@
 
         <Button
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
 
 
     </RelativeLayout>

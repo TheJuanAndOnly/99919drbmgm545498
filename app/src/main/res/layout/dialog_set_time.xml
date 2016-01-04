@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/lightbluebackground">
+
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:id="@+id/imgLineTop"
+        android:layout_gravity="center_horizontal"
+        android:background="@color/white"/>
 
     <TimePicker
         android:layout_width="wrap_content"
@@ -13,7 +21,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Set time"
+        android:textColor="@color/white"
         android:id="@+id/btnTime"
-        android:textAlignment="center"/>
+        android:textAlignment="center"
+        android:background="@color/darkbluebackground"/>
 
 </LinearLayout>
