@@ -1,14 +1,11 @@
 package com.thejuanandonly.schoolapp;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -23,19 +20,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
-
 import org.json.JSONArray;
-
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     DrawerLayout mDrawerLayout;
@@ -234,6 +223,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void deleteAll(View view) {
         deleteDialogBox();
+
+        SharedPreferences.Editor editor = getSharedPreferences("GridView", Context.MODE_PRIVATE).edit();
+        editor.clear();
+        editor.commit();
+
+        SharedPreferences.Editor editor2 = getSharedPreferences("SubjectGroupName", Context.MODE_PRIVATE).edit();
+        editor2.clear();
+        editor2.commit();
+
+
+
+
     }
 
     public void deleteDialogBox() {
@@ -289,6 +290,7 @@ public class MainActivity extends AppCompatActivity {
 
                         } catch (Exception e) {
                         }
+
 
                         Toast.makeText(MainActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
                     }

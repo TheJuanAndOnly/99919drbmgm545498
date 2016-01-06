@@ -65,7 +65,6 @@ public class CustomDialogLvAdapter extends ArrayAdapter<Grade> {
 
 
             try {
-                //Toast.makeText(getContext(), arrayOfPercentages.getString(i), Toast.LENGTH_SHORT).show();
                 if (arrayOfPercentages.getInt(i) != 0){
                     count++;
                 }

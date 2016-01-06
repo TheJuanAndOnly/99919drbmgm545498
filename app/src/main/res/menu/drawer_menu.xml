@@ -4,7 +4,7 @@
     <group>
         <item android:title="Overview"
             android:id="@+id/nav_item_overview"
-            android:icon="@drawable/ic_dvr_white_24dp"/>
+            android:icon="@drawable/ic_dvr_white_24dp" />
 
         <item android:title="Tasks"
             android:id="@+id/nav_item_tasks"

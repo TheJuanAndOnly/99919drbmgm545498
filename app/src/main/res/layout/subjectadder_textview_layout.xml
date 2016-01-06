@@ -7,7 +7,7 @@
     android:layout_margin="40dp"
     android:textAppearance="?android:attr/textAppearanceListItemSmall"
     android:gravity="center_vertical"
-    android:padding="25dp"
+    android:padding="10dp"
     android:background="@color/white"
     android:minHeight="5dp"
     android:textColor="@color/black"

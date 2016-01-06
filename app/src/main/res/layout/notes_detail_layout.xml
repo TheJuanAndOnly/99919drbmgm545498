@@ -18,6 +18,7 @@
         android:divider="@android:color/transparent"
         android:dividerHeight="4dp"
         android:id="@+id/PictureGroupListView">
+
     </ListView>
 
 

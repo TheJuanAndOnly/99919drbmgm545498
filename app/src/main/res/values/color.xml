@@ -7,6 +7,9 @@
     <color name="red">#F44336</color>
     <color name="red800">#C62828</color>
 
+    <color name="blueT">#05a3bc</color>
+    <color name="blueTy">#06899e</color>
+
     <color name="orange">#ff9800</color>
     <color name="orange700">#F57C00</color>
     <color name="orange800">#EF6C00</color>

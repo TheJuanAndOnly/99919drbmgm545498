@@ -31,6 +31,8 @@ public class OverviewFragment extends Fragment {
     android.support.v7.widget.Toolbar toolbar;
     static View v;
     public static Context overviewFragmentContext;
+    String username;
+    String imageUri;
 
     @Nullable
     @Override
@@ -41,6 +43,26 @@ public class OverviewFragment extends Fragment {
 
         toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("Overview");
+
+
+
+        //TEST NA USERNAME A PHOTO Z LOGINU ↓ Môžeš mazať :D
+        try {
+            username = getActivity().getIntent().getExtras().getString("nickname");
+            Toast.makeText(getActivity().getApplicationContext(), "the username is: " + username, Toast.LENGTH_SHORT).show();
+        }catch (NullPointerException e) {
+            Toast.makeText(getActivity().getApplicationContext(), "No username is selected", Toast.LENGTH_SHORT).show();
+        }
+
+        try {
+            imageUri = getActivity().getIntent().getExtras().getString("avatar");
+            Toast.makeText(getActivity().getApplicationContext(), "the imageUri is: " + imageUri, Toast.LENGTH_SHORT).show();
+        } catch (NullPointerException e) {
+            Toast.makeText(getActivity().getApplicationContext(), "No photo was chosen", Toast.LENGTH_SHORT).show();
+        }
+
+
+
 
         lv = (ListView) rootView.findViewById(R.id.SubjectListView);
 

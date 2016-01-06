@@ -12,10 +12,14 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 public class ScheduleActivity extends Activity {
 
@@ -28,28 +32,21 @@ public class ScheduleActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.schedule_activity_layout);
         String picturePath = loadPath();
-        imageView = (ImageView) findViewById(R.id.schedule_image_view);
+        SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) findViewById(R.id.imageViewS);
 
         if (picturePath != null) {
-            Toast.makeText(this, "Changing the image is provided by tapping it", Toast.LENGTH_LONG).show();
-            imageView.setImageBitmap(BitmapScaled(picturePath, 800, 800));
-            imageView.setOnClickListener(new View.OnClickListener() {
+            Toast.makeText(this, "Long click on the image to change it", Toast.LENGTH_LONG).show(); //Sem dáme SNackbaríček
+            imageView.setImage(ImageSource.bitmap(BitmapScaled(picturePath, 800, 800)));
 
-                @Override
-                public void onClick(View arg0) {
-                    Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(i, RESULT_LOAD_IMAGE);
-                }
-            });
-        } else {
-            imageView.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View arg0) {
-                    Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(i, RESULT_LOAD_IMAGE);
-                }
-            });
+                imageView.setLongClickable(true);
+            imageView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        startActivityForResult(i, RESULT_LOAD_IMAGE);
+                        return true;
+                    }
+                });
         }
     }
 
@@ -68,7 +65,8 @@ public class ScheduleActivity extends Activity {
             picture = cursor.getString(columnIndex);
             cursor.close();
 
-            imageView.setImageBitmap(BitmapScaled(picture, 800, 800));
+            SubsamplingScaleImageView imageView = new SubsamplingScaleImageView(this);
+            imageView.setImage(ImageSource.bitmap(BitmapScaled(picture, 800, 800)));
             savePath(picture);
         }
     }
