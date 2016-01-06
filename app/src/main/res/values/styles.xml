@@ -24,9 +24,4 @@
         <item name="android:backgroundDimEnabled">false</item>
     </style>
 
-    <style name="ContextTheme" >
-        <item name="android:textSize">20sp</item>
-        <item name="android:gravity">center</item>
-    </style>
-
 </resources>

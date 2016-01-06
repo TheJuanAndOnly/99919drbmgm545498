@@ -8,18 +8,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.internal.view.menu.ListMenuItemView;
 import android.text.InputType;
-import android.view.ContextMenu;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -52,14 +47,10 @@ public class NotesDetailActivity extends AppCompatActivity {
     public static String currentNote;
     android.support.v7.widget.Toolbar toolbar;
     private Menu menu;
+    ListView lv_detail;
+    ArrayAdapter<String> m_adapter_detail;
     ListView listView;
-    JSONArray arrayOfCategories, jsonArray;
-    ArrayAdapter<String> arrayAdapter;
-    ArrayList<String> arrayList;
-    String subjectName, newSubCategoryName;
-    String subCategoryName, update = "";
-    String subCategory = "";
-
+    JSONArray arrayOfCategories;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,170 +91,35 @@ public class NotesDetailActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                SharedPreferences prefs = getSharedPreferences("ListOfSubjectsGroupName", Context.MODE_PRIVATE);
+                SharedPreferences prefs = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getExtras().getString("note", null), Context.MODE_PRIVATE);
                 JSONArray jsonArray = new JSONArray();
-
-
+                String subCategory = "";
                 try {
                     jsonArray = new JSONArray(prefs.getString("ListGroupName", null));
                     subCategory = jsonArray.getString(position);
                 } catch (Exception e) {
                 }
 
-
                 Intent intent = new Intent(getApplicationContext(), PictureGroupActivity.class);
-
                 intent.putExtra("subNote", subCategory);
-                intent.putExtra("position", position);
-
-                try {
-                    intent.putExtra("subjectDetailNotes", jsonArray.getString(position));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                intent.putExtra("positionNotesDetail", position);
 
                 startActivity(intent);
             }
         });
 
-        registerForContextMenu(listView);
     }
 
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.context_menu, menu);
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_notes_detail, menu);
+        this.menu = menu;
+        return true;
     }
 
-
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
-
-        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        final int id = info.position;
-        final TextView textView = (TextView) findViewById(android.R.id.text1);
-        final ArrayList<String> arrayList = new ArrayList<>();
-        final ArrayList<String> arrayListRename = new ArrayList<>();
-        final SharedPreferences preferences = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getExtras().getString("note", null), Context.MODE_PRIVATE);
-        final SharedPreferences.Editor editor = preferences.edit();
-        JSONArray array = new JSONArray();
-        textView.getText();
-
-        SharedPreferences GroupNamePrefs = getSharedPreferences("SubjectGroupName" + subjectName, Context.MODE_PRIVATE);
-        final SharedPreferences.Editor editorName = GroupNamePrefs.edit();
-
-
-        switch (item.getItemId()) {
-            case R.id.rename:
-
-
-                final AlertDialog.Builder alert = new AlertDialog.Builder(NotesDetailActivity.this);
-                alert.setTitle("Rename");
-                final EditText editText = new EditText(getApplicationContext());
-                editText.setTextColor(Color.BLACK);
-                alert.setView(editText);
-
-                jsonArray = new JSONArray();
-
-                try {
-                    jsonArray = new JSONArray(preferences.getString("ListGroupName", jsonArray.toString()));
-                    subCategoryName = jsonArray.getString(info.position);
-                } catch (Exception e) {
-                }
-
-                editText.setText(subCategoryName);
-
-                for (int i = 0; i < jsonArray.length(); i++) {
-
-                    try {
-                        arrayListRename.add(jsonArray.get(i).toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                    alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-
-                            newSubCategoryName = editText.getText().toString();
-
-                            subCategoryName = newSubCategoryName;
-
-
-                            arrayListRename.remove(info.position);
-                            arrayListRename.add(info.position, newSubCategoryName);
-
-                            Toast.makeText(NotesDetailActivity.this, "Updated text: " + subCategoryName, Toast.LENGTH_SHORT).show();
-
-                            editor.putString("ListGroupName", arrayListRename.toString()).apply();
-                            setListView();
-                        }
-                    });
-
-
-
-                    alert.setNegativeButton("Cancle", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-
-                    alert.show();
-                    return true;
-
-                    case R.id.delete:
-
-                        try {
-                        array = new JSONArray(preferences.getString("ListGroupName", null));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-
-                    for (int i = 0; i < array.length(); i++) {
-
-                        try {
-                            arrayList.add(array.get(i).toString());
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    arrayList.remove(id);
-                    arrayAdapter.notifyDataSetChanged();
-
-                    editor.putString("ListGroupName", arrayList.toString()).apply();
-
-                    setListView();
-
-                    return true;
-
-                    case R.id.cancel:
-
-                            return true;
-
-                    default:
-                            return super.onContextItemSelected(item);
-                }
-        }
-
-
-        @Override
-        public boolean onCreateOptionsMenu(Menu menu) {
-            getMenuInflater().inflate(R.menu.menu_notes_detail, menu);
-            this.menu = menu;
-            return true;
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
 
             if (id == R.id.addPictureFolder) {
                 pictureGroupNameDialog();
@@ -279,22 +135,22 @@ public class NotesDetailActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.PictureGroupListView);
 
         SharedPreferences prefs = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getExtras().getString("note", null), Context.MODE_PRIVATE);
-        jsonArray = new JSONArray();
+        JSONArray jsonArray = new JSONArray();
         try {
             jsonArray = new JSONArray(prefs.getString("ListGroupName", null));
         } catch (Exception e) {
         }
 
-        arrayList = new ArrayList<String>();
+        ArrayList<String> arrayList = new ArrayList<String>();
 
-        for (int i = 0; i < jsonArray.length(); i++) {
+        for (int i = 0; i < jsonArray.length(); i++){
             try {
                 arrayList.add(jsonArray.getString(i));
-            } catch (Exception e) {
+            }catch (Exception e){
             }
         }
 
-        arrayAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.subjectadder_textview_layout, arrayList);
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.subjectadder_textview_layout, arrayList);
 
         listView.setAdapter(arrayAdapter);
     }
@@ -315,56 +171,49 @@ public class NotesDetailActivity extends AppCompatActivity {
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.orange));
 
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.orange700));
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.orange700));
 
                 break;
             case 2:
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.green));
 
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.green800));
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.green800));
 
                 break;
             case 3:
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.blue));
 
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.blue800));
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.blue800));
 
                 break;
             case 4:
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.grey));
 
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.grey700));
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.grey700));
 
                 break;
             case 5:
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.teal));
 
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.teal800));
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.teal800));
 
                 break;
             case 6:
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.brown));
 
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.brown700));
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.brown700));
 
                 break;
             default:
 
                 toolbar.setBackgroundColor(getResources().getColor(R.color.red));
 
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.red800));
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.red800));
         }
     }
 
@@ -426,7 +275,6 @@ public class NotesDetailActivity extends AppCompatActivity {
         SharedPreferences.Editor arrayPrefsEditor = arrayPrefs.edit();
         arrayPrefsEditor.putString("ListGroupName", jsonArray.toString()).apply();
 
-        subjectName = subject;
 
         setListView();
     }

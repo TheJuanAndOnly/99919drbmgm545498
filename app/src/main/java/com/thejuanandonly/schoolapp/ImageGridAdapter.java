@@ -28,7 +28,6 @@ import java.util.ArrayList;
 /**
  * Created by Daniel on 11/15/2015.
  */
-
 public class ImageGridAdapter extends BaseAdapter {
 
 
@@ -76,6 +75,7 @@ public class ImageGridAdapter extends BaseAdapter {
         }
 
         try {
+
                 imageView.setImageBitmap(PictureGroupActivity.ALofSelectedImgs.get(position));
 
         }catch (Exception e) {}

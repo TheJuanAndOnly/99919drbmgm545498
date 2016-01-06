@@ -7,14 +7,13 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#05a3bc"
+        android:background="@color/red"
         android:id="@+id/subjectDetailToolbar"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <GridView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#282e30"
         android:id="@+id/picture_group_gridView"
         android:columnWidth="90dp"
         android:numColumns="auto_fit"
@@ -24,10 +23,5 @@
         android:padding="10dp"
         android:gravity="center">
     </GridView>
-
-    <android.support.v7.widget.AppCompatCheckBox
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/checkBox" />
 
 </LinearLayout>
