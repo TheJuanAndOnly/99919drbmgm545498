@@ -16,14 +16,17 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,12 +39,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,6 +57,7 @@ import org.json.JSONObject;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by Robo on 10/22/2015.
@@ -61,7 +68,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
     android.support.v7.widget.Toolbar toolbar;
     private Menu menu;
     public static int menuButtonChange = 1;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +84,20 @@ public class SubjectDetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
         try {
             arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
-        }catch (Exception e) {arrayOfCategories = new JSONArray();}
+        }catch (Exception e) {
+
+            arrayOfCategories = new JSONArray();
+            arrayOfCategories.put("Grades");
+            editor.putString("ListOfCategories", arrayOfCategories.toString()).apply();
+
+            JSONArray arrayOfPercentages = new JSONArray();
+            arrayOfPercentages.put("100");
+            editor.putString("ListOfPercentages", arrayOfPercentages.toString()).apply();
+        }
+
 
         try {
             ArrayList<String> strings = new ArrayList<String>();
@@ -93,8 +110,35 @@ public class SubjectDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "Add a category", Toast.LENGTH_SHORT).show();
         }
 
-        setListView();
+        TextView textView = (TextView) findViewById(R.id.testsToWriteEditText);
+        textView.setText(String.valueOf(prefs.getInt("testsToWrite", 1)));
+
+        LinearLayout ttwLayout = (LinearLayout) findViewById(R.id.ttwLayout);
+        if (prefs.getInt("GradeType", 0) == 0){
+            ttwLayout.setVisibility(View.VISIBLE);
+        }else {
+            ttwLayout.setVisibility(View.GONE);
+            editor.putInt("testsToWrite", 1).apply();
+        }
+
+        editor.putBoolean("doSetLv", true).apply();
+
+        setAvgTv();
     }
+
+    public void setAvgTv(){
+        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        TextView averageTV = (TextView) findViewById(R.id.averageTextView);
+        int gradeType = prefs.getInt("GradeType" , 0);
+        if (gradeType == 2){
+            averageTV.setText("GPA: " + prefs.getString("AvgGrade", "0"));
+        }else {
+            averageTV.setText("Average: " + prefs.getString("AvgGrade", "0"));
+        }
+    }
+
 //////////////////////////////////////////////////////////////////////////
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -107,18 +151,47 @@ public class SubjectDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
         if (id == R.id.action_edit) {
             Button bottomPlus = (Button) findViewById(R.id.addCategory);
 
             menuButtonChange++;
             if (menuButtonChange%2 == 0){
-                bottomPlus.setVisibility(View.VISIBLE);
+
                 menu.getItem(0).setIcon(R.drawable.ic_done_white_24dp);
+
+                if (!prefs.getBoolean("useCategories", false)){
+                    Button edit = (Button) findViewById(R.id.gradeEditButtonSingle);
+                    edit.setVisibility(View.VISIBLE);
+
+                }else {
+                    bottomPlus.setVisibility(View.VISIBLE);
+                }
+
+                RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.secondLayout);
+                Button rollDownButton = (Button) findViewById(R.id.rollDownButton);
+
+                int visibility = relativeLayout.getVisibility();
+                if (visibility == 8) {
+                    relativeLayout.setVisibility(View.VISIBLE);
+                    rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_black_24dp);
+                }
+
             }else {
                 menu.getItem(0).setIcon(R.drawable.ic_mode_edit_white_24dp);
+
                 bottomPlus.setVisibility(View.GONE);
+
+                if (!prefs.getBoolean("useCategories", false)){
+                    Button edit = (Button) findViewById(R.id.gradeEditButtonSingle);
+                    edit.setVisibility(View.GONE);
+                }
+
             }
 
+            editor.putBoolean("doSetLv", true).apply();
             setListView();
             return true;
         } else if (id == R.id.action_settings) {
@@ -135,69 +208,169 @@ public class SubjectDetailActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
-        ArrayList<Grade> arrayOfGrades = Grade.getGrades();
+        if (!prefs.getBoolean("doSetLv", true)) return;
 
-        CustomGradeAdapter adapter = new CustomGradeAdapter(this, arrayOfGrades);
+        editor.putBoolean("doSetLv", false).apply();
+
+        editor.putString("AvgGrade", String.valueOf(countAverage())).apply();
+
+        JSONArray arrayOfPercentages = new JSONArray();
+        try {
+            arrayOfPercentages = new JSONArray(prefs.getString("ListOfPercentages", null));
+        } catch (Exception e) {
+            Log.e("debug", e.toString());
+        }
+        JSONArray arrayOfCategories = new JSONArray();
+        try {
+            arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
+        } catch (Exception e) {
+            Log.e("debug", e.toString());
+        }
+
+        int gradeType = prefs.getInt("GradeType" , 0);
 
         ListView listView = (ListView) findViewById(R.id.categoryListView);
-        listView.setAdapter(adapter);
+        TextView gradeTv = (TextView) findViewById(R.id.gradeTextViewNoCat);
 
-        /*View item = adapter.getView(0, null, listView);
-        item.measure(0, 0);*/
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        if (!prefs.getBoolean("useCategories", false)){
 
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-        wm.getDefaultDisplay().getMetrics(displayMetrics);
-        int screenWidth = displayMetrics.widthPixels;
-        int screenHeight = displayMetrics.heightPixels;
+            listView.setVisibility(View.GONE);
+            gradeTv.setVisibility(View.VISIBLE);
+            gradeTv.setText("");
 
-        if (adapter.getCount() <= 5) {
-            params.height = adapter.getCount() * (screenHeight / (screenHeight/113));
+            try {
+                for (int i = 0; i < arrayOfCategories.length(); i++) {
+                    JSONArray arrayOfGrades = new JSONArray(prefs.getString(arrayOfCategories.getString(i) + "Grades" + gradeType, null));
+
+                    for (int j = 0; j <arrayOfGrades.length(); j++){
+
+                        if (gradeTv.length() == 0){
+                            gradeTv.append(arrayOfGrades.getString(j));
+                        }else {
+                            gradeTv.append(", " + arrayOfGrades.getString(j));
+                        }
+                    }
+                }
+            }catch (Exception e){
+                Log.e("debug", e.toString());
+            }
+        }
+        else {
+
+            gradeTv.setVisibility(View.GONE);
+            listView.setVisibility(View.VISIBLE);
+
+            ArrayList<Grade> arrayListOfGrades = Grade.getGrades();
+
+            CustomGradeAdapter adapter = new CustomGradeAdapter(this, arrayListOfGrades);
+
+            listView.setAdapter(adapter);
+
+            ViewGroup.LayoutParams params = listView.getLayoutParams();
+
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+            wm.getDefaultDisplay().getMetrics(displayMetrics);
+            int screenHeight = displayMetrics.heightPixels;
+
+            params.height = adapter.getCount() * (screenHeight / (screenHeight / 113));
             listView.setLayoutParams(params);
             listView.requestLayout();
-        }else {
-            params.height =  5 * (screenHeight / (screenHeight/113)) + 40;
-            //params.height =  5 * item.getMeasuredHeight();
-            listView.setLayoutParams(params);
-            listView.requestLayout();
+
+            try {
+
+                int count = 0;
+                boolean isNonZeroCategory = false,
+                        isIgnoredCategory = false;
+
+                for (int i = 0; i < arrayOfPercentages.length(); i++) {
+                    try {
+                        count += arrayOfPercentages.getInt(i);
+                    } catch (JSONException ex) {
+                        count += 0;
+                    }
+
+                }
+
+                for (int i = 0; i < arrayOfCategories.length(); i++) {
+
+                    JSONArray arrayOfGrades = new JSONArray();
+                    try {
+                        arrayOfGrades = new JSONArray(prefs.getString(arrayOfCategories.getString(i) + "Grades" + gradeType, null));
+                    } catch (NullPointerException ex) {
+                    }
+
+                    int percentage = 0;
+                    try {
+                        percentage = arrayOfPercentages.getInt(i);
+                    } catch (JSONException e) {
+                    }
+
+                    if (arrayOfGrades.length() == 0 && percentage != 0) {
+                        isNonZeroCategory = true;
+                    } else if (arrayOfGrades.length() != 0 && percentage == 0) {
+                        isIgnoredCategory = true;
+                    }
+                }
+
+                if (count != 100 && count != 0) {
+
+                    final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "The total must equal 100!", Snackbar.LENGTH_INDEFINITE);
+                    snackbar.show();
+                    snackbar.setAction("Settings", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            settingsDialog();
+
+                            snackbar.dismiss();
+                        }
+                    });
+
+                } else if (isNonZeroCategory) {
+
+                    final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "In order for all empty categories to be ignored, set their values to 0", Snackbar.LENGTH_INDEFINITE);
+                    snackbar.show();
+                    snackbar.setAction("Settings", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            settingsDialog();
+
+                            snackbar.dismiss();
+                        }
+                    });
+
+                } else if (isIgnoredCategory) {
+
+                    final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Some categories containing grades are ignored. Set their values", Snackbar.LENGTH_INDEFINITE);
+                    snackbar.show();
+                    snackbar.setAction("Settings", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            settingsDialog();
+
+                            snackbar.dismiss();
+                        }
+                    });
+                }
+
+
+            } catch (Exception e) {
+                Log.e("debug", e.toString());
+            }
         }
 
-        editor.putString("AvgGrade", countAverage()).apply();
-
-        TextView averageTV = (TextView) findViewById(R.id.averageTextView);
-        int gradeType = prefs.getInt("GradeType" , 0);
-        if (gradeType == 2){
-            averageTV.setText("GPA: " + countAverage());
-        }else {
-            averageTV.setText("Average: " + countAverage());
-        }
-
-
-        try{
-            JSONArray arrayOfPercentages = new JSONArray(prefs.getString("ListOfPercentages", null));
-
-            int count = 0;
-
-            for (int i = 0; i < arrayOfPercentages.length(); i++){
-
-
-
-                count += arrayOfPercentages.getInt(i);
-            }
-
-            if (count != 100 && count != 0){
-                Toast.makeText(this, "The total must equal 100!", Toast.LENGTH_LONG).show();
-                settingsDialog();
-            }
-
-        }catch (Exception e){}
-
+        setAvgTv();
+        setPredictionListView();
     }
 //////////////////////////////////////////////////////////////////////////
     public void addGrade(View view) {
         JSONArray arrayOfCategories;
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = prefs.edit();
+
         try {
             arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
         }catch (Exception e) {arrayOfCategories = new JSONArray();}
@@ -209,16 +382,23 @@ public class SubjectDetailActivity extends AppCompatActivity {
             }catch (JSONException e){}
         }
 
-        if(!listOfCategories.isEmpty()) {
+        if(!listOfCategories.isEmpty() || !prefs.getBoolean("useCategories", false)) {
 
             final Dialog dialog = new Dialog(this);
             dialog.setContentView(R.layout.grade_adder_dialog);
             dialog.setTitle("Add a Grade");
 
             final Spinner spinner = (Spinner) dialog.findViewById(R.id.dialogSpinner);
-            ArrayAdapter spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listOfCategories);
-            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(spinnerAdapter);
+
+            if (prefs.getBoolean("useCategories", false)) {
+
+                ArrayAdapter spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listOfCategories);
+                spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(spinnerAdapter);
+            }
+            else {
+                spinner.setVisibility(View.GONE);
+            }
 
             final EditText editText = (EditText) dialog.findViewById(R.id.addGradeEditText);
             int gradeType = prefs.getInt("GradeType", 0);
@@ -242,8 +422,18 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     String grade = editText.getText().toString();
-                    String category = spinner.getSelectedItem().toString();
-                    int pos = spinner.getSelectedItemPosition();
+
+                    String category;
+                    int pos;
+                    try {
+                        category = spinner.getSelectedItem().toString();
+                        pos = spinner.getSelectedItemPosition();
+
+                    }catch (NullPointerException e){
+                        category = "Grades";
+                        pos = 0;
+                    }
+
                     saveGrade(grade, category, pos);
                     dialog.dismiss();
                 }
@@ -257,10 +447,20 @@ public class SubjectDetailActivity extends AppCompatActivity {
             });
 
             dialog.show();
-        }else{
+        }
+        else{
             Toast.makeText(this, "Add a Category first", Toast.LENGTH_SHORT).show();
             Button bottomPlus = (Button) findViewById(R.id.addCategory);
             bottomPlus.setVisibility(View.VISIBLE);
+
+            RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.secondLayout);
+            Button rollDownButton = (Button) findViewById(R.id.rollDownButton);
+
+            int visibility = relativeLayout.getVisibility();
+            if (visibility == 8) {
+                relativeLayout.setVisibility(View.VISIBLE);
+                rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_black_24dp);
+            }
         }
     }
     public void saveGrade(String grade, String category, int pos){
@@ -274,6 +474,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
         }catch (Exception e) {
             jsonArray = new JSONArray();
         }
+
+        grade = grade + "*";
         char[] chars = grade.toCharArray();
         switch (gradeType){
             case 1:
@@ -286,7 +488,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                         if (percentage == -1) percentage = 0;
                         percentage = (percentage * 10) + num;
 
-                    }else if (percentage != -1){
+                    }else if (percentage != -1 || i+1 == chars.length){
                         jsonArray.put(String.valueOf(percentage));
                         percentage = -1;
                     }
@@ -299,10 +501,12 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
                         String string = String.valueOf(chars[i]);
 
-                        int j = i + 1;
-                        if (chars[j] == '+' || chars[j] == '-'){
-                            string += String.valueOf(chars[j]);
-                        }
+                        try {
+                            int j = i + 1;
+                            if (chars[j] == '+' || chars[j] == '-'){
+                                string += String.valueOf(chars[j]);
+                            }
+                        }catch (IndexOutOfBoundsException e){}
 
                         jsonArray.put(string);
                     }
@@ -320,10 +524,11 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 break;
         }
 
+        editor.putBoolean("doSetLv", true).apply();
         setListView();
     }
 //////////////////////////////////////////////////////////////////////////
-    public String countAverage(){
+    public double countAverage(){
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
         JSONArray arrayOfCategories, arrayOfPercentages;
         try {
@@ -333,38 +538,92 @@ public class SubjectDetailActivity extends AppCompatActivity {
             arrayOfCategories = new JSONArray();
             arrayOfPercentages = new JSONArray();
         }
+        int gradeType = prefs.getInt("GradeType", 0);
 
         ArrayList<Double> semiAverage = new ArrayList<Double>();
-        for (int i = 0; i < arrayOfCategories.length(); i++){
-            String s = "";
-            try {
-                s = arrayOfCategories.getString(i);
-            }catch (JSONException e) {}
-            semiAverage.add(countSemiAverage(s));
-        }
-        double average = 0;
-        for(int i = 0; i < semiAverage.size(); i++) {
-            if (semiAverage.get(i) == 0) {
-                semiAverage.remove(i);
-                i--;
-            }
-            else {
-                double temp = semiAverage.get(i);
+
+        if (!prefs.getBoolean("useValues", false) && !prefs.getBoolean("useCategories", false)){
+
+            for (int i = 0; i < arrayOfCategories.length(); i++){
+
+                JSONArray arrayOfGrades = new JSONArray();
                 try {
-                    temp = temp / (100 / arrayOfPercentages.getDouble(i));
-                }catch (JSONException e) {}
-                average += temp;
+                    arrayOfGrades = new JSONArray(prefs.getString(arrayOfCategories.getString(i) + "Grades" + gradeType, null));
+                } catch (Exception e) {
+                    Log.e("debug", e.toString());
+                }
+
+                for (int j = 0; j < arrayOfGrades.length(); j++){
+
+                    if (gradeType == 2){
+
+                        try {
+                            semiAverage.add(letterToNumber(arrayOfGrades.getString(j)));
+                        } catch (JSONException e) {
+                            Log.e("debug", e.toString());
+                        }
+
+                    }
+                    else {
+
+                        try {
+                            semiAverage.add(Double.parseDouble(arrayOfGrades.getString(j)));
+                        } catch (JSONException e) {
+                            Log.e("debug", e.toString());
+                        }
+                    }
+                }
             }
-        }
 
-        DecimalFormat df = new DecimalFormat("#.####");
-        average = Double.valueOf(df.format(average));
+            double average = 0;
+            for (int i = 0; i < semiAverage.size(); i++) {
 
-        if (String.valueOf(average).equals("NaN")){
-            return "";
+                average += semiAverage.get(i);
+            }
+
+            average /= semiAverage.size();
+
+            DecimalFormat df = new DecimalFormat("#.####");
+            average = Double.valueOf(df.format(average));
+
+
+
+            if (String.valueOf(average).equals("NaN")) {
+                return 0;
+            } else {
+                return average;
+            }
+
         }
         else {
-            return String.valueOf(average);
+
+            for (int i = 0; i < arrayOfCategories.length(); i++){
+                String s = "";
+                try {
+                    s = arrayOfCategories.getString(i);
+                }catch (JSONException e) {}
+                semiAverage.add(countSemiAverage(s));
+            }
+
+            double average = 0;
+            for(int i = 0; i < semiAverage.size(); i++) {
+
+                try {
+                    average += semiAverage.get(i) / (100 / arrayOfPercentages.getDouble(i));
+                }catch (JSONException e){
+                    Log.e("debug", e.toString());
+                }
+            }
+
+            DecimalFormat df = new DecimalFormat("#.####");
+            average = Double.valueOf(df.format(average));
+
+            if (String.valueOf(average).equals("NaN")){
+                return 0;
+            }
+            else {
+                return average;
+            }
         }
     }
 
@@ -397,66 +656,92 @@ public class SubjectDetailActivity extends AppCompatActivity {
                     string = jsonArray.getString(i);
                 } catch (JSONException e) {}
 
-                switch (string){
-                    case "A+":
-                        average += 4.33;
-                        break;
-
-                    case "A":
-                        average += 4;
-                        break;
-
-                    case "A-":
-                        average += 4 - 0.33 ;
-                        break;
-
-                    case "B+":
-                        average += 3 + 0.33;
-                        break;
-
-                    case "B":
-                        average += 3;
-                        break;
-
-                    case "B-":
-                        average += 3 - 0.33;
-                        break;
-
-                    case "C+":
-                        average += 2 + 0.33;
-                        break;
-
-                    case "C":
-                        average += 2;
-                        break;
-
-                    case "C-":
-                        average += 2 - 0.33;
-                        break;
-
-                    case "D+":
-                        average += 1 + 0.33;
-                        break;
-
-                    case "D":
-                        average += 1;
-                        break;
-
-                    case "D-":
-                        average += 1 - 0.33;
-                        break;
-
-                    case "F":
-                        average += 0;
-                        break;
-                }
+                average += letterToNumber(string);
 
             }
             if (average != 0) {
                 average /= jsonArray.length();
             }
         }
+
         return average;
+    }
+
+    public double letterToNumber(String letter){
+        switch (letter){
+            case "A+":
+                return 4.33;
+
+            case "A":
+                return 4;
+
+            case "A-":
+                return 4 - 0.33 ;
+
+            case "B+":
+                return 3 + 0.33;
+
+            case "B":
+                return 3;
+
+            case "B-":
+                return 3 - 0.33;
+
+            case "C+":
+                return 2 + 0.33;
+
+            case "C":
+                return 2;
+
+            case "C-":
+                return 2 - 0.33;
+
+            case "D+":
+                return  + 0.33;
+
+            case "D":
+                return 1;
+
+            case "D-":
+                return 1 - 0.33;
+
+            case "F":
+                return 0;
+
+            default:
+                return 0;
+        }
+    }
+    public String numberToLetter(double letter){
+        if (letter == 4.33) {
+            return "A+";
+        } else if (letter == 4) {
+            return "A";
+        } else if (letter == 3.67) {
+            return "A-";
+        } else if (letter == 3.33) {
+            return "B+";
+        } else if (letter == 3) {
+            return "B";
+        } else if (letter == 2.67) {
+            return "B-";
+        } else if (letter == 2.33) {
+            return "C+";
+        } else if (letter == 2) {
+            return "C";
+        } else if (letter == 1.67) {
+            return "C-";
+        } else if (letter == 1.33) {
+            return "D+";
+        } else if (letter == 1) {
+            return "D";
+        } else if (letter == 0.67) {
+            return "D-";
+        } else if (letter == 0) {
+            return "F";
+        } else {
+            return "";
+        }
     }
 //////////////////////////////////////////////////////////////////////////
     public void addCategory(View view) {
@@ -520,10 +805,31 @@ public class SubjectDetailActivity extends AppCompatActivity {
             arrayOfPercentages = new JSONArray();
         }
 
-        if (!arrayOfCategories.toString().contains(name)){
-            arrayOfCategories.put(name);
-            editor.putString("ListOfCategories", arrayOfCategories.toString());
+        int different = 0;
+        for (int i = 0; i < arrayOfCategories.length(); i++) {
+            try {
+                if (!arrayOfCategories.getString(i).equals(name)) {
+                    different++;
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
+        if (different == arrayOfCategories.length()){
+
+            try {
+                arrayOfCategories.put(name);
+                editor.putString("ListOfCategories", arrayOfCategories.toString());
+
+                arrayOfPercentages.put(String.valueOf(100 / (arrayOfPercentages.length() + 1)));
+                editor.putString("ListOfPercentages", arrayOfPercentages.toString());
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+
         char[] chars = gradesString.toCharArray();
         JSONArray arrayOfGrades = new JSONArray();
 
@@ -573,12 +879,95 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 break;
         }
 
-        arrayOfPercentages.put(String.valueOf(100 / (arrayOfPercentages.length() + 1)));
-        editor.putString("ListOfPercentages", arrayOfPercentages.toString());
-
         editor.putString(name + "Grades" + gradeType, arrayOfGrades.toString());
         editor.apply();
 
+        editor.putBoolean("doSetLv", true).apply();
+        setListView();
+    }
+    public void saveCategory(String gradesString){
+        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        JSONArray arrayOfCategories;
+        try {
+            arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
+        }catch (Exception e) {
+            arrayOfCategories = new JSONArray();
+        }
+
+        char[] chars = gradesString.toCharArray();
+        JSONArray arrayOfGrades = new JSONArray();
+
+        int gradeType = prefs.getInt("GradeType", 0);
+        switch (gradeType){
+            case 1:
+                int percentage = 0;
+                for (int i = 0; i < chars.length; i++){
+                    if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5' ||
+                            chars[i] == '6' || chars[i] == '7' || chars[i] == '8' || chars[i] == '9' || chars[i] == '0'){
+
+                        int num = Character.getNumericValue(chars[i]);
+                        if (percentage == -1) percentage = 0;
+                        percentage = (percentage * 10) + num;
+
+                    }else if (percentage != -1){
+                        arrayOfGrades.put(String.valueOf(percentage));
+                        percentage = -1;
+                    }
+                }
+                if (percentage != -1) arrayOfGrades.put(String.valueOf(percentage));
+                break;
+            case 2:
+                for (int i = 0; i < chars.length; i++) {
+                    if (chars[i] == 'A' || chars[i] == 'B' || chars[i] == 'C' || chars[i] == 'D' || chars[i] == 'F') {
+                        String string = String.valueOf(chars[i]);
+
+                        try {
+                            int j = i + 1;
+
+                            if (chars[j] == '+' || chars[j] == '-') {
+                                string += String.valueOf(chars[j]);
+                            }
+                        }catch (ArrayIndexOutOfBoundsException e){}
+
+                        arrayOfGrades.put(string);
+                    }
+                }
+                break;
+            default:
+                for (int i = 0; i < chars.length; i++) {
+                    if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5') {
+                        String string = String.valueOf(chars[i]);
+                        arrayOfGrades.put(string);
+                    }
+                }
+                break;
+        }
+
+        for (int i = 0; i < arrayOfCategories.length(); i++){
+
+            int length = arrayOfGrades.length() / arrayOfCategories.length();
+
+            JSONArray arrayOfGrades2 = new JSONArray();
+
+            for (int j = 0; j < length; j++){
+
+                try {
+                    arrayOfGrades2.put(arrayOfGrades.get((i * length) + j));
+                } catch (JSONException e) {}
+
+            }
+
+            try {
+                editor.putString(arrayOfCategories.get(i) + "Grades" + gradeType, arrayOfGrades2.toString());
+            } catch (JSONException e) {}
+
+        }
+
+        editor.apply();
+
+        editor.putBoolean("doSetLv", true).apply();
         setListView();
     }
 //////////////////////////////////////////////////////////////////////////
@@ -625,110 +1014,211 @@ public class SubjectDetailActivity extends AppCompatActivity {
         editor.putString("ListOfPercentages", arrayToSendP.toString());
         editor.apply();
 
+        editor.putBoolean("doSetLv", true).apply();
         setListView();
     }
 //////////////////////////////////////////////////////////////////////////
     public void editCategory(final View view) {
-        final View parentRow = (View) view.getParent();
-        ListView listView = (ListView) parentRow.getParent();
-        final int position = listView.getPositionForView(parentRow);
 
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        String category = "", grades = "";
-        JSONArray arrayOfCategories;
-        try {
-            arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
-            category = arrayOfCategories.getString(position);
-        }catch (JSONException e) {arrayOfCategories = new JSONArray();}
+        final int gradeType = prefs.getInt("GradeType", 0);
 
-        JSONArray arrayOfGrades = new JSONArray();
-        int gradeType = prefs.getInt("GradeType", 0);
-        try {
-            arrayOfGrades = new JSONArray(prefs.getString(category + "Grades" + gradeType, null));
-        }catch (Exception e) {}
-        for (int i = 0; i < arrayOfGrades.length(); i++){
+        if (view == findViewById(R.id.gradeEditButtonSingle)){
+
+            String grades = "";
+            JSONArray arrayOfCategories;
             try {
-                grades = grades + arrayOfGrades.getString(i) + ", ";
-            }catch (JSONException e) {}
-        }
+                arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
+            } catch (JSONException e) {
+                arrayOfCategories = new JSONArray();
+            }
 
+            for (int i = 0; i < arrayOfCategories.length(); i++){
 
-        final Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.category_adder_dialog);
-        dialog.setTitle("Edit " + category + " Category");
-
-        final EditText nameEditText = (EditText) dialog.findViewById(R.id.categoryNameEditText);
-        nameEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-        nameEditText.setText(category);
-
-        final EditText gradeEditText = (EditText) dialog.findViewById(R.id.categoryGradesEditText);
-        switch (gradeType) {
-            case 0:
-                gradeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_PHONE);
-                gradeEditText.setHint("Add Grades (1 - 5)");
-                break;
-            case 1:
-                gradeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_PHONE);
-                gradeEditText.setHint("Percentage Format: 94, 82, ...");
-                break;
-            default:
-                gradeEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
-                gradeEditText.setHint("Add Grades (A - F)");
-                break;
-        }
-        gradeEditText.setSingleLine(false);
-        gradeEditText.setText(grades);
-        final String finalCategory = category;
-
-        Button dialogOkButton = (Button) dialog.findViewById(R.id.categoryDialogOkButton);
-        dialogOkButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String newCategory = nameEditText.getText().toString();
-                String grades = gradeEditText.getText().toString();
-
-                saveCategory(newCategory, grades);
-
-                if (!finalCategory.equals(newCategory)) {
-                    deleteOldCategory(finalCategory);
+                JSONArray arrayOfGrades = new JSONArray();
+                try {
+                    arrayOfGrades = new JSONArray(prefs.getString(arrayOfCategories.get(i) + "Grades" + gradeType, null));
+                } catch (Exception e) {
+                }
+                for (int j = 0; j < arrayOfGrades.length(); j++) {
+                    try {
+                        grades = grades + arrayOfGrades.getString(j) + ", ";
+                    } catch (JSONException e) {
+                    }
                 }
 
-                dialog.dismiss();
             }
-        });
-        Button dialogCancelButton = (Button) dialog.findViewById(R.id.categoryDialogCancelButton);
-        dialogCancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
+
+            final Dialog dialog = new Dialog(this);
+            dialog.setContentView(R.layout.category_adder_dialog);
+            dialog.setTitle("Edit your grades");
+
+            final EditText nameEditText = (EditText) dialog.findViewById(R.id.categoryNameEditText);
+            nameEditText.setVisibility(View.GONE);
+
+            final EditText gradeEditText = (EditText) dialog.findViewById(R.id.categoryGradesEditText);
+            switch (gradeType) {
+                case 0:
+                    gradeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_PHONE);
+                    gradeEditText.setHint("Add Grades (1 - 5)");
+                    break;
+                case 1:
+                    gradeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_PHONE);
+                    gradeEditText.setHint("Percentage Format: 94, 82, ...");
+                    break;
+                default:
+                    gradeEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+                    gradeEditText.setHint("Add Grades (A - F)");
+                    break;
             }
-        });
-        dialog.show();
+            gradeEditText.setSingleLine(false);
+            gradeEditText.setText(grades);
+
+            final String finalGrades = grades;
+
+            Button dialogOkButton = (Button) dialog.findViewById(R.id.categoryDialogOkButton);
+            dialogOkButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String grades = gradeEditText.getText().toString();
+
+                    saveCategory(grades);
+
+                    dialog.dismiss();
+                }
+            });
+            Button dialogCancelButton = (Button) dialog.findViewById(R.id.categoryDialogCancelButton);
+            dialogCancelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+        }
+
+        else {
+
+            final View parentRow = (View) view.getParent();
+            ListView listView = (ListView) parentRow.getParent();
+            final int position = listView.getPositionForView(parentRow);
+
+            String category = "", grades = "";
+            JSONArray arrayOfCategories;
+            try {
+                arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
+                category = arrayOfCategories.getString(position);
+            } catch (JSONException e) {
+                arrayOfCategories = new JSONArray();
+            }
+
+            JSONArray arrayOfGrades = new JSONArray();
+            try {
+                arrayOfGrades = new JSONArray(prefs.getString(category + "Grades" + gradeType, null));
+            } catch (Exception e) {
+            }
+            for (int i = 0; i < arrayOfGrades.length(); i++) {
+                try {
+                    grades = grades + arrayOfGrades.getString(i) + ", ";
+                } catch (JSONException e) {
+                }
+            }
+
+
+            final Dialog dialog = new Dialog(this);
+            dialog.setContentView(R.layout.category_adder_dialog);
+            dialog.setTitle("Edit " + category + " Category");
+
+            final EditText nameEditText = (EditText) dialog.findViewById(R.id.categoryNameEditText);
+            nameEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+            nameEditText.setText(category);
+
+            final EditText gradeEditText = (EditText) dialog.findViewById(R.id.categoryGradesEditText);
+            switch (gradeType) {
+                case 0:
+                    gradeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_PHONE);
+                    gradeEditText.setHint("Add Grades (1 - 5)");
+                    break;
+                case 1:
+                    gradeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_PHONE);
+                    gradeEditText.setHint("Percentage Format: 94, 82, ...");
+                    break;
+                default:
+                    gradeEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+                    gradeEditText.setHint("Add Grades (A - F)");
+                    break;
+            }
+            gradeEditText.setSingleLine(false);
+            gradeEditText.setText(grades);
+            final String finalCategory = category;
+
+            Button dialogOkButton = (Button) dialog.findViewById(R.id.categoryDialogOkButton);
+            dialogOkButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String newCategory = nameEditText.getText().toString();
+                    String grades = gradeEditText.getText().toString();
+
+                    if (!finalCategory.equals(newCategory)) {
+                        deleteOldCategory(finalCategory, position);
+                    }
+
+                    saveCategory(newCategory, grades);
+
+                    dialog.dismiss();
+                }
+            });
+            Button dialogCancelButton = (Button) dialog.findViewById(R.id.categoryDialogCancelButton);
+            dialogCancelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+        }
     }
-    public void deleteOldCategory(String category){
+    public void deleteOldCategory(String category, int pos){
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
-        JSONArray arrayOfCategories;
+        JSONArray arrayOfCategories, arrayOfPercentages;
         try {
             arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
-        }catch (JSONException e) {arrayOfCategories = new JSONArray();}
+            arrayOfPercentages = new JSONArray(prefs.getString("ListOfPercentages", null));
+        }catch (JSONException e) {
+            arrayOfCategories = new JSONArray();
+            arrayOfPercentages = new JSONArray();
+        }
 
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> listC = new ArrayList<String>();
+        ArrayList<String> listP = new ArrayList<String>();
+
         for (int i = 0; i < arrayOfCategories.length(); i++){
             try {
-                list.add(arrayOfCategories.getString(i));
+                listC.add(arrayOfCategories.getString(i));
             }catch (JSONException e){}
         }
 
-        editor.remove(category + "Grades");
+        for (int i = 0; i < arrayOfPercentages.length(); i++){
+            try {
+                listP.add(arrayOfPercentages.getString(i));
+            }catch (JSONException e){}
+        }
 
-        list.remove(category);
+        editor.remove(listC.get(pos) + "Grades");
 
-        JSONArray arrayToSend = new JSONArray(list);
+        listC.remove(pos);
+        listP.remove(pos);
 
-        editor.putString("ListOfCategories", arrayToSend.toString()).apply();
+        JSONArray arrayToSendC = new JSONArray(listC);
+        JSONArray arrayToSendP = new JSONArray(listP);
 
+        editor.putString("ListOfCategories", arrayToSendC.toString());
+        editor.putString("ListOfPercentages", arrayToSendP.toString());
+        editor.apply();
+
+        editor.putBoolean("doSetLv", true).apply();
         setListView();
     }
 //////////////////////////////////////////////////////////////////////////
@@ -740,18 +1230,88 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
         final Spinner spinner = (Spinner) dialog.findViewById(R.id.detailSettingsSpinner);
         String[] strings = {"Numeric (1 - 5)", "Percentage", "Alphabetic (A - F)"};
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, strings);
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, strings);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-        SharedPreferences spinnerPrefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
+        final SharedPreferences spinnerPrefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = spinnerPrefs.edit();
         int pos = spinnerPrefs.getInt("GradeType", 0);
         spinner.setSelection(pos);
+
+        JSONArray arrayOfCategories;
+        try {
+            arrayOfCategories = new JSONArray(spinnerPrefs.getString("ListOfCategories", null));
+        } catch (Exception e) {
+            arrayOfCategories = new JSONArray();
+        }
+
 
         final ListView listView = (ListView) dialog.findViewById(R.id.SettingsDialogListView);
         ArrayList<Grade> arrayOfGrades = Grade.getGrades();
         CustomDialogLvAdapter arrayAdapter = new CustomDialogLvAdapter(getApplicationContext(), arrayOfGrades);
         listView.setAdapter(arrayAdapter);
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = arrayOfCategories.length() * (125);
+        listView.setLayoutParams(params);
+        listView.requestLayout();
+
+        final LinearLayout lvLayout = (LinearLayout) dialog.findViewById(R.id.settingsLvLayout);
+
+        final Switch switch1 = (Switch) dialog.findViewById(R.id.detailSettingsCheckbox);
+        final Switch switch2 = (Switch) dialog.findViewById(R.id.detailSettingsCheckbox2);
+
+        if (spinnerPrefs.getBoolean("useCategories", false)){
+            switch1.setChecked(true);
+        }else {
+            switch1.setChecked(false);
+        }
+        if (spinnerPrefs.getBoolean("useValues", false)){
+            switch2.setChecked(true);
+            lvLayout.setVisibility(View.VISIBLE);
+        }else {
+            switch2.setChecked(false);
+            lvLayout.setVisibility(View.GONE);
+        }
+
+        switch1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (switch1.isChecked()){
+                    editor.putBoolean("useCategories", true).apply();
+                }else {
+                    editor.putBoolean("useCategories", false).apply();
+
+                    if (switch2.isChecked()){
+                        switch2.setChecked(false);
+                        editor.putBoolean("useValues", false).apply();
+                        lvLayout.setVisibility(View.GONE);
+                    }
+
+                }
+            }
+        });
+        switch2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (switch2.isChecked()){
+                    editor.putBoolean("useValues", true).apply();
+                    lvLayout.setVisibility(View.VISIBLE);
+
+                    if (!switch1.isChecked()){
+                        switch1.setChecked(true);
+                        editor.putBoolean("useCategories", true).apply();
+                    }
+
+                }else {
+                    editor.putBoolean("useValues", false).apply();
+                    lvLayout.setVisibility(View.GONE);
+                }
+
+                balancePercentages(dialog);
+            }
+        });
 
         Button dialogOkButton = (Button) dialog.findViewById(R.id.DialogOkButton);
         dialogOkButton.setOnClickListener(new View.OnClickListener() {
@@ -763,32 +1323,27 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 SharedPreferences.Editor spinnerPrefsEditor = spinnerPrefs.edit();
                 spinnerPrefsEditor.putInt("GradeType", spinnerPos);
 
-                JSONArray arrayOfPercentages, arrayOfCategories;
+                JSONArray arrayOfPercentages;
                 try {
                     arrayOfPercentages = new JSONArray(spinnerPrefs.getString("ListOfPercentages", null));
-                    arrayOfCategories = new JSONArray(spinnerPrefs.getString("ListOfCategories", null));
-                }catch (Exception e) {
+                } catch (Exception e) {
                     arrayOfPercentages = new JSONArray();
-                    arrayOfCategories = new JSONArray();
                 }
 
-                int count = 0;
                 for (int i = 0; i < listView.getCount(); i++) {
-                    View view = listView.getChildAt(i);
+                    View view = getViewByPos(i, listView);
                     EditText editText = (EditText) view.findViewById(R.id.settingsLVEditText);
                     try {
                         arrayOfPercentages.put(i, editText.getText().toString());
-
-                        try {
-                            count += Integer.parseInt(editText.getText().toString());
-                        }catch (NumberFormatException e){}
-
-                    } catch (JSONException e) {}
+                    } catch (JSONException e) {
+                    }
                 }
 
                 spinnerPrefsEditor.putString("ListOfPercentages", arrayOfPercentages.toString());
 
                 spinnerPrefsEditor.apply();
+
+                editor.putBoolean("doSetLv", true).apply();
                 setListView();
                 dialog.dismiss();
 
@@ -799,6 +1354,9 @@ public class SubjectDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 dialog.dismiss();
+
+                editor.putBoolean("doSetLv", true).apply();
+                setListView();
             }
         });
 
@@ -812,6 +1370,117 @@ public class SubjectDetailActivity extends AppCompatActivity {
         });
 
         dialog.show();
+    }
+
+    public View getViewByPos(int position, ListView listView){
+
+        final int firstPos = listView.getFirstVisiblePosition();
+
+        final int lastPos = firstPos + listView.getChildCount() - 1;
+
+        if (position < firstPos || position > lastPos){
+            return listView.getAdapter().getView(position, listView.getChildAt(position), listView);
+        }else {
+            final int childIndex = position - firstPos;
+
+            return listView.getChildAt(childIndex);
+        }
+    }
+
+    public void balancePercentages(Dialog dialog){
+
+        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        JSONArray arrayOfPercentages;
+        try {
+            arrayOfPercentages = new JSONArray(prefs.getString("ListOfPercentages", null));
+        } catch (Exception e) {
+            arrayOfPercentages = new JSONArray();
+        }
+
+        JSONArray array = new JSONArray();
+        int over = 0, abc = 0;
+        for (int i = 0; i < arrayOfPercentages.length(); i++){
+
+            int toBePut = (int) Math.round(100 / arrayOfPercentages.length());
+
+            array.put(String.valueOf(toBePut));
+            abc += toBePut;
+        }
+        over = 100 - abc;
+
+        if (over != 0){
+
+            int i = 0;
+            while (over > 0){
+
+                try {
+                    array.put(i, String.valueOf(Integer.parseInt(array.getString(i)) + 1));
+                } catch (JSONException e) {
+                    Log.e("debug", e.toString());
+                }
+
+                over--;
+
+                i++;
+                if (i == array.length()) {
+                    i = 0;
+                }
+            }
+        }
+
+        editor.putString("ListOfPercentages", array.toString()).apply();
+
+        final ListView listView = (ListView) dialog.findViewById(R.id.SettingsDialogListView);
+        ArrayList<Grade> arrayOfGrades = Grade.getGrades();
+        CustomDialogLvAdapter arrayAdapter = new CustomDialogLvAdapter(getApplicationContext(), arrayOfGrades);
+        listView.setAdapter(arrayAdapter);
+    }
+    public void balancePercentages(){
+
+        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        JSONArray arrayOfPercentages;
+        try {
+            arrayOfPercentages = new JSONArray(prefs.getString("ListOfPercentages", null));
+        } catch (Exception e) {
+            arrayOfPercentages = new JSONArray();
+        }
+
+        JSONArray array = new JSONArray();
+        int over = 0, abc = 0;
+        for (int i = 0; i < arrayOfPercentages.length(); i++){
+
+            int toBePut = (int) Math.round(100 / arrayOfPercentages.length());
+
+            array.put(String.valueOf(toBePut));
+            abc += toBePut;
+        }
+        over = 100 - abc;
+
+        if (over != 0){
+
+            int i = 0;
+            while (over > 0){
+
+                try {
+                    array.put(i, String.valueOf(Integer.parseInt(array.getString(i)) + 1));
+                } catch (JSONException e) {
+                    Log.e("debug", e.toString());
+                }
+
+                over--;
+
+                i++;
+                if (i == array.length()) {
+                    i = 0;
+                }
+            }
+        }
+
+        editor.putString("ListOfPercentages", array.toString()).apply();
     }
 
     public void deleteSubject(){
@@ -849,98 +1518,528 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.subjectDetailToolbar);
 
-        View separator = (View) findViewById(R.id.separatorDetail);
-        View separator1 = (View) findViewById(R.id.separatorDetail1);
-
         switch (theme) {
-            case 1:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.orange));
-
-                separator.setBackgroundColor(getResources().getColor(R.color.orange));
-                separator1.setBackgroundColor(getResources().getColor(R.color.orange));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.orange700));
-
-                break;
-            case 2:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.green));
-
-                separator.setBackgroundColor(getResources().getColor(R.color.green));
-                separator1.setBackgroundColor(getResources().getColor(R.color.green));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.green800));
-
-                break;
-            case 3:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.blue));
-
-                separator.setBackgroundColor(getResources().getColor(R.color.blue));
-                separator1.setBackgroundColor(getResources().getColor(R.color.blue));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.blue800));
-
-                break;
-            case 4:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.grey));
-
-                separator.setBackgroundColor(getResources().getColor(R.color.grey));
-                separator1.setBackgroundColor(getResources().getColor(R.color.grey));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.grey700));
-
-                break;
-            case 5:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.teal));
-
-                separator.setBackgroundColor(getResources().getColor(R.color.teal));
-                separator1.setBackgroundColor(getResources().getColor(R.color.teal));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.teal800));
-
-                break;
-            case 6:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.brown));
-
-                separator.setBackgroundColor(getResources().getColor(R.color.brown));
-                separator1.setBackgroundColor(getResources().getColor(R.color.brown));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.brown700));
-
-                break;
             default:
 
-                toolbar.setBackgroundColor(getResources().getColor(R.color.red));
-
-                separator.setBackgroundColor(getResources().getColor(R.color.red));
-                separator1.setBackgroundColor(getResources().getColor(R.color.red));
+                toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
 
                 if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.red800));
         }
     }
-
+//////////////////////////////////////////////////////////////////////////
     public void titleClick(View view) {
-        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.secondLayout);
-        Button rollDownButton = (Button) findViewById(R.id.rollDownButton);
+
+        RelativeLayout relativeLayout;
+        Button rollDownButton;
+
+        if (view == findViewById(R.id.rollDownButton) || view == findViewById(R.id.firstLayout)) {
+            relativeLayout = (RelativeLayout) findViewById(R.id.secondLayout);
+            rollDownButton = (Button) findViewById(R.id.rollDownButton);
+        }
+        else {
+            relativeLayout = (RelativeLayout) findViewById(R.id.fourthLayout);
+            rollDownButton = (Button) findViewById(R.id.rollDownButton2);
+        }
 
         int visibility = relativeLayout.getVisibility();
-
         if (visibility == 8) {
             relativeLayout.setVisibility(View.VISIBLE);
             rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_black_24dp);
-        }
-        else {
+        } else {
             relativeLayout.setVisibility(View.GONE);
             rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_down_black_24dp);
         }
 
+        setListView();
+    }
+
+    public void testsToWriteBtn(View view) {
+        TextView textView = (TextView) findViewById(R.id.testsToWriteEditText);
+
+        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject"), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        if (view == findViewById(R.id.ttwAddBtn) || view == findViewById(R.id.ttwAddLayout)){
+            if (Integer.parseInt(textView.getText().toString()) < 3) {
+                int ttw = Integer.parseInt(textView.getText().toString()) + 1;
+                textView.setText(String.valueOf(ttw));
+
+                editor.putInt("testsToWrite", Integer.parseInt(textView.getText().toString())).apply();
+
+                if (findViewById(R.id.fourthLayout).getVisibility() == View.VISIBLE) {
+
+                    setPredictionListView();
+                }else {
+                    editor.putBoolean("doSetLv", true).apply();
+                }
+            }
+        }
+        else {
+            if (Integer.parseInt(textView.getText().toString()) > 1) {
+                int ttw = Integer.parseInt(textView.getText().toString()) - 1;
+                textView.setText(String.valueOf(ttw));
+
+                editor.putInt("testsToWrite", Integer.parseInt(textView.getText().toString())).apply();
+
+                if (findViewById(R.id.fourthLayout).getVisibility() == View.VISIBLE) {
+
+                    setPredictionListView();
+                }else {
+                    editor.putBoolean("doSetLv", true).apply();
+                }
+            }
+        }
+    }
+
+    public void setPredictionListView(){
+        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject"), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        JSONArray arrayOfCategories = new JSONArray();
+        try {
+            arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
+        } catch (Exception e) {
+            Log.e("debug0", e.toString());
+        }
+        int gradeType = prefs.getInt("GradeType", 0);
+
+        ArrayList<Double> avgsAfter = new ArrayList<Double>();
+
+        if (!prefs.getBoolean("useCategories", false)){
+
+            JSONArray arrayOfGrades = new JSONArray();
+            try {
+                arrayOfGrades = new JSONArray(prefs.getString(arrayOfCategories.getString(0) + "Grades" + gradeType, ""));
+            } catch (Exception e) {
+                Log.e("debug1", e.toString());
+            }
+
+            TextView textView = (TextView) findViewById(R.id.testsToWriteEditText);
+
+            int pocetZnamok = 1;
+            switch (gradeType){
+                case 0:
+                    pocetZnamok = 5;
+                    break;
+                case 1:
+                    pocetZnamok = 101;
+                    break;
+                case 2:
+                    pocetZnamok = 13;
+                    break;
+            }
+
+            String cat1;
+            try {
+                cat1 = arrayOfCategories.getString(0);
+            } catch (JSONException e) {
+                cat1 = "Grades";
+                Log.e("debug2", e.toString());
+            }
+
+            switch (gradeType) {
+                case 0:
+
+                    for (int c = 1; c <= 5; c++) {
+
+                        if (Integer.parseInt(textView.getText().toString()) >= 3){
+                            arrayOfGrades.put(String.valueOf(c));
+                        }
+
+                        ArrayList<String> arrayList = new ArrayList<>();
+
+                        for (int d = c; d <= 5; d++) {
+
+                            if (Integer.parseInt(textView.getText().toString()) >= 2){
+                                arrayOfGrades.put(String.valueOf(d));
+                            }
+
+                            for (int e = d; e <= 5; e++) {
+
+                                arrayOfGrades.put(String.valueOf(e));
+
+                                editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+
+                                avgsAfter.add(countAverage());
+
+                                arrayList = new ArrayList<>();
+                                for (int k = 0; k < arrayOfGrades.length(); k++){
+                                    try {
+                                        arrayList.add(arrayOfGrades.getString(k));
+                                    } catch (JSONException ex) {
+                                        Log.e("debug3", ex.toString());
+                                    }
+                                }
+                                arrayList.remove(arrayList.size() - 1);
+
+                                arrayOfGrades = new JSONArray(arrayList);
+
+                                editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+
+                            }
+                            if (Integer.parseInt(textView.getText().toString()) == 1){
+                                break;
+                            }
+
+                            arrayList.remove(arrayList.size() - 1);
+                            arrayOfGrades = new JSONArray(arrayList);
+                            editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+
+                        }
+                        if (Integer.parseInt(textView.getText().toString()) <= 2){
+                            break;
+                        }
+
+                        arrayList.remove(arrayList.size() - 1);
+                        arrayOfGrades = new JSONArray(arrayList);
+                        editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+
+                    }
+
+                    break;
+
+                case 1:
+
+                    for (int c = 0; c <= 100; c++) {
+
+                        ArrayList<String> arrayOfGrades2 = new ArrayList<String>();
+
+                        if (Integer.parseInt(textView.getText().toString()) >= 3){
+                            arrayOfGrades.put(String.valueOf(c));
+                        }
+
+                        for (int d = c; d <= 100; d++) {
+
+                            if (Integer.parseInt(textView.getText().toString()) >= 2){
+                                arrayOfGrades.put(String.valueOf(d));
+                            }
+
+                            for (int e = d; e <= 100; e++) {
+
+                                arrayOfGrades.put(String.valueOf(e));
+
+                                editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+
+                                avgsAfter.add(countAverage());
+
+                                arrayOfGrades2 = new ArrayList<String>();
+
+                                for (int k = 0; k < arrayOfGrades.length(); k++) {
+                                    try {
+                                        arrayOfGrades2.add(arrayOfGrades.getString(k));
+                                    } catch (JSONException ex) {
+                                        Log.e("debug3", ex.toString());
+                                    }
+                                }
+                                arrayOfGrades2.remove(arrayOfGrades.length() - 1);
+
+                                arrayOfGrades = new JSONArray(arrayOfGrades2);
+
+                                editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+
+                            }
+                            if (Integer.parseInt(textView.getText().toString()) == 1){
+                                break;
+                            }
+
+                            arrayOfGrades2.remove(arrayOfGrades2.size() - 1);
+                            arrayOfGrades = new JSONArray(arrayOfGrades2);
+                            editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+
+                        }
+                        if (Integer.parseInt(textView.getText().toString()) <= 2){
+                            break;
+                        }
+
+                        arrayOfGrades2.remove(arrayOfGrades2.size() - 1);
+                        arrayOfGrades = new JSONArray(arrayOfGrades2);
+                        editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+
+                    }
+
+                    break;
+
+                case 2:
+
+                    for (int c = 433; c >= 0;) {
+
+                        ArrayList<String> arrayOfGrades2 = new ArrayList<String>();
+
+                        if (Integer.parseInt(textView.getText().toString()) >= 3){
+                            double j = c;
+                            j /= 100;
+                            arrayOfGrades.put(numberToLetter(j));
+                        }
+
+                        ArrayList<String> arrayList = new ArrayList<>();
+
+                        for (int d = c; d >= 0;) {
+
+                            if (Integer.parseInt(textView.getText().toString()) >= 2){
+                                double j = d;
+                                j /= 100;
+                                arrayOfGrades.put(numberToLetter(j));
+                            }
+
+                            for (int e = d; e >= 0;) {
+
+                                double j = e;
+                                j /= 100;
+                                arrayOfGrades.put(numberToLetter(j));
+
+                                editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+
+                                avgsAfter.add(countAverage());
+
+                                arrayOfGrades2 = new ArrayList<String>();
+
+                                for (int k = 0; k < arrayOfGrades.length(); k++) {
+                                    try {
+                                        arrayOfGrades2.add(arrayOfGrades.getString(k));
+                                    } catch (JSONException ex) {
+                                        Log.e("debug3", ex.toString());
+                                    }
+                                }
+                                arrayOfGrades2.remove(arrayOfGrades.length() - 1);
+
+                                arrayOfGrades = new JSONArray(arrayOfGrades2);
+
+                                editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+
+                                if (e == 67) {
+                                    e = 0;
+                                } else if (String.valueOf(e).endsWith("67")) {
+                                    e -= 34;
+                                } else {
+                                    e -= 33;
+                                }
+                            }
+                            if (Integer.parseInt(textView.getText().toString()) == 1){
+                                break;
+                            }
+
+                            arrayOfGrades2.remove(arrayOfGrades2.size() - 1);
+                            arrayOfGrades = new JSONArray(arrayOfGrades2);
+                            editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+
+                            if (d == 67) {
+                                d = 0;
+                            } else if (String.valueOf(d).endsWith("67")) {
+                                d -= 34;
+                            } else {
+                                d -= 33;
+                            }
+                        }
+                        if (Integer.parseInt(textView.getText().toString()) <= 2){
+                            break;
+                        }
+
+                        arrayOfGrades2.remove(arrayOfGrades2.size() - 1);
+                        arrayOfGrades = new JSONArray(arrayOfGrades2);
+                        editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+
+                        if (c == 67) {
+                            c = 0;
+                        } else if (String.valueOf(c).endsWith("67")) {
+                            c -= 34;
+                        } else {
+                            c -= 33;
+                        }
+                    }
+
+                    break;
+            }
+
+        }
+        else {
+
+            for (int i = 0; i < arrayOfCategories.length(); i++) {
+
+                JSONArray arrayOfGrades = new JSONArray();
+                try {
+                    arrayOfGrades = new JSONArray(prefs.getString(arrayOfCategories.getString(i) + "Grades" + gradeType, ""));
+                } catch (Exception e) {
+                    Log.e("debug1", e.toString());
+                }
+
+                switch (gradeType) {
+                    case 0:
+
+                        for (int j = 1; j <= 5; j++) {
+                            arrayOfGrades.put(String.valueOf(j));
+
+                            try {
+                                editor.putString(arrayOfCategories.getString(i) + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+                            } catch (JSONException e) {
+                                Log.e("debug2", e.toString());
+                            }
+
+                            avgsAfter.add(countAverage());
+
+                            ArrayList<String> arrayOfGrades2 = new ArrayList<String>();
+
+                            for (int k = 0; k < arrayOfGrades.length(); k++) {
+                                try {
+                                    arrayOfGrades2.add(arrayOfGrades.getString(k));
+                                } catch (JSONException e) {
+                                    Log.e("debug3", e.toString());
+                                }
+                            }
+                            arrayOfGrades2.remove(arrayOfGrades.length() - 1);
+
+                            arrayOfGrades = new JSONArray(arrayOfGrades2);
+
+                            try {
+                                editor.putString(arrayOfCategories.getString(i) + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+                            } catch (JSONException e) {
+                                Log.e("debug4", e.toString());
+                            }
+                        }
+
+                        break;
+
+                    case 1:
+
+                        for (int j = 0; j <= 100; j++) {
+                            arrayOfGrades.put(String.valueOf(j));
+
+                            try {
+                                editor.putString(arrayOfCategories.getString(i) + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+                            } catch (JSONException e) {
+                                Log.e("debug2", e.toString());
+                            }
+
+                            avgsAfter.add(countAverage());
+
+                            ArrayList<String> arrayOfGrades2 = new ArrayList<String>();
+
+                            for (int k = 0; k < arrayOfGrades.length(); k++) {
+                                try {
+                                    arrayOfGrades2.add(arrayOfGrades.getString(k));
+                                } catch (JSONException e) {
+                                    Log.e("debug3", e.toString());
+                                }
+                            }
+                            arrayOfGrades2.remove(arrayOfGrades.length() - 1);
+
+                            arrayOfGrades = new JSONArray(arrayOfGrades2);
+
+                            try {
+                                editor.putString(arrayOfCategories.getString(i) + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+                            } catch (JSONException e) {
+                                Log.e("debug4", e.toString());
+                            }
+                        }
+
+                        break;
+
+                    case 2:
+
+                        for (int j = 433; j >= 0; ) {
+
+                            double d = j;
+                            d /= 100;
+                            arrayOfGrades.put(numberToLetter(d));
+
+                            try {
+                                editor.putString(arrayOfCategories.getString(i) + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+                            } catch (JSONException e) {
+                                Log.e("debug2", e.toString());
+                            }
+
+                            avgsAfter.add(countAverage());
+
+                            ArrayList<String> arrayOfGrades2 = new ArrayList<String>();
+
+                            for (int k = 0; k < arrayOfGrades.length(); k++) {
+                                try {
+                                    arrayOfGrades2.add(arrayOfGrades.getString(k));
+                                } catch (JSONException e) {
+                                    Log.e("debug3", e.toString());
+                                }
+                            }
+                            arrayOfGrades2.remove(arrayOfGrades.length() - 1);
+
+                            arrayOfGrades = new JSONArray(arrayOfGrades2);
+
+                            try {
+                                editor.putString(arrayOfCategories.getString(i) + "Grades" + gradeType, arrayOfGrades.toString()).apply();
+                            } catch (JSONException e) {
+                                Log.e("debug4", e.toString());
+                            }
+
+                            if (j == 67) {
+                                j = 0;
+                            } else if (String.valueOf(j).endsWith("67")) {
+                                j -= 34;
+                            } else {
+                                j -= 33;
+                            }
+                        }
+
+                        break;
+                }
+            }
+        }
+
+        int currentGrade = (int) Math.round(Double.parseDouble(prefs.getString("AvgGrade", "1")));
+
+        Log.d("debugA", String.valueOf(avgsAfter.size()));
+        Log.d("debugA", String.valueOf(avgsAfter));
+
+        String[] strings = new String[]{};
+        switch (gradeType){
+            case 0:
+                strings = new String[]{"1", "2", "3", "4", "5"};
+                break;
+            case 1:
+                strings = new String[]{"90+", "75+", "50+", "30+", "0+"};
+                break;
+            case 2:
+                strings = new String[]{"4", "3", "2", "1", "0"};
+                break;
+        }
 
 
+        editor.putInt("currentGrade", currentGrade);
+        editor.putString("avgsAfter", new JSONArray(avgsAfter).toString());
+        editor.apply();
 
+        try {
+            strings[currentGrade - 1] = String.valueOf(currentGrade) + " - You are here";
+        }catch (IndexOutOfBoundsException e){
+            Log.e("debug", e.toString());
+        }
+
+        ListView listView = (ListView) findViewById(R.id.predictionListView);
+        PredictionLvAdapter adapter = new PredictionLvAdapter(this, strings);
+        listView.setAdapter(adapter);
+
+        setTotalHeightOfListView(listView);
+    }
+
+
+    public void setTotalHeightOfListView(ListView listView) {
+
+        ListAdapter mAdapter = listView.getAdapter();
+
+        int totalHeight = 0;
+
+        for (int i = 0; i < mAdapter.getCount(); i++) {
+            View mView = mAdapter.getView(i, null, listView);
+
+            mView.measure(
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+
+                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+
+            totalHeight += mView.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight
+                + (listView.getDividerHeight() * (mAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+        listView.requestLayout();
     }
 }

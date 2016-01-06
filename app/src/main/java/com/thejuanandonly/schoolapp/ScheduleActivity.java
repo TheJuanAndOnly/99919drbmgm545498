@@ -31,7 +31,7 @@ public class ScheduleActivity extends Activity {
         imageView = (ImageView) findViewById(R.id.schedule_image_view);
 
         if (picturePath != null) {
-            Toast.makeText(this, "Changing the image is provided by tapping it", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Tap the screen to change this image", Toast.LENGTH_LONG).show();
             imageView.setImageBitmap(BitmapScaled(picturePath, 800, 800));
             imageView.setOnClickListener(new View.OnClickListener() {
 

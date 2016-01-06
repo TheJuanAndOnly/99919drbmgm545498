@@ -2,7 +2,8 @@
 
     <style name="DefaultTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/black</item>
-        <item name="colorPrimaryDark">@android:color/black</item>
+        <item name="colorPrimaryDark">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="CustomDialog">
@@ -22,6 +23,11 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="NavigationDrawerItems" parent="@android:style/TextAppearance">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">#ffffff</item>
     </style>
 
 </resources>

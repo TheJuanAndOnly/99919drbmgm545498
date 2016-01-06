@@ -39,7 +39,7 @@ public class Grade {
                 category = arrayOfCategories.getString(i);
             }catch (JSONException e){category = null;}
 
-            JSONArray arrayOfGrades = new JSONArray();
+            JSONArray arrayOfGrades;
             try {
                 arrayOfGrades = new JSONArray(preferences.getString(category + "Grades" + gradeType, null));
             }catch (Exception e) {arrayOfGrades = new JSONArray();}

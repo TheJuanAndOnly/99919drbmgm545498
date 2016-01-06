@@ -46,15 +46,19 @@ public class CustomGradeAdapter extends ArrayAdapter<Grade> {
             deleteBtn.setVisibility(View.GONE);
         }
 
-        categoryTV.setText(grade.category);
 
-        ArrayList<String> list = grade.grades;
-        String grades = "";
-        for (int i = 0; i < list.size(); i++){
-            if (i == 0) grades = grades + list.get(i);
-            else grades = grades + ", " + list.get(i);
-        }
-        gradesTV.setText(grades);
+            categoryTV.setText(grade.category);
+
+            ArrayList<String> list = grade.grades;
+            String grades = "";
+            for (int i = 0; i < list.size(); i++) {
+                if (i == 0) {
+                    grades = grades + list.get(i);
+                } else {
+                    grades = grades + ", " + list.get(i);
+                }
+            }
+            gradesTV.setText(grades);
 
         return convertView;
     }

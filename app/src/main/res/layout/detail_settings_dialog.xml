@@ -1,100 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Grade Type:"
-        android:padding="4dp"
-        android:layout_marginTop="8dp"
-        android:id="@+id/gradeTypeTV"
-        style="@style/TextAppearance.AppCompat.Subhead"
-        />
-
-    <Spinner
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="4dp"
-        android:padding="4dp"
-        android:layout_below="@id/gradeTypeTV"
-        android:id="@+id/detailSettingsSpinner"
-        style="@style/Widget.AppCompat.Spinner.Underlined">
-    </Spinner>
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Percentage Marker:"
-        android:layout_below="@id/detailSettingsSpinner"
-        android:padding="4dp"
-        android:id="@+id/percMarkerTV"
-        style="@style/TextAppearance.AppCompat.Subhead"
-        />
-
-        <ListView
-            android:id="@+id/SettingsDialogListView"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_below="@id/percMarkerTV"
-            android:divider="@android:color/darker_gray"
-            android:dividerHeight="0.5dp">
-        </ListView>
+            android:padding="8dp"
+            android:orientation="vertical">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:minWidth="64dp"
-        android:layout_height="48dp"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Grade Type:"
+                android:textStyle="bold"
+                android:padding="4dp"
+                android:layout_marginLeft="4dp"
+                android:layout_marginTop="8dp"
+                android:id="@+id/gradeTypeTV"
+                style="@style/TextAppearance.AppCompat.Subhead"
+                />
 
-        android:padding="8dp"
-        android:layout_marginTop="8dp"
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:padding="4dp"
+                android:id="@+id/detailSettingsSpinner"
+                style="@style/Widget.AppCompat.Spinner.Underlined">
+            </Spinner>
 
-        android:gravity="center"
-        android:layout_below="@id/SettingsDialogListView"
-        android:layout_alignParentRight="true"
+            <Switch
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="2dp"
+                style="@style/Widget.AppCompat.CompoundButton.Switch"
+                android:text="Use Categories"
+                android:id="@+id/detailSettingsCheckbox"/>
 
-        android:text="OK"
-        android:id="@+id/DialogOkButton"
-        style="?android:attr/buttonBarButtonStyle"
-        />
+            <Switch
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="8dp"
+                style="@style/Widget.AppCompat.CompoundButton.Switch"
+                android:text="Use Category Values"
+                android:id="@+id/detailSettingsCheckbox2"/>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:minWidth="64dp"
-        android:layout_height="48dp"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/settingsLvLayout"
+                android:visibility="visible">
 
-        android:padding="8dp"
-        android:layout_marginTop="8dp"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Category Values:"
+                    android:paddingLeft="8dp"
+                    android:textStyle="bold"
+                    android:paddingTop="8dp"
+                    android:id="@+id/percMarkerTV"
+                    style="@style/TextAppearance.AppCompat.Subhead"
+                    />
 
-        android:gravity="center"
-        android:layout_below="@id/SettingsDialogListView"
-        android:layout_toLeftOf="@id/DialogOkButton"
+                <ListView
+                    android:id="@+id/SettingsDialogListView"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_margin="4dp"
+                    android:layout_below="@id/percMarkerTV"
+                    android:divider="@android:color/darker_gray"
+                    android:dividerHeight="0.5dp">
+                </ListView>
 
-        android:text="Cancel"
-        android:id="@+id/DialogCancelButton"
-        style="?android:attr/buttonBarButtonStyle"
-        />
+            </LinearLayout>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:minWidth="64dp"
-        android:layout_height="48dp"
 
-        android:padding="8dp"
-        android:layout_marginTop="8dp"
 
-        android:gravity="center"
-        android:layout_below="@id/SettingsDialogListView"
-        android:layout_alignParentLeft="true"
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
-        android:text="Delete Subject"
-        android:textColor="@color/red800"
-        android:id="@+id/DialogDeleteButton"
-        style="?android:attr/buttonBarButtonStyle"
-        />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:minWidth="64dp"
+                    android:layout_height="48dp"
+
+                    android:padding="8dp"
+                    android:layout_marginTop="8dp"
+
+                    android:gravity="center"
+                    android:layout_alignParentRight="true"
+
+                    android:text="OK"
+                    android:id="@+id/DialogOkButton"
+                    style="?android:attr/buttonBarButtonStyle"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:minWidth="64dp"
+                    android:layout_height="48dp"
+
+                    android:padding="8dp"
+                    android:layout_marginTop="8dp"
+
+                    android:gravity="center"
+                    android:layout_toLeftOf="@id/DialogOkButton"
+
+                    android:text="Cancel"
+                    android:id="@+id/DialogCancelButton"
+                    style="?android:attr/buttonBarButtonStyle"
+                    />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:minWidth="64dp"
+                    android:layout_height="48dp"
+
+                    android:padding="8dp"
+                    android:layout_marginTop="8dp"
+
+                    android:gravity="start|center_vertical"
+                    android:layout_alignParentLeft="true"
+                    android:layout_toLeftOf="@id/DialogCancelButton"
+
+                    android:text="Delete Subject"
+                    android:textColor="@color/red800"
+                    android:id="@+id/DialogDeleteButton"
+                    style="?android:attr/buttonBarButtonStyle"
+                    />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </RelativeLayout>
