@@ -31,6 +31,8 @@ public class OverviewFragment extends Fragment {
     android.support.v7.widget.Toolbar toolbar;
     static View v;
     public static Context overviewFragmentContext;
+    String username;
+    String imageUri;
 
     @Nullable
     @Override

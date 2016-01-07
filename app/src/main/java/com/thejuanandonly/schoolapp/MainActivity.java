@@ -8,8 +8,15 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -17,6 +24,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,10 +32,17 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.thejuanandonly.schoolapp.ImageToCircle;
 
 import org.json.JSONArray;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,12 +50,18 @@ public class MainActivity extends AppCompatActivity {
     NavigationView mNavigationView;
     FragmentManager mFragmentManager;
     FragmentTransaction mFragmentTransaction;
+    LinearLayout drawerFull;
+    public ImageView userPhotoimgview;
+    public TextView userNicktxtview;
+
     public int actualFragment = 1;
     public static int api;
     public static int theme;
     public boolean willSend = false;
     public static boolean taskAdded = false;
     android.support.v7.widget.Toolbar toolbar;
+
+    public String userNickname;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,12 +71,26 @@ public class MainActivity extends AppCompatActivity {
         api = android.os.Build.VERSION.SDK_INT;
         theme();
 
+        drawerFull = (LinearLayout) findViewById(R.id.drawerFull);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        userPhotoimgview = (ImageView) findViewById(R.id.usersPhoto);
+        userNicktxtview = (TextView) findViewById(R.id.usersNickname);
+
+        updateUserDetails();
+
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
 
         mFragmentManager = getSupportFragmentManager();
         mFragmentTransaction = mFragmentManager.beginTransaction();
         mFragmentTransaction.replace(R.id.containerView, new OverviewFragment()).commit();
+
+        boolean fromNotification = getIntent().getBooleanExtra("fromNotification", false);
+        if (fromNotification == true) {
+            FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
+            actualFragment = 2;
+            invalidateOptionsMenu();
+        }
 
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -100,6 +135,15 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(drawerFull)) {
+            mDrawerLayout.closeDrawer(drawerFull);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -196,12 +240,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void deleteAll(View view) {
         deleteDialogBox();
-        SharedPreferences preferences = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
-        preferences.edit().clear().commit();
-
-        SharedPreferences prefs = getSharedPreferences("ListOfDoneTasks", Context.MODE_PRIVATE);
-        prefs.edit().clear().commit();
-
     }
 
     public void deleteDialogBox() {
@@ -258,7 +296,25 @@ public class MainActivity extends AppCompatActivity {
                         } catch (Exception e) {
                         }
 
+                        SharedPreferences tasksPrefs = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+                        tasksPrefs.edit().clear().commit();
+
+                        SharedPreferences doneTasksPrefs = getSharedPreferences("ListOfDoneTasks", Context.MODE_PRIVATE);
+                        doneTasksPrefs.edit().clear().commit();
+
+                        SharedPreferences gridPrefs = getSharedPreferences("GridView", Context.MODE_PRIVATE);
+                        gridPrefs.edit().clear().commit();
+
+                        SharedPreferences subjectGroupPrefs = getSharedPreferences("SubjectGroupName", Context.MODE_PRIVATE);
+                        subjectGroupPrefs.edit().clear().commit();
+
+                        SharedPreferences userPrefs = getSharedPreferences("User", MODE_PRIVATE);
+                        userPrefs.edit().clear().commit();
+
+
                         Toast.makeText(MainActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
+
+                        updateUserDetails();
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -401,5 +457,34 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager mFragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
+    }
+
+    public void updateUserDetails() {
+        SharedPreferences sharedPreferences = getSharedPreferences("User", MODE_PRIVATE);
+        userNickname = sharedPreferences.getString("nickname", null);
+        String imageUriString = sharedPreferences.getString("avatar", null);
+
+        if (userNickname == null) {
+            startActivity(new Intent(this, LoginActivity.class));
+            return;
+        }
+
+        if (imageUriString != null) {
+            Bitmap bitmap = null;
+            int w = 0, h = 0;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(imageUriString));
+                w = bitmap.getWidth();
+                h = bitmap.getHeight();
+            } catch (IOException e) {
+                Toast.makeText(this, "exception", Toast.LENGTH_SHORT).show();
+            }
+            int radius = w > h ? h : w;
+            Bitmap roundBitmap = ImageToCircle.getCroppedBitmap(bitmap, radius);
+
+            userPhotoimgview.setImageBitmap(roundBitmap);
+        }
+
+        userNicktxtview.setText(userNickname);
     }
 }

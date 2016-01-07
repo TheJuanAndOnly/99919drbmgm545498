@@ -294,8 +294,8 @@ public class TaskAdder extends ActionBarActivity {
             editor.putInt("NumberOfTask", numberOfTask).apply();
             editor.commit();
 
-            finish();
             MainActivity.taskAdded = true;
+            finish();
 
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
             PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), 0);
@@ -363,17 +363,13 @@ public class TaskAdder extends ActionBarActivity {
             editor.putString("TaskTime", arrayTime.toString()).apply();
             editor.commit();
 
-            finish();
             MainActivity.taskAdded = true;
+            finish();
 
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
             PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), 0);
             alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
         }
-    }
-
-    public void snackBar(String string) {
-
     }
 
 }
