@@ -4,13 +4,20 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+<<<<<<< HEAD
     android:background="@color/darkbluebackground">
+=======
+    android:background="#dadada">
+>>>>>>> origin/master
 
     <ListView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/SubjectListView"
-        android:layout_margin="7dp"
+        android:layout_marginLeft="7dp"
+        android:layout_marginRight="7dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
         android:textColor="@color/black"
         android:divider="@android:color/transparent"
         android:textSize="30sp">

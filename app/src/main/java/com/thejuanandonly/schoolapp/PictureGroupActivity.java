@@ -1,37 +1,45 @@
 package com.thejuanandonly.schoolapp;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Selection;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.amirarcane.recentimages.RecentImages;
 import com.amirarcane.recentimages.thumbnailOptions.ImageAdapter;
 
-import java.lang.reflect.Array;
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.StringTokenizer;
 
 /**
  * Created by Daniel on 11/7/2015.
@@ -40,42 +48,160 @@ public class PictureGroupActivity extends AppCompatActivity {
 
     public static Context initialContext;
     public static String currentPictureGroup;
-    private Menu menu;
-    android.support.v7.widget.Toolbar toolbar;
-    private static int RESULT_LOAD_IMAGE = 1;
     public static Uri selectedImage;
     public static ArrayList<Bitmap> ALofSelectedImgs = new ArrayList<>();
+    public static ArrayList<Bitmap> ALofRSelectedImgs = new ArrayList<>();
+    ArrayList<String> arrayListPD = new ArrayList<>();
+    private static int RESULT_LOAD_IMAGE = 1;
+    private Menu menu;
+    public JSONArray arrayOfImgs = new JSONArray();
+    public int numberOfImgs;
+    android.support.v7.widget.Toolbar toolbar;
     String picture;
+    String[] thePicture;
+    ImageGridAdapter imageGridapter = new ImageGridAdapter(this);
+    GridView gridView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.picture_group_activity_layout);
-
-
-        initialContext = getApplicationContext();
-        currentPictureGroup = getIntent().getExtras().getString("subjectGroupName", null);
+        currentPictureGroup = getIntent().getExtras().getString("subjectDetailNotes", null);
 
         theme();
-        String subject_notes = getIntent().getExtras().getString("subjectGroupName", null);
+        String subject_notes = getIntent().getExtras().getString("subNote", "SchoolApp");
         toolbar.setTitle(subject_notes);
-
-        RecentImages ri = new RecentImages();
-        ImageAdapter adapter = ri.getAdapter(PictureGroupActivity.this);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        GridView gridView = (GridView) findViewById(R.id.picture_group_gridView);
+        SharedPreferences prefs = this.getSharedPreferences("GridView" + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
+        try {
+            arrayOfImgs = new JSONArray(prefs.getString("ListOfSubjectsGroupName", null));
+        } catch (Exception e) {
+            arrayOfImgs = new JSONArray();
+        }
+
+        try {
+            ArrayList<String> strings = new ArrayList<String>();
+            for (int i = 0; i < arrayOfImgs.length(); i++) {
+                try {
+                    strings.add(arrayOfImgs.getString(i));
+                } catch (JSONException e) {
+                }
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Add pictures", Toast.LENGTH_SHORT).show();
+        }
+
+
+        gridView = (GridView) findViewById(R.id.picture_group_gridView);
         gridView.setAdapter(new ImageGridAdapter(this));
+        gridView.deferNotifyDataSetChanged();
+        registerForContextMenu(gridView);
+
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(PictureGroupActivity.this, "You clicked " + position, Toast.LENGTH_SHORT).show();
+
+
+                Toast.makeText(PictureGroupActivity.this, "position: " + position , Toast.LENGTH_SHORT).show();
+                Intent viewPager = new Intent(getApplicationContext(), GridViewPager.class);
+                viewPager.putExtra("position", position);
+                startActivity(viewPager);
+
             }
         });
+
+        Toast.makeText(PictureGroupActivity.this, "Number of Images is:" + prefs.getInt("numberOfImgs", 0), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.context_menu_gridview, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        int id = info.position;
+
+        ArrayList<String> arrayListOfImgs = new ArrayList<>();
+
+        SharedPreferences preferences = getSharedPreferences("GridView" + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+
+        try {
+            arrayOfImgs = new JSONArray(preferences.getString("NoteImages", null));
+        } catch (Exception e) {
+        }
+
+        switch (item.getItemId()) {
+
+            case R.id.delete_gridView:
+
+
+                for (int i = 0; i < arrayOfImgs.length(); i++) {
+                    try {
+                        arrayListOfImgs.add(arrayOfImgs.getString(i));
+                    } catch (JSONException e) {
+                    }
+                }
+
+                arrayListOfImgs.remove(id);
+                arrayOfImgs = new JSONArray(arrayListOfImgs);
+
+
+
+
+
+                if (preferences.getInt("numberOfImgs", 0) == 0) {
+                    super.onResume();
+                } else {
+                    ALofSelectedImgs.clear();
+                    ALofRSelectedImgs.clear();
+                    for (int i = 0; i < preferences.getInt("numberOfImgs", 0); i++) {
+                        String imageUri = "";
+                        try {
+                            imageUri = arrayOfImgs.getString(i);
+                        } catch (Exception e) {
+                        }
+
+                        ALofSelectedImgs.add(BitmapScaled(imageUri, 100, 100));
+                        //Collections.reverse(ALofSelectedImgs);
+
+                        ALofRSelectedImgs.add(BitmapScaled(imageUri, 750, 540));
+                        //Collections.reverse(ALofRSelectedImgs);
+
+                    }
+                }
+
+                numberOfImgs = preferences.getInt("numberOfImgs", 0);
+                numberOfImgs--;
+
+                editor.putString("NoteImages", arrayOfImgs.toString()).apply();
+                editor.putInt("numberOfImgs", numberOfImgs).apply();
+
+                onResume();
+
+                imageGridapter.notifyDataSetChanged();
+
+                return true;
+
+
+            case R.id.cancle_gridView:
+
+                return true;
+
+            default:
+                return super.onContextItemSelected(item);
+        }
     }
 
 
@@ -92,8 +218,8 @@ public class PictureGroupActivity extends AppCompatActivity {
 
         if (id == R.id.addPictureFolder) {
 
-                Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(i, RESULT_LOAD_IMAGE);
+            Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(i, RESULT_LOAD_IMAGE);
 
         } else if (id == android.R.id.home) {
             onBackPressed();
@@ -101,16 +227,32 @@ public class PictureGroupActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        SharedPreferences prefs = getSharedPreferences("GridView" + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+
+            numberOfImgs = prefs.getInt("numberOfImgs", 0);
+            numberOfImgs++;
+
+            try {
+                arrayOfImgs = new JSONArray(prefs.getString("NoteImages", null));
+            } catch (Exception e) {
+            }
+
+
 
             selectedImage = data.getData();
             Uri selectedImage = data.getData();
 
             String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            thePicture = filePathColumn;
             Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
 
             cursor.moveToFirst();
@@ -118,19 +260,70 @@ public class PictureGroupActivity extends AppCompatActivity {
             picture = cursor.getString(columnIndex);
             cursor.close();
 
+            ALofRSelectedImgs.add(BitmapScaled(picture, 750, 540));
+            //Collections.reverse(ALofRSelectedImgs);
             ALofSelectedImgs.add(BitmapScaled(picture, 100, 100));
+            //Collections.reverse(ALofSelectedImgs);
 
-            Intent restart   = getIntent();
+
+
+            arrayOfImgs.put(picture);
+            editor.putString("NoteImages", arrayOfImgs.toString()).apply();
+            finish();
+
+            editor.putInt("numberOfImgs", numberOfImgs);
+            editor.apply();
+
+
+            Intent restart = getIntent();
             finish();
             startActivity(restart);
 
         }
 
+    }
+
+    @Override
+    protected void onResume() {
+
+
+        SharedPreferences prefs = this.getSharedPreferences("GridView" + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
+        try {
+            arrayOfImgs = new JSONArray(prefs.getString("NoteImages", null));
+        } catch (Exception e) {
+        }
+
+        if (prefs.getInt("numberOfImgs", 0) == 0) {
+            super.onResume();
+        } else {
+            ALofSelectedImgs.clear();
+            ALofRSelectedImgs.clear();
+            for (int i = 0; i < prefs.getInt("numberOfImgs", 0); i++) {
+                String imageUri = "";
+                try {
+                    imageUri = arrayOfImgs.getString(i);
+                } catch (Exception e) {
+                }
+
+
+
+                ALofSelectedImgs.add(BitmapScaled(imageUri, 100, 100));
+                //Collections.reverse(ALofSelectedImgs);
+
+                ALofRSelectedImgs.add(BitmapScaled(imageUri, 750, 540));
+                //Collections.reverse(ALofRSelectedImgs);
+
+            }
+        }
+
+
+        super.onResume();
 
     }
 
     private Bitmap BitmapScaled(String picturePath, int width, int height) {
         BitmapFactory.Options sizeOptions = new BitmapFactory.Options();
+        sizeOptions.inPurgeable = true;
         sizeOptions.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(picturePath, sizeOptions);
 
@@ -172,13 +365,13 @@ public class PictureGroupActivity extends AppCompatActivity {
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.subjectDetailToolbar);
 
         switch (theme) {
-            default:
-                toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
+            case 1:
+                toolbar.setBackgroundColor(getResources().getColor(R.color.blueT));
 
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.red800));
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
+                    window.setStatusBarColor(getResources().getColor(R.color.blueTy));
+
+                break;
         }
     }
-
-
-
 }

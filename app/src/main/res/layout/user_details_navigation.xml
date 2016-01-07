@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/userDetails"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/nav_drawer"
+    android:layout_weight="3"
+    android:padding="15dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="5">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:paddingRight="10dp">
+
+                <ImageView
+                    android:id="@+id/usersPhoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/usersNickname"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent"
+            android:text="Username"
+            android:textSize="14sp"
+            android:textColor="@color/white"
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="center"
+            android:layout_weight="4"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

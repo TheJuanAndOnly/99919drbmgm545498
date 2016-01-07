@@ -47,6 +47,13 @@
 
         <receiver android:process=":remote" android:name=".NotificationRecieverActivity"></receiver>
 
+        <activity android:name=".LoginActivity" ></activity>
+
+        <activity android:name=".GridViewPager"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/Theme.Transparent">
+        </activity>
+
     </application>
 
 </manifest>
