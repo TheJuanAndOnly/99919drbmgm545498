@@ -70,7 +70,7 @@ public class NotesFragment extends Fragment {
                 }
 
 
-                Intent intent = new Intent(getActivity(), PictureGroupActivity.class);
+                Intent intent = new Intent(getActivity(), NotesDetailActivity.class);
 
                 intent.putExtra("note", selected);
                 intent.putExtra("position", position);
