@@ -22,4 +22,10 @@
     <color name="mainblue">#009eb7</color>
     <color name="mainblue800">#048ca1</color>
 
+    <color name="greyText">#EEEEEE</color>
+
+    <integer-array name="dots">
+
+    </integer-array>
+
 </resources>

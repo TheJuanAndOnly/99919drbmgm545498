@@ -2,22 +2,30 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="80dp"
-    android:background="@color/white"
-    android:paddingRight="8dp"
-    android:elevation="8dp">
+    android:background="@color/darkbluebackground"
+    android:paddingRight="8dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="5dp"
-            android:layout_height="match_parent"
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
             android:layout_alignParentLeft="true"
-            android:background="@color/mainblue"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="6dp"
+            android:background="@drawable/dot1"
             android:id="@+id/leftTV">
-        </TextView>
+        </ImageView>
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/ic_trending_up_white_24dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:id="@+id/arrow"/>
 
         <TextView
             android:id="@+id/subjectLVAverageText"
@@ -27,28 +35,49 @@
             android:minWidth="75dp"
             android:textAppearance="?android:attr/textAppearanceListItemSmall"
             android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
+            android:layout_toLeftOf="@id/arrow"
             android:textAlignment="center"
             android:minHeight="5dp"
-            android:textColor="@color/black"
+            android:textColor="@color/greyText"
             android:textSize="23sp"/>
 
-        <TextView
-            android:id="@+id/subjectName"
-            android:text="Subject"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceListItemSmall"
-            android:gravity="center_vertical"
+            android:orientation="vertical"
             android:layout_centerVertical="true"
-            android:padding="17dp"
-            android:layout_marginLeft="8dp"
-            android:background="@android:color/transparent"
+            android:paddingLeft="20dp"
+            android:paddingRight="17dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_marginLeft="20dp"
             android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@id/subjectLVAverageText"
-            android:minHeight="5dp"
-            android:textColor="@color/black"
-            android:textSize="23sp"/>
+            android:layout_toLeftOf="@id/subjectLVAverageText">
+
+            <TextView
+                android:id="@+id/subjectName"
+                android:text="Subject"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceListItemSmall"
+                android:gravity="center_vertical"
+                android:background="@android:color/transparent"
+                android:minHeight="5dp"
+                android:textColor="@color/greyText"
+                android:textSize="23sp"/>
+
+            <TextView
+                android:id="@+id/goodJobTv"
+                android:text="Good job!"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceListItemSmall"
+                android:gravity="center_vertical"
+                android:background="@android:color/transparent"
+                android:textColor="@color/greyText"
+                android:textSize="14sp"/>
+
+        </LinearLayout>
 
         <TextView
             android:layout_width="1dp"

@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#cacaca">
+    android:background="@color/darkbluebackground">
 
     <ListView
         android:layout_width="fill_parent"
@@ -13,7 +13,6 @@
         android:layout_margin="7dp"
         android:textColor="@color/black"
         android:divider="@android:color/transparent"
-        android:dividerHeight="6dp"
         android:textSize="30sp">
 
     </ListView>

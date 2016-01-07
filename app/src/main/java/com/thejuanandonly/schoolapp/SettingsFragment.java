@@ -17,7 +17,10 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thejuanandonly.schoolapp.R;
@@ -43,10 +46,20 @@ public class SettingsFragment extends Fragment {
     public void onStart() {
         toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("Settings");
+        toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
 
-        CheckBox notificationsCheckBox = (CheckBox) getView().findViewById(R.id.notificationsCheckBox);
-        CheckBox soundsCheckBox = (CheckBox) getView().findViewById(R.id.soundsNotificationCheckBox);
-        CheckBox vibrationsCheckBox = (CheckBox) getView().findViewById(R.id.vibrationsNotificationCheckBox);
+        ImageView img = (ImageView) getActivity().findViewById(R.id.overviewImg);
+        img.setVisibility(View.GONE);
+
+        TextView quote = (TextView) getActivity().findViewById(R.id.quote);
+        quote.setVisibility(View.GONE);
+
+        TextView author = (TextView) getActivity().findViewById(R.id.author);
+        author.setVisibility(View.GONE);
+
+        Switch notificationsCheckBox = (Switch) getView().findViewById(R.id.notificationsCheckBox);
+        Switch soundsCheckBox = (Switch) getView().findViewById(R.id.soundsNotificationCheckBox);
+        Switch vibrationsCheckBox = (Switch) getView().findViewById(R.id.vibrationsNotificationCheckBox);
 
         SharedPreferences prefs = getActivity().getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
 
@@ -66,19 +79,14 @@ public class SettingsFragment extends Fragment {
             vibrationsCheckBox.setVisibility(View.VISIBLE);
         }
 
-        theme();
-
-        addItemsToSpinner();
-        addListenerToSpinner();
-
         super.onStart();
     }
 
     @Override
     public void onStop() {
-        CheckBox notificationsCheckBox = (CheckBox) getView().findViewById(R.id.notificationsCheckBox);
-        CheckBox soundsCheckBox = (CheckBox) getView().findViewById(R.id.soundsNotificationCheckBox);
-        CheckBox vibrationsCheckBox = (CheckBox) getView().findViewById(R.id.vibrationsNotificationCheckBox);
+        Switch notificationsCheckBox = (Switch) getView().findViewById(R.id.notificationsCheckBox);
+        Switch soundsCheckBox = (Switch) getView().findViewById(R.id.soundsNotificationCheckBox);
+        Switch vibrationsCheckBox = (Switch) getView().findViewById(R.id.vibrationsNotificationCheckBox);
 
         boolean n = notificationsCheckBox.isChecked(),
                 s = soundsCheckBox.isChecked(),
@@ -104,60 +112,6 @@ public class SettingsFragment extends Fragment {
 
 
         super.onStop();
-    }
-
-    public void addItemsToSpinner() {
-
-        themeSpinner = (Spinner) getView().findViewById(R.id.themeSpinner);
-
-        String red = "Red",
-               orange = "Orange",
-               green = "Green",
-               blue = "Blue",
-               grey = "Grey",
-               teal = "Teal",
-               brown = "Brown";
-
-        SharedPreferences prefs = getActivity().getSharedPreferences("themeSave", Context.MODE_PRIVATE);
-        int pos = prefs.getInt("theme", 0);
-
-        stringArray = new String[]{red, orange, green, blue, grey, teal, brown};
-
-        ArrayAdapter<String> SpinnerAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, stringArray);
-        SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        themeSpinner.setAdapter(SpinnerAdapter);
-
-        themeSpinner.setSelection(pos);
-    }
-
-    public void addListenerToSpinner() {
-        themeSpinner = (Spinner) getView().findViewById(R.id.themeSpinner);
-        themeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView<?> parent, View arg1, int pos, long arg3) {
-                position = pos;
-            }
-
-            public void onNothingSelected(AdapterView<?> arg0) {
-                // TODO maybe add something here later
-            }
-        });
-    }
-
-    public void theme() {
-        SharedPreferences prefs = getContext().getSharedPreferences("themeSave", Context.MODE_PRIVATE);
-        int theme = prefs.getInt("theme", 0);
-
-        View view1 = (View) getView().findViewById(R.id.separator1);
-        View view2 = (View) getView().findViewById(R.id.separator2);
-        View view3 = (View) getView().findViewById(R.id.separator3);
-
-        switch (theme) {
-            default:
-
-                view1.setBackgroundColor(getResources().getColor(R.color.mainblue));
-                view2.setBackgroundColor(getResources().getColor(R.color.mainblue));
-                view3.setBackgroundColor(getResources().getColor(R.color.mainblue));
-        }
     }
 
 }

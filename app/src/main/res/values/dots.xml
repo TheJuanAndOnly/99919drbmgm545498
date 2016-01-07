@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <array name="dots_array">
+        <item>@drawable/dot1</item>
+        <item>@drawable/dot2</item>
+        <item>@drawable/dot3</item>
+        <item>@drawable/dot4</item>
+        <item>@drawable/dot5</item>
+        <item>@drawable/dot6</item>
+        <item>@drawable/dot7</item>
+    </array>
+
+</resources>

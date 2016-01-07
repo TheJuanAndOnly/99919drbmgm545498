@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="20dp"
     android:id="@+id/Linear2"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:background="@color/darkbluebackground">
 
     <TextView
         android:layout_width="29.5dp"
@@ -17,7 +18,7 @@
         android:text="Get"
         android:background="@android:color/transparent"
         android:minHeight="5dp"
-        android:textColor="@color/black"
+        android:textColor="@color/greyText"
         android:textSize="14sp"/>
 
     <TextView
@@ -31,7 +32,7 @@
         android:background="@android:color/transparent"
         android:minHeight="5dp"
         android:textStyle="bold"
-        android:textColor="@color/black"
+        android:textColor="@color/greyText"
         android:textSize="16sp"/>
 
     <TextView
@@ -44,7 +45,7 @@
         android:text="from"
         android:background="@android:color/transparent"
         android:minHeight="5dp"
-        android:textColor="@color/black"
+        android:textColor="@color/greyText"
         android:textSize="14sp"/>
 
     <TextView
@@ -58,7 +59,7 @@
         android:background="@android:color/transparent"
         android:minHeight="5dp"
         android:textStyle="italic"
-        android:textColor="@color/black"
+        android:textColor="@color/greyText"
         android:textSize="14sp"/>
 
 </LinearLayout>

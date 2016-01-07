@@ -7,37 +7,83 @@ android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:fitsSystemWindows="true">
 
-    <android.support.v7.widget.Toolbar
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/mainblue"
-        android:id="@+id/subjectDetailToolbar"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:elevation="10dp"/>
+        android:id="@+id/detailToolbarLayout">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:src="@drawable/knowledge"
+            android:scaleType="centerCrop"
+            android:id="@+id/overviewImg"/>
+
+        <android.support.v7.widget.Toolbar
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:id="@+id/subjectDetailToolbar"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            android:elevation="10dp"/>
+
+        <TextView
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_centerInParent="true"
+            android:background="@drawable/round"
+            android:text="M"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:textSize="45dp"
+            android:id="@+id/firstLetterTv"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Subject"
+            android:id="@+id/subjectTv"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="135dp"
+            android:textColor="@color/white"
+            android:textSize="18sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/greyText"
+            android:text="Average:"
+            android:id="@+id/averageTextView"
+            android:layout_below="@id/subjectTv"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="4dp"
+            style="@style/TextAppearance.AppCompat.Subhead"/>
+
+    </RelativeLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:layout_below="@id/subjectDetailToolbar">
+        android:layout_below="@id/detailToolbarLayout">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="8dp"
-            android:background="#cacaca">
+            android:background="@color/darkbluebackground">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
+                android:layout_height="80dp"
+                android:background="@color/darkbluebackground"
 
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                android:paddingTop="16dp"
-                android:paddingBottom="4dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
 
                 android:id="@+id/firstLayout"
                 android:onClick="titleClick">
@@ -46,6 +92,7 @@ android:fitsSystemWindows="true">
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
 
+                    android:textColor="@color/greyText"
                     android:text="Grades"
                     android:layout_marginBottom="4dp"
                     android:id="@+id/gradeTextView"
@@ -56,27 +103,16 @@ android:fitsSystemWindows="true">
                     android:layout_height="32dp"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentRight="true"
-                    android:background="@drawable/ic_add_black_24dp"
+                    android:background="@drawable/ic_add_plus"
                     android:id="@+id/gradePlusButton"
                     android:onClick="addGrade" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="Average:"
-                    android:id="@+id/averageTextView"
-                    android:textColor="@color/grey800"
-                    android:layout_below="@id/gradeTextView"
-                    style="@style/TextAppearance.AppCompat.Subhead"/>
 
                 <Button
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_below="@id/averageTextView"
-                    android:background="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentBottom="true"
+                    android:background="@drawable/ic_arrow_drop_down_white_24dp"
                     android:id="@+id/rollDownButton"
                     android:onClick="titleClick"/>
 
@@ -86,7 +122,7 @@ android:fitsSystemWindows="true">
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/secondLayout"
-                android:background="@color/white"
+                android:background="@color/darkbluebackground"
 
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
@@ -98,11 +134,13 @@ android:fitsSystemWindows="true">
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:id="@+id/lvLayoutGrade">
+                    android:id="@+id/lvLayoutGrade"
+                    android:background="@color/darkbluebackground">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:background="@color/darkbluebackground">
 
                         <TextView
                             android:layout_width="match_parent"
@@ -113,8 +151,8 @@ android:fitsSystemWindows="true">
                             android:layout_marginBottom="5dp"
                             android:gravity="left"
                             android:text="1,2,3"
+                            android:textColor="@color/greyText"
                             android:background="@android:color/transparent"
-                            android:textColor="@color/black"
                             android:textSize="16sp"
                             android:textStyle="italic|bold"
                             android:id="@+id/gradeTextViewNoCat"
@@ -126,7 +164,7 @@ android:fitsSystemWindows="true">
                             android:layout_marginLeft="4dp"
                             android:layout_marginRight="4dp"
                             android:layout_centerVertical="true"
-                            android:background="@drawable/ic_mode_edit_black_24dp"
+                            android:background="@drawable/ic_mode_edit_white_24dp"
                             android:id="@+id/gradeEditButtonSingle"
                             android:layout_alignParentRight="true"
                             android:onClick="editCategory"
@@ -159,31 +197,36 @@ android:fitsSystemWindows="true">
                     android:layout_marginRight="5dp"
                     android:layout_marginBottom="5dp"
 
-                    android:background="@drawable/ic_add_black_24dp"
+                    android:background="@drawable/ic_add_plus"
                     android:id="@+id/addCategory"
                     android:onClick="addCategory"
                     android:visibility="gone"/>
 
             </RelativeLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/mainblue"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_height="80dp"
                 android:paddingLeft="16dp"
-                android:paddingBottom="4dp"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp"
                 android:id="@+id/thirdLayout"
-                android:background="@color/white"
+                android:background="@color/darkbluebackground"
                 android:onClick="titleClick">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Prediction"
-                    android:layout_marginTop="16dp"
                     android:layout_marginBottom="4dp"
+                    android:layout_marginTop="8dp"
                     android:id="@+id/predictionTextView"
+                    android:textColor="@color/greyText"
                     android:textSize="20sp"
                     style="@style/TextAppearance.AppCompat.Headline"
                     />
@@ -191,9 +234,9 @@ android:fitsSystemWindows="true">
                 <Button
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:layout_alignParentLeft="true"
-                    android:layout_below="@id/predictionTextView"
-                    android:background="@drawable/ic_arrow_drop_down_black_24dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentBottom="true"
+                    android:background="@drawable/ic_arrow_drop_down_white_24dp"
                     android:id="@+id/rollDownButton2"
                     android:onClick="titleClick"/>
 
@@ -219,9 +262,10 @@ android:fitsSystemWindows="true">
                         <Button
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:background="@drawable/ic_navigate_before_black_24dp"
+                            android:background="@drawable/ic_chevron_left_white_24dp"
                             android:id="@+id/ttwSubtractBtn"
-                            android:onClick="testsToWriteBtn"/>
+                            android:onClick="testsToWriteBtn"
+                            android:layout_gravity="center"/>
 
                     </LinearLayout>
 
@@ -233,6 +277,7 @@ android:fitsSystemWindows="true">
                         android:gravity="center"
                         android:textSize="18sp"
                         android:layout_gravity="center"
+                        android:textColor="@color/greyText"
                         style="?android:attr/textViewStyle"
                         android:text="1"
                         android:maxLength="1"/>
@@ -251,14 +296,13 @@ android:fitsSystemWindows="true">
                         <Button
                             android:layout_width="24dp"
                             android:layout_height="24dp"
-                            android:background="@drawable/ic_navigate_next_black_24dp"
+                            android:background="@drawable/ic_chevron_right_white_24dp"
 
                             android:id="@+id/ttwAddBtn"
-                            android:onClick="testsToWriteBtn"/>
+                            android:onClick="testsToWriteBtn"
+                            android:layout_gravity="center"/>
 
                     </LinearLayout>
-
-
 
                 </LinearLayout>
 
@@ -271,7 +315,7 @@ android:fitsSystemWindows="true">
                 android:paddingRight="16dp"
                 android:paddingBottom="16dp"
                 android:id="@+id/fourthLayout"
-                android:background="@color/white"
+                android:background="@color/darkbluebackground"
                 android:visibility="gone">
 
                 <ListView
@@ -285,6 +329,11 @@ android:fitsSystemWindows="true">
                 </ListView>
 
             </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="@color/mainblue"/>
 
         </LinearLayout>
 

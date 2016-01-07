@@ -12,7 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thejuanandonly.schoolapp.R;import org.json.JSONArray;
@@ -39,7 +41,16 @@ public class NotesFragment extends Fragment {
 
         toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("Notes");
+        toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
 
+        ImageView img = (ImageView) getActivity().findViewById(R.id.overviewImg);
+        img.setVisibility(View.GONE);
+
+        TextView quote = (TextView) getActivity().findViewById(R.id.quote);
+        quote.setVisibility(View.GONE);
+
+        TextView author = (TextView) getActivity().findViewById(R.id.author);
+        author.setVisibility(View.GONE);
 
         lv_notes = (ListView) rootView.findViewById(R.id.SubjectListView_Notes);
 
