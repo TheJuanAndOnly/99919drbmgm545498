@@ -4,11 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-<<<<<<< HEAD
-    android:background="@color/darkbluebackground">
-=======
     android:background="#dadada">
->>>>>>> origin/master
 
     <ListView
         android:layout_width="fill_parent"

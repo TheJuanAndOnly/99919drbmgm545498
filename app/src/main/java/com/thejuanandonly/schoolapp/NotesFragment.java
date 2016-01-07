@@ -19,19 +19,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-<<<<<<< HEAD
 import android.widget.ImageView;
-=======
 import android.widget.EditText;
->>>>>>> origin/master
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.thejuanandonly.schoolapp.R;import org.json.JSONArray;
+import com.thejuanandonly.schoolapp.R;
+import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.lang.Exception;import java.lang.NullPointerException;import java.lang.Override;import java.lang.String;import java.util.ArrayList;
+import java.lang.Exception;
+import java.lang.NullPointerException;
+import java.lang.Override;
+import java.lang.String;
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -58,7 +60,6 @@ public class NotesFragment extends Fragment {
         toolbar.setTitle("Notes");
         toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
 
-<<<<<<< HEAD
         ImageView img = (ImageView) getActivity().findViewById(R.id.overviewImg);
         img.setVisibility(View.GONE);
 
@@ -68,8 +69,6 @@ public class NotesFragment extends Fragment {
         TextView author = (TextView) getActivity().findViewById(R.id.author);
         author.setVisibility(View.GONE);
 
-=======
->>>>>>> origin/master
         lv_notes = (ListView) rootView.findViewById(R.id.SubjectListView_Notes);
 
         lv_notes.setOnItemClickListener(new AdapterView.OnItemClickListener() {

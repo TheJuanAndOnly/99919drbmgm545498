@@ -33,13 +33,13 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
-<<<<<<< HEAD
+
 import android.widget.Switch;
-=======
+
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
->>>>>>> origin/master
+
 import android.widget.Toast;
 
 import com.thejuanandonly.schoolapp.ImageToCircle;
@@ -481,9 +481,6 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
     }
-<<<<<<< HEAD
-}
-=======
 
     public void updateUserDetails() {
         SharedPreferences sharedPreferences = getSharedPreferences("User", MODE_PRIVATE);
@@ -514,4 +511,3 @@ public class MainActivity extends AppCompatActivity {
         userNicktxtview.setText(userNickname);
     }
 }
->>>>>>> origin/master
