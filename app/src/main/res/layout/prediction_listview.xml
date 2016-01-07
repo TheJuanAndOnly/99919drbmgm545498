@@ -4,32 +4,77 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/grade_text_view"
-        android:textAppearance="?android:attr/textAppearanceListItemSmall"
-        android:paddingRight="4dp"
-        android:paddingLeft="4dp"
-        android:text="1"
-        android:background="@android:color/transparent"
-        android:minHeight="5dp"
-        android:textStyle="bold"
-        android:textColor="@color/black"
-        android:textSize="16sp"/>
+        android:id="@+id/tvlayout"
+        android:visibility="visible">
 
-    <TextView
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/grade_text_view"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:paddingRight="4dp"
+            android:paddingLeft="4dp"
+            android:text="1"
+            android:background="@android:color/transparent"
+            android:minHeight="5dp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dash_text_view"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:paddingRight="4dp"
+            android:paddingLeft="4dp"
+            android:text=" - "
+            android:background="@android:color/transparent"
+            android:minHeight="5dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/dash_text_view"
-        android:textAppearance="?android:attr/textAppearanceListItemSmall"
-        android:paddingRight="4dp"
-        android:paddingLeft="4dp"
-        android:text=" - "
-        android:background="@android:color/transparent"
-        android:minHeight="5dp"
-        android:textColor="@color/black"
-        android:textSize="16sp"/>
+        android:id="@+id/etlayout"
+        android:visibility="gone">
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/grade_edit_text"
+            android:textAppearance="?android:attr/editTextStyle"
+            style="?android:attr/editTextStyle"
+            android:paddingRight="4dp"
+            android:paddingLeft="4dp"
+            android:text="1"
+            android:background="@android:color/transparent"
+            android:minHeight="5dp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:singleLine="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dash_edit_text"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:paddingRight="4dp"
+            android:paddingLeft="4dp"
+            android:text=" - "
+            android:background="@android:color/transparent"
+            android:minHeight="5dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"

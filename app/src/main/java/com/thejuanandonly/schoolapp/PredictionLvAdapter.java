@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -59,6 +62,17 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
         }
         t1.setText(strings[position]);
 
+        if (gradeType == 1){
+            LinearLayout tv = (LinearLayout) convertView.findViewById(R.id.tvlayout);
+            LinearLayout et = (LinearLayout) convertView.findViewById(R.id.etlayout);
+
+            tv.setVisibility(View.GONE);
+            et.setVisibility(View.VISIBLE);
+
+            EditText editText = (EditText) convertView.findViewById(R.id.grade_edit_text);
+            editText.setText(strings[position]);
+        }
+
         int testsToWrite = prefs.getInt("testsToWrite", 1);
 
         JSONArray arrayOfCategories = new JSONArray();
@@ -97,7 +111,7 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
                 break;
         }
 
-        if (!prefs.getBoolean("useCategories", false)) {
+        if (!prefs.getBoolean("useCategories", false) && testsToWrite != 1) {
 
             int avgsInt = 0;
 
@@ -110,6 +124,7 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
                             sc = String.valueOf(c + 1) + ", ";
                             break;
                         case 1:
+                            sc = String.valueOf(c) + ", ";
                             break;
                         case 2:
                             sc = numberToLetter(alphabeticGradeRound(c)) + ", ";
@@ -125,6 +140,7 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
                                 sd = String.valueOf(d + 1) + " and ";
                                 break;
                             case 1:
+                                sd = String.valueOf(d) + " and ";
                                 break;
                             case 2:
                                 sd = numberToLetter(alphabeticGradeRound(d)) + " and ";
@@ -140,6 +156,7 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
                                     se = String.valueOf(e + 1);
                                     break;
                                 case 1:
+                                    se = String.valueOf(e) + ", ";
                                     break;
                                 case 2:
                                     se = numberToLetter(alphabeticGradeRound(e));
@@ -173,11 +190,12 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
 
                                     break;
 
-                                /*case 1:
+                                case 1:
+                                    EditText editText = (EditText) convertView.findViewById(R.id.grade_edit_text);
 
-                                    int percentage = (Integer.parseInt(String.valueOf(strings[position].charAt(0))) * 10);
+                                    int percentage = (Integer.parseInt(String.valueOf(editText.getText().charAt(0))) * 10);
                                     try{
-                                        percentage += Integer.parseInt(String.valueOf(strings[position].charAt(1)));
+                                        percentage += Integer.parseInt(String.valueOf(editText.getText().charAt(1)));
                                     }catch (NumberFormatException ex){
                                         percentage /= 10;
                                     }
@@ -198,15 +216,11 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
 
                                         ci = true;
 
-                                        line.set(1, String.valueOf((i) - (pocetZnamok * k)));
-
-                                        line.set(2, "from");
-
-                                        line.set(3, arrayOfCategories.getString(k));
+                                        line.set(1, sc + sd + se);
 
                                     }
 
-                                    break;*/
+                                    break;
 
                                 case 2:
 
@@ -253,27 +267,35 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
 
                                             break;
 
-                                        /*case 1:
-                                            bool = Character.isDigit(line.get(1).charAt(k));
-                                            bool2 = line.get(1).charAt(k) == (arrayLists.get(arrayLists.size() - 1).get(1).charAt(k));
+                                        case 1:
+                                            int digits = 0;
 
-                                            try {
-                                                Integer.parseInt(String.valueOf(line.get(1).charAt(0)));
-                                            }catch (NumberFormatException ex){}
-                                            try {
-                                                Integer.parseInt(String.valueOf(line.get(1).charAt(1)));
-                                            }catch (NumberFormatException ex){}
-                                            try {
-                                                Integer.parseInt(String.valueOf(line.get(1).charAt(2)));
-                                            }catch (NumberFormatException ex){}
+                                            while (Character.isDigit(line.get(1).charAt(digits))){
+                                                digits++;
 
-                                            break;*/
+                                                if (digits >= 3) break;
+                                            }
+                                            bool = true;
+
+                                            if (testsToWrite == 2) {
+                                                bool2 = line.get(1).substring(0, digits).equals(
+                                                        arrayLists.get(arrayLists.size() - 1).get(1).substring(0, digits));
+                                                Log.d("debug", String.valueOf(bool2));
+                                            }else {
+
+
+
+                                            }
+
+
+                                            break;
 
                                         case 2:
 
                                             if (testsToWrite == 3) {
 
                                                 boolean b1 = true;
+
                                                 if (Character.isLetter(line.get(1).charAt(3))) b1 = true;
                                                 else if (Character.isLetter(line.get(1).charAt(4))) b1 = false;
 
@@ -318,20 +340,12 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
 
                                             case 1:
 
-                                                int digits = 1;
+                                                int digits = 0;
 
-                                                try {
+                                                while (Character.isDigit(line.get(1).charAt(digits))){
+                                                    digits++;
 
-                                                    int cc = Integer.parseInt(String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(1)));
-                                                    digits = 2;
-
-                                                } catch (IndexOutOfBoundsException | NumberFormatException ex) {
-                                                }
-                                                try {
-                                                    int cc = Integer.parseInt(String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(2)));
-                                                    digits = 3;
-
-                                                } catch (IndexOutOfBoundsException | NumberFormatException ex) {
+                                                    if (digits >= 3) break;
                                                 }
 
                                                 switch (digits) {
@@ -342,8 +356,8 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
                                                         break;
                                                     case 2:
 
-                                                        line.set(1, (String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(0)) +
-                                                                String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(1)) +
+                                                        line.set(1, (String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).substring(
+                                                                arrayLists.get(arrayLists.size() - 1).get(1).length() - 2)) +
                                                                 " - " + line.get(1) + "%"));
 
                                                         break;

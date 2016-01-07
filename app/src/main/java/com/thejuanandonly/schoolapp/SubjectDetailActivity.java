@@ -113,10 +113,22 @@ public class SubjectDetailActivity extends AppCompatActivity {
         TextView textView = (TextView) findViewById(R.id.testsToWriteEditText);
         textView.setText(String.valueOf(prefs.getInt("testsToWrite", 1)));
 
+        LinearLayout ttwLayout = (LinearLayout) findViewById(R.id.ttwLayout);
+        if (prefs.getInt("GradeType", 0) == 0){
+            ttwLayout.setVisibility(View.VISIBLE);
+        }else {
+            ttwLayout.setVisibility(View.GONE);
+            editor.putInt("testsToWrite", 1).apply();
+        }
+
+        editor.putBoolean("doSetLv", true).apply();
+
+        setAvgTv();
     }
 
     public void setAvgTv(){
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
 
         TextView averageTV = (TextView) findViewById(R.id.averageTextView);
         int gradeType = prefs.getInt("GradeType" , 0);
@@ -140,6 +152,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
 
         if (id == R.id.action_edit) {
             Button bottomPlus = (Button) findViewById(R.id.addCategory);
@@ -178,6 +191,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
             }
 
+            editor.putBoolean("doSetLv", true).apply();
             setListView();
             return true;
         } else if (id == R.id.action_settings) {
@@ -193,6 +207,10 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
+
+        if (!prefs.getBoolean("doSetLv", true)) return;
+
+        editor.putBoolean("doSetLv", false).apply();
 
         editor.putString("AvgGrade", String.valueOf(countAverage())).apply();
 
@@ -506,6 +524,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 break;
         }
 
+        editor.putBoolean("doSetLv", true).apply();
         setListView();
     }
 //////////////////////////////////////////////////////////////////////////
@@ -863,6 +882,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         editor.putString(name + "Grades" + gradeType, arrayOfGrades.toString());
         editor.apply();
 
+        editor.putBoolean("doSetLv", true).apply();
         setListView();
     }
     public void saveCategory(String gradesString){
@@ -947,6 +967,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
         editor.apply();
 
+        editor.putBoolean("doSetLv", true).apply();
         setListView();
     }
 //////////////////////////////////////////////////////////////////////////
@@ -993,6 +1014,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         editor.putString("ListOfPercentages", arrayToSendP.toString());
         editor.apply();
 
+        editor.putBoolean("doSetLv", true).apply();
         setListView();
     }
 //////////////////////////////////////////////////////////////////////////
@@ -1196,6 +1218,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         editor.putString("ListOfPercentages", arrayToSendP.toString());
         editor.apply();
 
+        editor.putBoolean("doSetLv", true).apply();
         setListView();
     }
 //////////////////////////////////////////////////////////////////////////
@@ -1319,6 +1342,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 spinnerPrefsEditor.putString("ListOfPercentages", arrayOfPercentages.toString());
 
                 spinnerPrefsEditor.apply();
+
+                editor.putBoolean("doSetLv", true).apply();
                 setListView();
                 dialog.dismiss();
 
@@ -1330,6 +1355,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dialog.dismiss();
 
+                editor.putBoolean("doSetLv", true).apply();
                 setListView();
             }
         });
@@ -1530,17 +1556,21 @@ public class SubjectDetailActivity extends AppCompatActivity {
     public void testsToWriteBtn(View view) {
         TextView textView = (TextView) findViewById(R.id.testsToWriteEditText);
 
+        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject"), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
         if (view == findViewById(R.id.ttwAddBtn) || view == findViewById(R.id.ttwAddLayout)){
             if (Integer.parseInt(textView.getText().toString()) < 3) {
                 int ttw = Integer.parseInt(textView.getText().toString()) + 1;
                 textView.setText(String.valueOf(ttw));
 
-                SharedPreferences.Editor editor = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject"), Context.MODE_PRIVATE).edit();
                 editor.putInt("testsToWrite", Integer.parseInt(textView.getText().toString())).apply();
 
                 if (findViewById(R.id.fourthLayout).getVisibility() == View.VISIBLE) {
 
                     setPredictionListView();
+                }else {
+                    editor.putBoolean("doSetLv", true).apply();
                 }
             }
         }
@@ -1549,19 +1579,19 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 int ttw = Integer.parseInt(textView.getText().toString()) - 1;
                 textView.setText(String.valueOf(ttw));
 
-                SharedPreferences.Editor editor = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject"), Context.MODE_PRIVATE).edit();
                 editor.putInt("testsToWrite", Integer.parseInt(textView.getText().toString())).apply();
 
                 if (findViewById(R.id.fourthLayout).getVisibility() == View.VISIBLE) {
 
                     setPredictionListView();
+                }else {
+                    editor.putBoolean("doSetLv", true).apply();
                 }
             }
         }
     }
 
     public void setPredictionListView(){
-
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject"), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
@@ -1670,7 +1700,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
                 case 1:
 
-                    for (int c = 0; c >= 100; c++) {
+                    for (int c = 0; c <= 100; c++) {
 
                         ArrayList<String> arrayOfGrades2 = new ArrayList<String>();
 
@@ -1678,13 +1708,13 @@ public class SubjectDetailActivity extends AppCompatActivity {
                             arrayOfGrades.put(String.valueOf(c));
                         }
 
-                        for (int d = c; d >= 0; d++) {
+                        for (int d = c; d <= 100; d++) {
 
                             if (Integer.parseInt(textView.getText().toString()) >= 2){
                                 arrayOfGrades.put(String.valueOf(d));
                             }
 
-                            for (int e = d; e >= 0; e++) {
+                            for (int e = d; e <= 100; e++) {
 
                                 arrayOfGrades.put(String.valueOf(e));
 
