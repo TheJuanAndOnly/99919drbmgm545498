@@ -38,8 +38,9 @@ public class Subject {
                 subjectName = arrayOfSubjects.getString(i);
             }catch (JSONException e) {}
 
+            SharedPreferences prefs = getContext().getSharedPreferences("Subject" + subjectName, Context.MODE_PRIVATE);
+
             try {
-                SharedPreferences prefs = getContext().getSharedPreferences("Subject" + subjectName, Context.MODE_PRIVATE);
                 average = prefs.getString("AvgGrade", null);
             } catch (NullPointerException e) { average = ""; }
 
@@ -63,6 +64,10 @@ public class Subject {
             }
 
             average = String.valueOf(doubleAvg);
+
+            if (average.length() == 3){
+                average += "0";
+            }
 
             subject.add(new Subject(subjectName, average));
         }

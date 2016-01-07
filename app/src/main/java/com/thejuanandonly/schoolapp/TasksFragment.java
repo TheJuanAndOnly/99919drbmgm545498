@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 public class TasksFragment extends Fragment {
 
@@ -30,6 +32,16 @@ public class TasksFragment extends Fragment {
 
         toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("Tasks");
+        toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
+
+        ImageView img = (ImageView) getActivity().findViewById(R.id.overviewImg);
+        img.setVisibility(View.GONE);
+
+        TextView quote = (TextView) getActivity().findViewById(R.id.quote);
+        quote.setVisibility(View.GONE);
+
+        TextView author = (TextView) getActivity().findViewById(R.id.author);
+        author.setVisibility(View.GONE);
 
         tabLayout = (TabLayout) view.findViewById(R.id.tabs);
         viewPager = (ViewPager) view.findViewById(R.id.viewpager);

@@ -4,5 +4,73 @@
     <string name="action_new_subject">New Subject</string>
     <string name="action_new_task">New Task</string>
     <string name="action_done">Done</string>
-    <string name="quote1">In school, you\'re taught a lesson and then given a test. In life, you\'re given a test that teaches you a lesson.</string>
+
+    <string name="rating1">Splendid!</string>
+    <string name="rating2">Keep it up!</string>
+    <string name="rating3">Try harder!</string>
+    <string name="rating4">You can do better than that!</string>
+    <string name="rating5">You\'re not even trying…</string>
+
+    <string-array name="quotes">
+
+        <item>\"In school, you\'re taught a lesson and then given a test. In life, you\'re given a test that teaches you a lesson.\"</item>
+        <item>\"Intellectual growth should commence at birth and cease only at death.\"</item>
+        <item>\"The mere imparting of information is not education.\"</item>
+        <item>\"When a subject becomes totally obsolete we make it a required course\"</item>
+        <item>\"If I were again beginning my studies, I would follow the advice of Plato and start with mathematics.\"</item>
+        <item>\"A child miseducated is a child lost.\"</item>
+        <item>\"Education is the most powerful weapon which you can use to change the world.\"</item>
+        <item>\"The roots of education are bitter, but the fruit is sweet.\"</item>
+        <item>\"Education is the key to unlock the golden door of freedom.\"</item>
+        <item>\"An investment in knowledge pays the best interest.\"</item>
+        <item>\"The philosophy of the school room in one generation will be the philosophy of government in the next.\"</item>
+        <item>\"The purpose of education is to replace an empty mind with an open one.\"</item>
+        <item>\"The direction in which education starts a man will determine his future in life.\"</item>
+        <item>\"Education is the best friend. An educated person is respected everywhere. Education beats the beauty and the youth.\"</item>
+        <item>\"Education is learning what you didn\'t even know you didn\'t know.\"</item>
+        <item>\"A man who has never gone to school may steal from a freight car; but if he has a university education, he may steal the whole railroad.\"</item>
+        <item>\"Change is the end result of all true learning.\"</item>
+        <item>\"All I want is an education, and I am afraid of no one.\"</item>
+        <item>\"Poor is the pupil who does not surpass his master.\"</item>
+        <item>\"Rewards and punishments are the lowest form of education.\"</item>
+        <item>\"Observation more than books, and experience more than persons, are the prime educators.\"</item>
+        <item>\"The only real failure in life is one not learned from.\"</item>
+        <item>\"What sculpture is to a block of marble, education is to the soul.\"</item>
+        <item>\"Education, n.: That which discloses to the wise and disguises from the foolish their lack of understanding.\"</item>
+        <item>\"Much education today is monumentally ineffective. All too often we are giving young people cut flowers when we should be teaching them to grow their own plants.\"</item>
+        <item>\"No man who worships education has got the best out of education… Without a gentle contempt for education no man\'s education is complete.\"</item>
+
+    </string-array>
+
+    <string-array name="authors">
+
+        <item>- Tom Bodett</item>
+        <item>- Albert Einstein</item>
+        <item>- Carter G. Woodson</item>
+        <item>- Peter Drucker</item>
+        <item>- Galileo Galilei</item>
+        <item>- John F. Kennedy</item>
+        <item>- Nelson Mandela</item>
+        <item>- Aristotle</item>
+        <item>- George Washington Carver</item>
+        <item>- Benjamin Franklin</item>
+        <item>- Abraham Lincoln</item>
+        <item>- Malcolm Forbes</item>
+        <item>- Plato</item>
+        <item>- Chanakya</item>
+        <item>- Daniel J. Boorstin</item>
+        <item>- Theodore Roosevelt</item>
+        <item>- Leo Buscaglia</item>
+        <item>- Malala Yousafzai</item>
+        <item>- Leonardo da Vinci</item>
+        <item>- Zhuangzi</item>
+        <item>- Amos Bronson Alcott</item>
+        <item>- Anthony J. D\'Angelo</item>
+        <item>- Joseph Addison</item>
+        <item>- Ambrose Bierce</item>
+        <item>- John W. Gardner</item>
+        <item>- Gilbert K. Chesterton</item>
+
+    </string-array>
+
 </resources>

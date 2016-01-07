@@ -30,16 +30,22 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
+<<<<<<< HEAD
+import android.widget.Switch;
+=======
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+>>>>>>> origin/master
 import android.widget.Toast;
 
 import com.thejuanandonly.schoolapp.ImageToCircle;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.URI;
@@ -161,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void theme() {
-        SharedPreferences prefs = getSharedPreferences("themeSave", Context.MODE_PRIVATE);
+        /*SharedPreferences prefs = getSharedPreferences("themeSave", Context.MODE_PRIVATE);
         theme = prefs.getInt("theme", 0);
 
         Window window = this.getWindow();
@@ -175,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
                 toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
 
                 if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.mainblue800));
-        }
+        }*/
     }
 
     @Override
@@ -210,9 +216,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void notificationsClick(View view) {
-        CheckBox notificationsCheckBox = (CheckBox) findViewById(R.id.notificationsCheckBox);
-        CheckBox soundsCheckBox = (CheckBox) findViewById(R.id.soundsNotificationCheckBox);
-        CheckBox vibrationsCheckBox = (CheckBox) findViewById(R.id.vibrationsNotificationCheckBox);
+        Switch notificationsCheckBox = (Switch) findViewById(R.id.notificationsCheckBox);
+        Switch soundsCheckBox = (Switch) findViewById(R.id.soundsNotificationCheckBox);
+        Switch vibrationsCheckBox = (Switch) findViewById(R.id.vibrationsNotificationCheckBox);
 
         boolean isChecked = notificationsCheckBox.isChecked();
         soundsCheckBox.setChecked(isChecked);
@@ -336,6 +342,9 @@ public class MainActivity extends AppCompatActivity {
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         builder.setView(input);
 
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
+
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -362,11 +371,24 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
         ArrayList<String> m_listItems = new ArrayList<>();
         try {
-             set = new JSONArray(prefs.getString("List", null));
+            set = new JSONArray(prefs.getString("List", null));
 
         } catch (Exception e) {
         }
 
+        for (int i = 0; i < set.length(); i++){
+
+            try {
+                if (subject.equals(set.getString(i))){
+
+                    Toast.makeText(this, "This subject already exists", Toast.LENGTH_LONG).show();
+                    subjectDialog();
+                    return;
+
+                }
+            } catch (JSONException e) {
+            }
+        }
 
         if (subject != null && subject.length() > 0) {
 
@@ -377,6 +399,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Don't leave the space blank!", Toast.LENGTH_LONG).show();
             subjectDialog();
+            return;
         }
 
         //SP pre kazdy predmet
@@ -458,6 +481,9 @@ public class MainActivity extends AppCompatActivity {
         FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
     }
+<<<<<<< HEAD
+}
+=======
 
     public void updateUserDetails() {
         SharedPreferences sharedPreferences = getSharedPreferences("User", MODE_PRIVATE);
@@ -488,3 +514,4 @@ public class MainActivity extends AppCompatActivity {
         userNicktxtview.setText(userNickname);
     }
 }
+>>>>>>> origin/master

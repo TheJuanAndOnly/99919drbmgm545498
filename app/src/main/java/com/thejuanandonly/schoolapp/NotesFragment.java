@@ -19,7 +19,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+<<<<<<< HEAD
+import android.widget.ImageView;
+=======
 import android.widget.EditText;
+>>>>>>> origin/master
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,7 +56,20 @@ public class NotesFragment extends Fragment {
 
         toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("Notes");
+        toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
 
+<<<<<<< HEAD
+        ImageView img = (ImageView) getActivity().findViewById(R.id.overviewImg);
+        img.setVisibility(View.GONE);
+
+        TextView quote = (TextView) getActivity().findViewById(R.id.quote);
+        quote.setVisibility(View.GONE);
+
+        TextView author = (TextView) getActivity().findViewById(R.id.author);
+        author.setVisibility(View.GONE);
+
+=======
+>>>>>>> origin/master
         lv_notes = (ListView) rootView.findViewById(R.id.SubjectListView_Notes);
 
         lv_notes.setOnItemClickListener(new AdapterView.OnItemClickListener() {

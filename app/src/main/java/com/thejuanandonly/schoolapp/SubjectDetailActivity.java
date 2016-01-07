@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -54,6 +55,7 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -76,12 +78,28 @@ public class SubjectDetailActivity extends AppCompatActivity {
         initialContext = getApplicationContext();
         currentSubject = getIntent().getExtras().getString("subject", null);
         JSONArray arrayOfCategories;
-        theme();
         String subject = getIntent().getExtras().getString("subject", null);
-        toolbar.setTitle(subject);
 
+        Window window = this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.setStatusBarColor(getResources().getColor(android.R.color.black));
+        }
+
+        String[] quotes = getResources().getStringArray(R.array.quotes);
+        Log.d("debugD", quotes[0]);
+
+        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.subjectDetailToolbar);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        TextView firstLetter = (TextView) findViewById(R.id.firstLetterTv);
+        firstLetter.setText(String.valueOf(subject.charAt(0)));
+
+        TextView subjectName = (TextView) findViewById(R.id.subjectTv);
+        subjectName.setText(subject);
 
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -98,7 +116,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
             editor.putString("ListOfPercentages", arrayOfPercentages.toString()).apply();
         }
 
-
         try {
             ArrayList<String> strings = new ArrayList<String>();
             for (int i = 0; i < arrayOfCategories.length(); i++){
@@ -108,17 +125,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
             }
         }catch (Exception e ){
             Toast.makeText(this, "Add a category", Toast.LENGTH_SHORT).show();
-        }
-
-        TextView textView = (TextView) findViewById(R.id.testsToWriteEditText);
-        textView.setText(String.valueOf(prefs.getInt("testsToWrite", 1)));
-
-        LinearLayout ttwLayout = (LinearLayout) findViewById(R.id.ttwLayout);
-        if (prefs.getInt("GradeType", 0) == 0){
-            ttwLayout.setVisibility(View.VISIBLE);
-        }else {
-            ttwLayout.setVisibility(View.GONE);
-            editor.putInt("testsToWrite", 1).apply();
         }
 
         editor.putBoolean("doSetLv", true).apply();
@@ -136,6 +142,17 @@ public class SubjectDetailActivity extends AppCompatActivity {
             averageTV.setText("GPA: " + prefs.getString("AvgGrade", "0"));
         }else {
             averageTV.setText("Average: " + prefs.getString("AvgGrade", "0"));
+        }
+
+        TextView textView = (TextView) findViewById(R.id.testsToWriteEditText);
+        textView.setText(String.valueOf(prefs.getInt("testsToWrite", 1)));
+
+        LinearLayout ttwLayout = (LinearLayout) findViewById(R.id.ttwLayout);
+        if (prefs.getInt("GradeType", 0) == 0 && !prefs.getBoolean("useCategories", false)){
+            ttwLayout.setVisibility(View.VISIBLE);
+        }else {
+            ttwLayout.setVisibility(View.GONE);
+            editor.putInt("testsToWrite", 1).apply();
         }
     }
 
@@ -176,7 +193,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 int visibility = relativeLayout.getVisibility();
                 if (visibility == 8) {
                     relativeLayout.setVisibility(View.VISIBLE);
-                    rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_black_24dp);
+                    rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_white_24dp);
                 }
 
             }else {
@@ -207,6 +224,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
+
+        setAvgTv();
 
         if (!prefs.getBoolean("doSetLv", true)) return;
 
@@ -313,7 +332,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                     }
                 }
 
-                if (count != 100 && count != 0) {
+                if (prefs.getBoolean("usePercentages", false) && count != 100 && count != 0) {
 
                     final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "The total must equal 100!", Snackbar.LENGTH_INDEFINITE);
                     snackbar.show();
@@ -362,7 +381,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
             }
         }
 
-        setAvgTv();
         setPredictionListView();
     }
 //////////////////////////////////////////////////////////////////////////
@@ -805,30 +823,31 @@ public class SubjectDetailActivity extends AppCompatActivity {
             arrayOfPercentages = new JSONArray();
         }
 
-        int different = 0;
         for (int i = 0; i < arrayOfCategories.length(); i++) {
             try {
-                if (!arrayOfCategories.getString(i).equals(name)) {
-                    different++;
+                if (arrayOfCategories.getString(i).equals(name)) {
+
+                    Toast.makeText(this, "This category already exists", Toast.LENGTH_LONG).show();
+                    addCategory(null);
+                    return;
+
                 }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        if (different == arrayOfCategories.length()){
-
-            try {
-                arrayOfCategories.put(name);
-                editor.putString("ListOfCategories", arrayOfCategories.toString());
-
-                arrayOfPercentages.put(String.valueOf(100 / (arrayOfPercentages.length() + 1)));
-                editor.putString("ListOfPercentages", arrayOfPercentages.toString());
-
             } catch (Exception e) {
-                e.printStackTrace();
             }
         }
 
+        try {
+            arrayOfCategories.put(name);
+            editor.putString("ListOfCategories", arrayOfCategories.toString());
+
+            arrayOfPercentages.put(String.valueOf(100 / (arrayOfPercentages.length() + 1)));
+            editor.putString("ListOfPercentages", arrayOfPercentages.toString());
+
+            balancePercentages();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         char[] chars = gradesString.toCharArray();
         JSONArray arrayOfGrades = new JSONArray();
@@ -1507,26 +1526,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
         finish();
     }
 //////////////////////////////////////////////////////////////////////////
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void theme() {
-        SharedPreferences prefs = getSharedPreferences("themeSave", Context.MODE_PRIVATE);
-        int theme = prefs.getInt("theme", 0);
-
-        Window window = this.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.subjectDetailToolbar);
-
-        switch (theme) {
-            default:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.red800));
-        }
-    }
-//////////////////////////////////////////////////////////////////////////
     public void titleClick(View view) {
 
         RelativeLayout relativeLayout;
@@ -1544,10 +1543,10 @@ public class SubjectDetailActivity extends AppCompatActivity {
         int visibility = relativeLayout.getVisibility();
         if (visibility == 8) {
             relativeLayout.setVisibility(View.VISIBLE);
-            rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_black_24dp);
+            rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_white_24dp);
         } else {
             relativeLayout.setVisibility(View.GONE);
-            rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_down_black_24dp);
+            rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_down_white_24dp);
         }
 
         setListView();
