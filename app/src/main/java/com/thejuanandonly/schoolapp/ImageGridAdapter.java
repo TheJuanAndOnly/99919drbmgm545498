@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -29,6 +31,9 @@ import java.util.ArrayList;
  * Created by Daniel on 11/15/2015.
  */
 public class ImageGridAdapter extends BaseAdapter {
+
+    int height = PictureGroupActivity.height;
+    int width = PictureGroupActivity.width;
 
 
     private Context mContext;
@@ -62,14 +67,16 @@ public class ImageGridAdapter extends BaseAdapter {
 
     public View getView(int position, View convertView, ViewGroup parent) {
 
+        Resources r = Resources.getSystem();
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 105, r.getDisplayMetrics());
 
 
         ImageView imageView;
         if (convertView == null) {
             imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(210, 210));
+            imageView.setLayoutParams(new GridView.LayoutParams((int)px, (int)px));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            imageView.setPadding(2, 2, 2, 2);
+            imageView.setPadding(1, 1, 1, 1);
         }  else {
             imageView = (ImageView) convertView;
         }

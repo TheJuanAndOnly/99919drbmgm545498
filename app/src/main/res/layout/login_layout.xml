@@ -33,7 +33,7 @@
         android:layout_gravity="center|bottom"
         android:layout_x="93dp"
         android:layout_y="388dp"
-        android:hint="NICKNAME"
+        android:hint="Your name"
         android:textColorHint="#6fc2d1"
         android:gravity="center"
         android:id="@+id/nickname"

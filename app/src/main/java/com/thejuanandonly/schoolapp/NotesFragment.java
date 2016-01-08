@@ -128,7 +128,9 @@ public class NotesFragment extends Fragment {
         JSONArray array = new JSONArray();
         ArrayList<String> arrayList = new ArrayList<>();
 
-        textView.getText();
+        try {
+            textView.getText();
+        } catch (NullPointerException e) {}
 
         SharedPreferences preferences = getActivity().getSharedPreferences("ListOfSubjectsNotes", Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = preferences.edit();
@@ -270,7 +272,7 @@ public class NotesFragment extends Fragment {
             }
 
             lv_notes = (ListView) getView().findViewById(R.id.SubjectListView_Notes);
-            m_adapter_notes = new ArrayAdapter<String>(getActivity().getApplicationContext(), R.layout.subjectadder_textview_layout, arrayList);
+            m_adapter_notes = new ArrayAdapter<String>(getActivity().getApplicationContext(), R.layout.notesdetail_listview_item, R.id.textView1, arrayList);
             lv_notes = (ListView) getView().findViewById(R.id.SubjectListView_Notes);
             lv_notes.setAdapter(m_adapter_notes);
             m_adapter_notes.notifyDataSetChanged();
@@ -300,7 +302,7 @@ public class NotesFragment extends Fragment {
             }
 
             ListView lv_notes = (ListView) v.findViewById(R.id.SubjectListView_Notes);
-            ArrayAdapter m_adapter_notes = new ArrayAdapter<String>(context, R.layout.subjectadder_textview_layout, arrayList);
+            ArrayAdapter m_adapter_notes = new ArrayAdapter<String>(context, R.layout.notesdetail_listview_item, R.id.textView1, arrayList);
 
             lv_notes.setAdapter(m_adapter_notes);
             m_adapter_notes.notifyDataSetChanged();

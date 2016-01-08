@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
-import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -24,7 +23,7 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 public class ScheduleActivity extends Activity {
 
     private static int RESULT_LOAD_IMAGE = 1;
-    ImageView imageView;
+    SubsamplingScaleImageView imageView;
     String picture;
 
     @Override
@@ -32,11 +31,10 @@ public class ScheduleActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.schedule_activity_layout);
         String picturePath = loadPath();
-
-        SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) findViewById(R.id.schedule_image_view);
+        imageView = (SubsamplingScaleImageView) findViewById(R.id.schedule_image_view);
 
         if (picturePath != null) {
-            Toast.makeText(this, "Long click on the image to change it", Toast.LENGTH_LONG).show(); //Sem dáme SNackbaríček
+            Toast.makeText(this, "Long click to choose an image", Toast.LENGTH_LONG).show();
             imageView.setImage(ImageSource.bitmap(BitmapScaled(picturePath, 800, 800)));
 
             imageView.setLongClickable(true);
@@ -49,6 +47,9 @@ public class ScheduleActivity extends Activity {
                 }
             });
         }
+
+
+
     }
 
     @Override
@@ -66,9 +67,7 @@ public class ScheduleActivity extends Activity {
             picture = cursor.getString(columnIndex);
             cursor.close();
 
-            SubsamplingScaleImageView imageView = new SubsamplingScaleImageView(this);
             imageView.setImage(ImageSource.bitmap(BitmapScaled(picture, 800, 800)));
-
             savePath(picture);
         }
     }
@@ -99,7 +98,7 @@ public class ScheduleActivity extends Activity {
             SizeSample = heightRatio < widthRatio ? heightRatio : widthRatio;
         }
 
-            return SizeSample;
+        return SizeSample;
     }
 
     public String loadPath() {

@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
+
     <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -12,7 +14,8 @@
         android:adjustViewBounds="true"
         android:scaleType="fitCenter"
         android:clickable="true"
-        android:id="@+id/schedule_image_view"
-        android:background="@android:drawable/ic_menu_gallery"/>
+        android:id="@+id/schedule_image_view" />
+
+
 
 </LinearLayout>

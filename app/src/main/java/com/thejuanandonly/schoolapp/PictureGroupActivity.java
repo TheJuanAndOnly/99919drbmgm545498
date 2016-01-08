@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Selection;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -51,6 +52,7 @@ public class PictureGroupActivity extends AppCompatActivity {
     public static Uri selectedImage;
     public static ArrayList<Bitmap> ALofSelectedImgs = new ArrayList<>();
     public static ArrayList<Bitmap> ALofRSelectedImgs = new ArrayList<>();
+    public static int height, width;
     ArrayList<String> arrayListPD = new ArrayList<>();
     private static int RESULT_LOAD_IMAGE = 1;
     private Menu menu;
@@ -69,7 +71,14 @@ public class PictureGroupActivity extends AppCompatActivity {
         setContentView(R.layout.picture_group_activity_layout);
         currentPictureGroup = getIntent().getExtras().getString("subjectDetailNotes", null);
 
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+
+        height = displaymetrics.heightPixels;
+        width = displaymetrics.widthPixels;
+
         theme();
+
         String subject_notes = getIntent().getExtras().getString("subNote", "SchoolApp");
         toolbar.setTitle(subject_notes);
 
@@ -107,7 +116,7 @@ public class PictureGroupActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 
-                Toast.makeText(PictureGroupActivity.this, "position: " + position , Toast.LENGTH_SHORT).show();
+                Toast.makeText(PictureGroupActivity.this, "position: " + position, Toast.LENGTH_SHORT).show();
                 Intent viewPager = new Intent(getApplicationContext(), GridViewPager.class);
                 viewPager.putExtra("position", position);
                 startActivity(viewPager);
@@ -156,9 +165,6 @@ public class PictureGroupActivity extends AppCompatActivity {
 
                 arrayListOfImgs.remove(id);
                 arrayOfImgs = new JSONArray(arrayListOfImgs);
-
-
-
 
 
                 if (preferences.getInt("numberOfImgs", 0) == 0) {
@@ -247,7 +253,6 @@ public class PictureGroupActivity extends AppCompatActivity {
             }
 
 
-
             selectedImage = data.getData();
             Uri selectedImage = data.getData();
 
@@ -264,7 +269,6 @@ public class PictureGroupActivity extends AppCompatActivity {
             //Collections.reverse(ALofRSelectedImgs);
             ALofSelectedImgs.add(BitmapScaled(picture, 100, 100));
             //Collections.reverse(ALofSelectedImgs);
-
 
 
             arrayOfImgs.put(picture);
@@ -304,7 +308,6 @@ public class PictureGroupActivity extends AppCompatActivity {
                     imageUri = arrayOfImgs.getString(i);
                 } catch (Exception e) {
                 }
-
 
 
                 ALofSelectedImgs.add(BitmapScaled(imageUri, 100, 100));
@@ -350,7 +353,6 @@ public class PictureGroupActivity extends AppCompatActivity {
 
         return SizeSample;
     }
-
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

@@ -55,8 +55,8 @@ public class NotesDetailActivity extends AppCompatActivity {
     ListView listView;
     JSONArray arrayOfCategories, jsonArray;
     ArrayAdapter<String> arrayAdapter;
-    ArrayList<String> arrayList;
-    String subjectName, newSubCategoryName;
+    public static ArrayList<String> arrayList;
+    public static String subjectName, newSubCategoryName;
     String subCategoryName, update = "";
     String subCategory = "";
 
@@ -145,7 +145,10 @@ public class NotesDetailActivity extends AppCompatActivity {
         final SharedPreferences preferences = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getExtras().getString("note", null), Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = preferences.edit();
         JSONArray array = new JSONArray();
-        textView.getText();
+
+        try {
+            textView.getText();
+        } catch (NullPointerException e) {}
 
         SharedPreferences GroupNamePrefs = getSharedPreferences("SubjectGroupName" + subjectName, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editorName = GroupNamePrefs.edit();
@@ -274,8 +277,9 @@ public class NotesDetailActivity extends AppCompatActivity {
                     }
                 }
 
-                arrayAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.subjectadder_textview_layout, arrayList);
+                arrayAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.notesdetail_listview_item, R.id.textView1, arrayList);
 
+                //noteAdapter = new CustomNoteAdapter(getApplicationContext(), arrayList);
                 listView.setAdapter(arrayAdapter);
             }
 

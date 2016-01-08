@@ -42,13 +42,11 @@ import android.widget.TextView;
 
 import android.widget.Toast;
 
-import com.thejuanandonly.schoolapp.ImageToCircle;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
