@@ -3,6 +3,8 @@ package com.thejuanandonly.schoolapp;
 import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -206,8 +208,10 @@ public class TaskAdder extends ActionBarActivity {
             if (nameTask.getText().length() > 0 && whatTask.getText().length() > 0 && time.getTime() > System.currentTimeMillis()) {
                 if (editing == true) {
                     editTask();
+                    alwaysOnScreen(this, numberOfTask+"");
                 } else {
                     addTask();
+                    alwaysOnScreen(this, numberOfTask+"");
                 }
             } else if (nameTask.getText().length() == 0 || whatTask.getText().length() == 0) {
                 final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Don't leave the space blank!", Snackbar.LENGTH_INDEFINITE);
@@ -370,6 +374,39 @@ public class TaskAdder extends ActionBarActivity {
             PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), 0);
             alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
         }
+    }
+
+    public void alwaysOnScreen(Context context, String name) {
+        String nameForAlways = null;
+        if (numberOfTask == 1) {
+            nameForAlways = " todo task";
+        } else if (numberOfTask > 1) {
+            nameForAlways = " todo tasks";
+        }
+
+        ArrayList<String> listNamez = new ArrayList<String>();
+        for (int i = 0; i < arrayName.length(); i++){
+            try {
+                listNamez.add(arrayName.getString(i));
+            } catch (Exception e) {
+            }
+        }
+
+        String childWithNames = listNamez.toString();
+
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("fromNotification", true);
+        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
+
+        Notification notification = new Notification.Builder(context)
+                .setContentTitle(name + nameForAlways)
+                .setContentText(childWithNames.substring(1, childWithNames.length()-1))
+                .setSmallIcon(R.drawable.ic_event_available_white_24dp)
+                .setContentIntent(contentIntent).build();
+
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+        notification.flags |= Notification.FLAG_NO_CLEAR;
+        notificationManager.notify(0, notification);
     }
 
 }
