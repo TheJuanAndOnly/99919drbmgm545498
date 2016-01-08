@@ -315,6 +315,13 @@ public class MainActivity extends AppCompatActivity {
                         SharedPreferences userPrefs = getSharedPreferences("User", MODE_PRIVATE);
                         userPrefs.edit().clear().commit();
 
+                        SharedPreferences prefs = getSharedPreferences("PicturePath", Context.MODE_PRIVATE);
+                        prefs.edit().clear().commit();
+
+                        SharedPreferences prefsSchedule = getSharedPreferences("ImgChange", Context.MODE_PRIVATE);
+                        prefsSchedule.edit().clear().commit();
+
+
 
                         Toast.makeText(MainActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
 

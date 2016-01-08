@@ -31,7 +31,7 @@
         <activity
             android:name=".ScheduleActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:theme="@style/Theme.Transparent">
+            android:theme="@style/AppTheme">
         </activity>
 
         <activity
