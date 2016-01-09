@@ -255,7 +255,6 @@ public class NotesFragment extends Fragment {
 
     @Override
     public void onResume() {
-
         SharedPreferences arrayPrefs_notes = getActivity().getSharedPreferences("ListOfSubjectsNotes", Context.MODE_PRIVATE);
         JSONArray set_notes = new JSONArray();
         arrayList = new ArrayList<String>();

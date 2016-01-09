@@ -55,7 +55,7 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
         for (int timePosition = 0; timePosition < numberOfTask; timePosition++) {
             if (timess.get(timePosition).getTime() < System.currentTimeMillis() && timess.get(timePosition).getTime() > System.currentTimeMillis() - 10000) {
                 try {
-                    notifyUser(context, arrayName.getString(timePosition), arrayWhat.getString(timePosition), timePosition);
+                    notifyUser(context, arrayName.getString(timePosition), arrayWhat.getString(timePosition));
                     taskPosition = timePosition;
                 } catch (Exception e) {
                 }
@@ -67,7 +67,7 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
         alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 10000, mAlarmSender);
     }
 
-    public void notifyUser(Context context, String name, String what, int id) {
+    public void notifyUser(Context context, String name, String what) {
         Intent intent = new Intent(context, MainActivity.class);
         intent.putExtra("fromNotification", true);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
@@ -75,13 +75,13 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
         Notification notification = new Notification.Builder(context)
                 .setContentTitle(name)
                 .setContentText(what)
-                .setVibrate(new long[]{500, 500})
+                .setVibrate(new long[]{500, 500, 500, 500})
                 .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
                 .setSmallIcon(R.drawable.ic_event_available_white_24dp)
                 .setContentIntent(contentIntent).build();
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
-        notificationManager.notify(id, notification);
+        notificationManager.notify(1, notification);
     }
 }

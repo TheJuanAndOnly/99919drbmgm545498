@@ -68,20 +68,19 @@ public class DoneTasksTabFragment extends Fragment {
     }
 
     private void setGroupIndicatorToRight() {
-        /* Get the screen width */
-        DisplayMetrics dm = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(dm);
-        int width = dm.widthPixels;
+        DisplayMetrics metrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        int width = metrics.widthPixels;
 
-        expListView.setIndicatorBounds(width - getDipsFromPixel(35), width - getDipsFromPixel(5));
+        expListView.setIndicatorBounds(width - GetPixelFromDips(50), width - GetPixelFromDips(0));
     }
 
-    // Convert pixel to dip
-    public int getDipsFromPixel(float pixels) {
+    public int GetPixelFromDips(float pixels) {
         // Get the screen's density scale
         final float scale = getResources().getDisplayMetrics().density;
         // Convert the dps to pixels, based on density scale
         return (int) (pixels * scale + 0.5f);
+
     }
 
     @Override

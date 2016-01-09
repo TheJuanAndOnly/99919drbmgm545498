@@ -194,6 +194,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 editorDone.commit();
 
                 ((MainActivity) context).updateListTasks();
+                ((MainActivity) context).updateNotification();
             }
         });
 

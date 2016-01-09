@@ -3,6 +3,8 @@ package com.thejuanandonly.schoolapp;
 import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -514,5 +516,52 @@ public class MainActivity extends AppCompatActivity {
         }
 
         userNicktxtview.setText(userNickname);
+    }
+
+    public void updateNotification() {
+        SharedPreferences prefs = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+        JSONArray arrayName;
+        int numberOfTask = prefs.getInt("NumberOfTask", 0);
+        try {
+            arrayName = new JSONArray(prefs.getString("TaskName", null));
+        } catch (Exception e) {
+            arrayName = new JSONArray();
+        }
+
+        ArrayList<String> listNamez = new ArrayList<String>();
+        for (int i = 0; i < arrayName.length(); i++){
+            try {
+                listNamez.add(arrayName.getString(i));
+            } catch (Exception e) {
+            }
+        }
+
+        String childWithNames = listNamez.toString();
+
+        if (numberOfTask > 0) {
+            String nameForAlways = null;
+            if (numberOfTask == 1) {
+                nameForAlways = " todo task";
+            } else if (numberOfTask > 1) {
+                nameForAlways = " todo tasks";
+            }
+
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("fromNotification", true);
+            PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+            Notification notification = new Notification.Builder(this)
+                    .setContentTitle(numberOfTask + nameForAlways)
+                    .setContentText(childWithNames.substring(1, childWithNames.length()-1))
+                    .setSmallIcon(R.drawable.ic_event_available_white_24dp)
+                    .setContentIntent(contentIntent).build();
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            notification.flags |= Notification.FLAG_NO_CLEAR;
+            notificationManager.notify(0, notification);
+        } else {
+            NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(0);
+        }
     }
 }
