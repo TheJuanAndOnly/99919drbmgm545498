@@ -52,7 +52,6 @@
             android:id="@+id/grade_edit_text"
             android:textAppearance="?android:attr/editTextStyle"
             style="?android:attr/editTextStyle"
-            android:paddingRight="4dp"
             android:paddingLeft="4dp"
             android:text="1"
             android:background="@android:color/transparent"
@@ -61,6 +60,19 @@
             android:textColor="@color/greyText"
             android:textSize="16sp"
             android:singleLine="true"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/grade_edit_text_plus"
+            android:textAppearance="?android:attr/textViewStyle"
+            android:paddingRight="4dp"
+            android:text="+"
+            android:background="@android:color/transparent"
+            android:minHeight="5dp"
+            android:textStyle="bold"
+            android:textColor="@color/greyText"
+            android:textSize="16sp"/>
 
         <TextView
             android:layout_width="wrap_content"

@@ -157,10 +157,6 @@ public class PictureGroupActivity extends AppCompatActivity {
                 arrayListOfImgs.remove(id);
                 arrayOfImgs = new JSONArray(arrayListOfImgs);
 
-
-
-
-
                 if (preferences.getInt("numberOfImgs", 0) == 0) {
                     super.onResume();
                 } else {
@@ -287,7 +283,7 @@ public class PictureGroupActivity extends AppCompatActivity {
     protected void onResume() {
 
 
-        SharedPreferences prefs = this.getSharedPreferences("GridView" + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
+        SharedPreferences prefs = this.getSharedPreferences("GridView" + getIntent().getExtras().getString("subNote"), Context.MODE_PRIVATE);
         try {
             arrayOfImgs = new JSONArray(prefs.getString("NoteImages", null));
         } catch (Exception e) {

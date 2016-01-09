@@ -4,7 +4,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#dadada">
+    android:background="@color/darkbluebackground">
 
     <ListView
         android:layout_width="fill_parent"
@@ -14,7 +14,6 @@
         android:layout_marginRight="7dp"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="4dp"
-        android:textColor="@color/black"
         android:divider="@android:color/transparent"
         android:textSize="30sp">
 

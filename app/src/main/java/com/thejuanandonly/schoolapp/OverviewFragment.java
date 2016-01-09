@@ -94,26 +94,6 @@ public class OverviewFragment extends Fragment {
         ListView listView = (ListView) getView().findViewById(R.id.SubjectListView);
         listView.setAdapter(adapter);
 
-
-        TextView quoteTv = (TextView) getActivity().findViewById(R.id.quote);
-        TextView authorTv = (TextView) getActivity().findViewById(R.id.author);
-
-        String[] quotes = getResources().getStringArray(R.array.quotes);
-        String[] authors = getResources().getStringArray(R.array.authors);
-
-        int rnd = (int) (Math.random() * 26);
-
-        quoteTv.setText(quotes[rnd]);
-        authorTv.setText(authors[rnd]);
-
-        if (rnd == 24 || rnd == 23){
-            quoteTv.setTextSize(16);
-            authorTv.setTextSize(14);
-        }else {
-            quoteTv.setTextSize(18);
-            authorTv.setTextSize(16);
-        }
-
         super.onResume();
     }
 

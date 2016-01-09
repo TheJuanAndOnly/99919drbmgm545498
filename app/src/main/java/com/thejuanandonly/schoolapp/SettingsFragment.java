@@ -17,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 
 import com.thejuanandonly.schoolapp.R;
 
+import org.json.JSONArray;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -79,6 +81,22 @@ public class SettingsFragment extends Fragment {
             vibrationsCheckBox.setVisibility(View.VISIBLE);
         }
 
+        SharedPreferences preferences= getContext().getSharedPreferences("Global", Context.MODE_PRIVATE);
+        try {
+            JSONArray conversionArray = new JSONArray(preferences.getString("conversion", null));
+
+            EditText et1 = (EditText) getView().findViewById(R.id.etPerc1);
+            EditText et2 = (EditText) getView().findViewById(R.id.etPerc2);
+            EditText et3 = (EditText) getView().findViewById(R.id.etPerc3);
+            EditText et4 = (EditText) getView().findViewById(R.id.etPerc4);
+
+            et1.setText(conversionArray.getString(0));
+            et2.setText(conversionArray.getString(1));
+            et3.setText(conversionArray.getString(2));
+            et4.setText(conversionArray.getString(3));
+
+        }catch (Exception e){}
+
         super.onStart();
     }
 
@@ -110,6 +128,20 @@ public class SettingsFragment extends Fragment {
 
         }
 
+        JSONArray conversionArray = new JSONArray();
+        SharedPreferences preferences= getContext().getSharedPreferences("Global", Context.MODE_PRIVATE);
+
+        EditText et1 = (EditText) getView().findViewById(R.id.etPerc1);
+        EditText et2 = (EditText) getView().findViewById(R.id.etPerc2);
+        EditText et3 = (EditText) getView().findViewById(R.id.etPerc3);
+        EditText et4 = (EditText) getView().findViewById(R.id.etPerc4);
+
+        conversionArray.put(et1.getText().toString());
+        conversionArray.put(et2.getText().toString());
+        conversionArray.put(et3.getText().toString());
+        conversionArray.put(et4.getText().toString());
+
+        preferences.edit().putString("conversion", conversionArray.toString()).apply();
 
         super.onStop();
     }

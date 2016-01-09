@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <integer-array name="level_ints">
+
+        <item name="numOfSubjects">40</item>
+
+        <item name="avg5">-50</item>
+        <item name="avg4">-20</item>
+        <item name="avg3">0</item>
+        <item name="avg2">20</item>
+        <item name="avg1">50</item>
+
+        <item name="tasks">20</item>
+        <item name="tasksDone">30</item>
+
+    </integer-array>
+
+    <integer-array name="borders">
+
+        <item>100</item>
+        <item>200</item>
+        <item>350</item>
+        <item>500</item>
+        <item>650</item>
+        <item>800</item>
+
+    </integer-array>
+
+</resources>

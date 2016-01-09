@@ -10,6 +10,7 @@
     <string name="rating3">Try harder!</string>
     <string name="rating4">You can do better than that!</string>
     <string name="rating5">You\'re not even trying…</string>
+    <string name="New">New!</string>
 
     <string-array name="quotes">
 

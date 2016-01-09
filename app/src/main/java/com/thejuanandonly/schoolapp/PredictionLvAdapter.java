@@ -54,7 +54,7 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
                 strings = new String[]{"1", "2", "3", "4", "5"};
                 break;
             case 1:
-                strings = new String[]{"90+", "75+", "50+", "30+", "0+"};
+                strings = new String[]{"90", "75", "50", "30", "0"};
                 break;
             case 2:
                 strings = new String[]{"0", "1", "2", "3", "4"};
@@ -70,7 +70,12 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
             et.setVisibility(View.VISIBLE);
 
             EditText editText = (EditText) convertView.findViewById(R.id.grade_edit_text);
-            editText.setText(strings[position]);
+            try{
+                JSONArray array = new JSONArray(prefs.getString("predictionPercentages", null));
+                editText.setText(array.getString(position));
+            }catch (Exception e){
+                editText.setText(strings[position]);
+            }
         }
 
         int testsToWrite = prefs.getInt("testsToWrite", 1);
@@ -486,7 +491,7 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
                                 int percentage = (Integer.parseInt(String.valueOf(strings[position].charAt(0))) * 10);
                                 try {
                                     percentage += Integer.parseInt(String.valueOf(strings[position].charAt(1)));
-                                } catch (NumberFormatException e) {
+                                } catch (NumberFormatException | IndexOutOfBoundsException e) {
                                     percentage /= 10;
                                 }
 
@@ -730,7 +735,6 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
 
             //}
         }
-
 
         return convertView;
     }

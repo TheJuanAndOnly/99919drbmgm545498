@@ -136,6 +136,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
+        editor.putString("AvgGrade", String.valueOf(countAverage())).apply();
+
         TextView averageTV = (TextView) findViewById(R.id.averageTextView);
         int gradeType = prefs.getInt("GradeType" , 0);
         if (gradeType == 2){
@@ -143,6 +145,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         }else {
             averageTV.setText("Average: " + prefs.getString("AvgGrade", "0"));
         }
+
 
         TextView textView = (TextView) findViewById(R.id.testsToWriteEditText);
         textView.setText(String.valueOf(prefs.getInt("testsToWrite", 1)));
@@ -246,7 +249,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
             Log.e("debug", e.toString());
         }
 
-        int gradeType = prefs.getInt("GradeType" , 0);
+        int gradeType = prefs.getInt("GradeType", 0);
 
         ListView listView = (ListView) findViewById(R.id.categoryListView);
         TextView gradeTv = (TextView) findViewById(R.id.gradeTextViewNoCat);
@@ -346,7 +349,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                         }
                     });
 
-                } else if (isNonZeroCategory) {
+                } else if (prefs.getBoolean("useValues", false) && isNonZeroCategory) {
 
                     final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "In order for all empty categories to be ignored, set their values to 0", Snackbar.LENGTH_INDEFINITE);
                     snackbar.show();
@@ -447,12 +450,14 @@ public class SubjectDetailActivity extends AppCompatActivity {
                         category = spinner.getSelectedItem().toString();
                         pos = spinner.getSelectedItemPosition();
 
-                    }catch (NullPointerException e){
+                    } catch (NullPointerException e) {
                         category = "Grades";
                         pos = 0;
                     }
 
                     saveGrade(grade, category, pos);
+                    editor.putBoolean("doSetLv", true).apply();
+                    setListView();
                     dialog.dismiss();
                 }
             });
@@ -541,9 +546,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 editor.putString(category + "Grades" + gradeType, jsonArray.toString()).apply();
                 break;
         }
-
-        editor.putBoolean("doSetLv", true).apply();
-        setListView();
     }
 //////////////////////////////////////////////////////////////////////////
     public double countAverage(){
@@ -560,7 +562,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
         ArrayList<Double> semiAverage = new ArrayList<Double>();
 
-        if (!prefs.getBoolean("useValues", false) && !prefs.getBoolean("useCategories", false)){
+        if (!prefs.getBoolean("useCategories", false)){
 
             for (int i = 0; i < arrayOfCategories.length(); i++){
 
@@ -613,6 +615,39 @@ public class SubjectDetailActivity extends AppCompatActivity {
             }
 
         }
+        else if (!prefs.getBoolean("useValues", false)) {
+
+            for (int i = 0; i < arrayOfCategories.length(); i++){
+                String s = "";
+                try {
+                    s = arrayOfCategories.getString(i);
+                }catch (JSONException e) {}
+                semiAverage.add(countSemiAverage(s));
+            }
+
+            double average = 0;
+            int count = 0;
+            for(int i = 0; i < semiAverage.size(); i++) {
+
+                if (semiAverage.get(i) != -1){
+
+                    average += semiAverage.get(i);
+                    count++;
+                }
+            }
+            average /= count;
+
+            DecimalFormat df = new DecimalFormat("#.####");
+            average = Double.valueOf(df.format(average));
+
+            if (String.valueOf(average).equals("NaN")){
+                return 0;
+            }
+            else {
+                return average;
+            }
+
+        }
         else {
 
             for (int i = 0; i < arrayOfCategories.length(); i++){
@@ -652,6 +687,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
         try {
             jsonArray = new JSONArray(prefs.getString(category + "Grades" + gradeType, null));
         }catch (Exception e) {}
+
+        if (prefs.getBoolean("useCategories", false) && !prefs.getBoolean("useValues", false) && jsonArray.length() == 0) return -1;
 
         double average;
         if (gradeType != 2) {
