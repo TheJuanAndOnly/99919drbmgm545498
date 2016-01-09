@@ -319,7 +319,6 @@ public class PictureGroupActivity extends AppCompatActivity {
             }
         }
 
-
         super.onResume();
 
     }

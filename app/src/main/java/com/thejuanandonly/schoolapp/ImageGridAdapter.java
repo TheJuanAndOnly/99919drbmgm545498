@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.app.NavUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -67,14 +68,15 @@ public class ImageGridAdapter extends BaseAdapter {
 
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        Resources r = Resources.getSystem();
-        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 105, r.getDisplayMetrics());
+        DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
+        int width = metrics.widthPixels;
+        int photoSize = (width - 10*6)/3;
 
 
         ImageView imageView;
         if (convertView == null) {
             imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams((int)px, (int)px));
+            imageView.setLayoutParams(new GridView.LayoutParams(photoSize, photoSize));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(1, 1, 1, 1);
         }  else {
@@ -83,7 +85,7 @@ public class ImageGridAdapter extends BaseAdapter {
 
         try {
 
-                imageView.setImageBitmap(PictureGroupActivity.ALofSelectedImgs.get(position));
+            imageView.setImageBitmap(PictureGroupActivity.ALofSelectedImgs.get(position));
 
         }catch (Exception e) {}
 
