@@ -104,8 +104,8 @@ public class TasksFragment extends Fragment {
         switch (theme){
             default:
 
-                tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.lightbluebackground));
-                tabLayout.setTabTextColors(getResources().getColor(R.color.white), getResources().getColor(R.color.lightbluebackground));
+                tabLayout.setSelectedTabIndicatorColor(getResources().getColor(R.color.white));
+                tabLayout.setTabTextColors(getResources().getColor(R.color.lightbluebackground), getResources().getColor(R.color.white));
         }
 
     }

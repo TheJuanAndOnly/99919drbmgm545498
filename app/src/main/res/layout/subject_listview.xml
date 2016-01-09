@@ -36,7 +36,7 @@
             android:textAppearance="?android:attr/textAppearanceListItemSmall"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/arrow"
-            android:textAlignment="center"
+            android:gravity="center"
             android:minHeight="5dp"
             android:textColor="@color/greyText"
             android:textSize="23sp"/>

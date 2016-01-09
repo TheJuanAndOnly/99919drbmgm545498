@@ -181,7 +181,6 @@ public class PictureGroupActivity extends AppCompatActivity {
                 arrayListOfImgs.remove(id);
                 arrayOfImgs = new JSONArray(arrayListOfImgs);
 
-
                 if (preferences.getInt("numberOfImgs", 0) == 0) {
                     super.onResume();
                 } else {

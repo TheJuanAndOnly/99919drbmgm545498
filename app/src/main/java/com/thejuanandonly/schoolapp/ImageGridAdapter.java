@@ -33,10 +33,6 @@ import java.util.ArrayList;
  */
 public class ImageGridAdapter extends BaseAdapter {
 
-    int height = PictureGroupActivity.height;
-    int width = PictureGroupActivity.width;
-
-
     private Context mContext;
 
     public ImageGridAdapter(Context c) {
@@ -68,15 +64,18 @@ public class ImageGridAdapter extends BaseAdapter {
 
     public View getView(int position, View convertView, ViewGroup parent) {
 
+        Resources r = Resources.getSystem();
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 105, r.getDisplayMetrics());
+
         DisplayMetrics metrics = mContext.getResources().getDisplayMetrics();
         int width = metrics.widthPixels;
         int photoSize = (width - 10*6)/3;
 
-
         ImageView imageView;
         if (convertView == null) {
             imageView = new ImageView(mContext);
-            imageView.setLayoutParams(new GridView.LayoutParams(photoSize, photoSize));
+            imageView.setLayoutParams(new GridView.LayoutParams((int)px, (int)px));
+
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(1, 1, 1, 1);
         }  else {

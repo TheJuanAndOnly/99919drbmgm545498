@@ -84,14 +84,15 @@ public class CustomSubjectAdapter extends ArrayAdapter<Subject> {
         switch (prefs.getInt("GradeType", 0)) {
             case 0:
                 if (avg == 0){
-                    rating.setText("");
-                }else if (avg < 1.1){
+                    rating.setText(R.string.New);
+                    rating.setTextColor(getContext().getResources().getColor(R.color.red));
+                }else if (avg <= 1.1){
                     rating.setText(R.string.rating1);
-                }else if (avg < 2.0){
+                }else if (avg <= 2.0){
                     rating.setText(R.string.rating2);
-                }else if (avg < 3.0){
+                }else if (avg <= 3.0){
                     rating.setText(R.string.rating3);
-                }else if (avg < 4.0){
+                }else if (avg <= 4.0){
                     rating.setText(R.string.rating4);
                 }else {
                     rating.setText(R.string.rating5);
@@ -99,14 +100,15 @@ public class CustomSubjectAdapter extends ArrayAdapter<Subject> {
                 break;
             case 1:
                 if (avg == 0){
-                    rating.setText("");
-                }else if (avg > 98){
+                    rating.setText(R.string.New);
+                    rating.setTextColor(getContext().getResources().getColor(R.color.red));
+                }else if (avg >= 98){
                     rating.setText(R.string.rating1);
-                }else if (avg > 90){
+                }else if (avg >= 90){
                     rating.setText(R.string.rating2);
-                }else if (avg > 75){
+                }else if (avg >= 75){
                     rating.setText(R.string.rating3);
-                }else if (avg > 50){
+                }else if (avg >= 50){
                     rating.setText(R.string.rating4);
                 }else {
                     rating.setText(R.string.rating5);
@@ -114,14 +116,15 @@ public class CustomSubjectAdapter extends ArrayAdapter<Subject> {
                 break;
             case 2:
                 if (avg == 0){
-                    rating.setText("");
-                }else if (avg > 4.1){
+                    rating.setText(R.string.New);
+                    rating.setTextColor(getContext().getResources().getColor(R.color.red));
+                }else if (avg >= 4.1){
                     rating.setText(R.string.rating1);
-                }else if (avg > 3.67){
+                }else if (avg >= 3.67){
                     rating.setText(R.string.rating2);
-                }else if (avg > 2.67){
+                }else if (avg >= 2.67){
                     rating.setText(R.string.rating3);
-                }else if (avg > 1.67){
+                }else if (avg >= 1.67){
                     rating.setText(R.string.rating4);
                 }else {
                     rating.setText(R.string.rating5);

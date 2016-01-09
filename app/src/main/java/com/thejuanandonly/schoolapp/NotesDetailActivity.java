@@ -111,8 +111,17 @@ public class NotesDetailActivity extends AppCompatActivity {
                 } catch (Exception e) {
                 }
 
+                SharedPreferences preferences = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getExtras().getString("note", null), Context.MODE_PRIVATE);
+                jsonArray = new JSONArray();
+                String subCat = "";
+                try {
+                    jsonArray = new JSONArray(preferences.getString("ListGroupName", null));
+                    subCat = jsonArray.getString(position);
+                } catch (Exception e) {
+                }
+
                 Intent intent = new Intent(getApplicationContext(), PictureGroupActivity.class);
-                intent.putExtra("subNote", subCategory);
+                intent.putExtra("subNote", subCat);
                 intent.putExtra("position", position);
                 try {
                     intent.putExtra("subjectDetailNotes", jsonArray.getString(position));

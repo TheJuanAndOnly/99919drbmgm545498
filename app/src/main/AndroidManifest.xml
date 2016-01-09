@@ -21,7 +21,9 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:excludeFromRecents="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -46,7 +48,8 @@
 
         <activity android:name=".SubjectDetailActivity"
             android:label="@string/app_name"
-            android:excludeFromRecents="true">
+            android:excludeFromRecents="true"
+            android:screenOrientation="portrait">
         </activity>
 
         <activity android:name=".PictureGroupActivity"

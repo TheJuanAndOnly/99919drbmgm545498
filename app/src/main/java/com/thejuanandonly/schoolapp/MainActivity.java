@@ -13,6 +13,8 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -36,6 +38,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import android.widget.ProgressBar;
 import android.widget.Switch;
 
 import android.widget.ImageView;
@@ -48,6 +51,7 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -83,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
         userNicktxtview = (TextView) findViewById(R.id.usersNickname);
 
         updateUserDetails();
+        setLevel();
+        setQuote();
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
 
@@ -102,6 +108,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 mDrawerLayout.closeDrawers();
+
+                setLevel();
 
                 if (menuItem.getItemId() == R.id.nav_item_overview) {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
@@ -162,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
             fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();;
             taskAdded = false;
         }
+
         super.onResume();
     }
 
@@ -215,6 +224,214 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void setLevel(){
+
+        TextView levelText = (TextView) findViewById(R.id.levelText);
+        TextView levelDot = (TextView) findViewById(R.id.levelDot);
+        ProgressBar bar = (ProgressBar) findViewById(R.id.levelProgress);
+        TextView xp = (TextView) findViewById(R.id.xpProgress);
+
+        SharedPreferences arrayPrefs = getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
+
+        int[] array = getResources().getIntArray(R.array.level_ints);
+        int[] borders = getResources().getIntArray(R.array.borders);
+
+        int points = 0;
+
+        JSONArray arrayOfSubjects = new JSONArray();
+        try {
+            arrayOfSubjects = new JSONArray(arrayPrefs.getString("List", null));
+        }catch (Exception e) {}
+
+        for (int i = 0; i < arrayOfSubjects.length(); i++){
+
+            String currentSubj = "";
+            try {
+                currentSubj = arrayOfSubjects.getString(i);
+            } catch (JSONException e) {
+            }
+
+            SharedPreferences prefs = getSharedPreferences("Subject" + currentSubj, Context.MODE_PRIVATE);
+            double avg = Double.parseDouble(prefs.getString("AvgGrade", "0"));
+            int gradeType = prefs.getInt("GradeType" , 0);
+
+            if (avg != 0) {
+
+                points += array[0];
+                Log.d("debug", String.valueOf(array[0]));
+
+                switch (gradeType) {
+                    case 0:
+                        if (avg >= 4.5) {
+                            points += array[1];
+                            Log.d("debug", String.valueOf(array[1]));
+                        } else if (avg >= 3.5) {
+                            points += array[2];
+                            Log.d("debug", String.valueOf(array[2]));
+                        } else if (avg >= 2.5) {
+                            points += array[3];
+                            Log.d("debug", String.valueOf(array[3]));
+                        } else if (avg >= 1.5) {
+                            points += array[4];
+                            Log.d("debug", String.valueOf(array[4]));
+                        } else {
+                            points += array[5];
+                            Log.d("debug", String.valueOf(array[5]));
+                        }
+                        break;
+                    case 1:
+                        if (avg < 30) {
+                            points += array[1];
+                            Log.d("debug", String.valueOf(array[1]));
+                        } else if (avg < 50) {
+                            points += array[2];
+                            Log.d("debug", String.valueOf(array[2]));
+                        } else if (avg < 75) {
+                            points += array[3];
+                            Log.d("debug", String.valueOf(array[3]));
+                        } else if (avg < 90) {
+                            points += array[4];
+                            Log.d("debug", String.valueOf(array[4]));
+                        } else {
+                            points += array[5];
+                            Log.d("debug", String.valueOf(array[5]));
+                        }
+                        break;
+                    case 3:
+                        if (avg < 0.67) {
+                            points += array[1];
+                            Log.d("debug", String.valueOf(array[1]));
+                        } else if (avg < 1.67) {
+                            points += array[2];
+                            Log.d("debug", String.valueOf(array[2]));
+                        } else if (avg < 2.67) {
+                            points += array[3];
+                            Log.d("debug", String.valueOf(array[3]));
+                        } else if (avg < 3.67) {
+                            points += array[4];
+                            Log.d("debug", String.valueOf(array[4]));
+                        } else {
+                            points += array[5];
+                            Log.d("debug", String.valueOf(array[5]));
+                        }
+                        break;
+                }
+            }
+        }
+
+        SharedPreferences prefsToDo = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+        int numberOfTasks = prefsToDo.getInt("NumberOfTask", 0);
+
+        points += numberOfTasks * array[6];
+        Log.d("debug", String.valueOf(numberOfTasks * array[6]));
+
+        SharedPreferences prefsDone = getSharedPreferences("ListOfDoneTasks", Context.MODE_PRIVATE);
+        int numberOfDoneTask = prefsDone.getInt("NumberOfDoneTask", 0);
+
+        points += numberOfDoneTask * array[7];
+        Log.d("debug", String.valueOf(numberOfDoneTask * array[7]));
+
+        if (points <= borders[0]) {
+            levelText.setText("Level 1");
+            levelDot.setText("1");
+            levelDot.setBackgroundResource(R.drawable.dot1);
+
+            bar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.dotBlue), PorterDuff.Mode.SRC_IN);
+            bar.setMax(borders[0]);
+            bar.setProgress(points);
+
+            xp.setText(String.valueOf(points) + "xp" + " / " + String.valueOf(borders[0]) + "xp");
+
+        } else if (points <= borders[1]) {
+            levelText.setText("Level 2");
+            levelDot.setText("2");
+            levelDot.setBackgroundResource(R.drawable.dot2);
+
+            bar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.dotYellow), PorterDuff.Mode.SRC_IN);
+            bar.setMax(borders[1] - borders[0]);
+            bar.setProgress(points - borders[0]);
+
+            xp.setText(String.valueOf(points) + "xp" + " / " + String.valueOf(borders[1]) + "xp");
+
+        } else if (points <= borders[2]) {
+            levelText.setText("Level 3");
+            levelDot.setText("3");
+            levelDot.setBackgroundResource(R.drawable.dot3);
+
+            bar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.dotGreen), PorterDuff.Mode.SRC_IN);
+            bar.setMax(borders[2] - borders[1]);
+            bar.setProgress(points - borders[1]);
+
+            xp.setText(String.valueOf(points) + "xp" + " / " + String.valueOf(borders[2]) + "xp");
+
+        } else if (points <= borders[3]) {
+            levelText.setText("Level 4");
+            levelDot.setText("4");
+            levelDot.setBackgroundResource(R.drawable.dot4);
+
+            bar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.dotOrange), PorterDuff.Mode.SRC_IN);
+            bar.setMax(borders[3] - borders[2]);
+            bar.setProgress(points - borders[2]);
+
+            xp.setText(String.valueOf(points) + "xp" + " / " + String.valueOf(borders[3]) + "xp");
+
+        } else if (points <= borders[4]) {
+            levelText.setText("Level 5");
+            levelDot.setText("5");
+            levelDot.setBackgroundResource(R.drawable.dot5);
+
+            bar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.dotRed), PorterDuff.Mode.SRC_IN);
+            bar.setMax(borders[4] - borders[3]);
+            bar.setProgress(points - borders[3]);
+
+            xp.setText(String.valueOf(points) + "xp" + " / " + String.valueOf(borders[4]) + "xp");
+
+        } else if (points <= borders[5]) {
+            levelText.setText("Level 6");
+            levelDot.setText("6");
+            levelDot.setBackgroundResource(R.drawable.dot6);
+
+            bar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.dotViolet), PorterDuff.Mode.SRC_IN);
+            bar.setMax(borders[5] - borders[4]);
+            bar.setProgress(points - borders[4]);
+
+            xp.setText(String.valueOf(points) + "xp" + " / " + String.valueOf(borders[5]) + "xp");
+
+        }else if (points >= borders[5]) {
+            levelText.setText("Level 7");
+            levelDot.setText("7");
+            levelDot.setBackgroundResource(R.drawable.dot7);
+
+            bar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.dotPink), PorterDuff.Mode.SRC_IN);
+            bar.setMax(1);
+            bar.setProgress(1);
+
+            xp.setText("Max level mate!");
+        }
+
+    }
+
+    public void setQuote(){
+        TextView quoteTv = (TextView) findViewById(R.id.quote);
+        TextView authorTv = (TextView) findViewById(R.id.author);
+
+        String[] quotes = getResources().getStringArray(R.array.quotes);
+        String[] authors = getResources().getStringArray(R.array.authors);
+
+        int rnd = (int) (Math.random() * 26);
+
+        quoteTv.setText(quotes[rnd]);
+        authorTv.setText(authors[rnd]);
+
+        if (rnd == 24 || rnd == 23){
+            quoteTv.setTextSize(16);
+            authorTv.setTextSize(14);
+        }else {
+            quoteTv.setTextSize(18);
+            authorTv.setTextSize(16);
+        }
+    }
+
     public void notificationsClick(View view) {
         Switch notificationsCheckBox = (Switch) findViewById(R.id.notificationsCheckBox);
         Switch soundsCheckBox = (Switch) findViewById(R.id.soundsNotificationCheckBox);
@@ -258,76 +475,13 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int arg0) {
 
-                        try {
-                            SharedPreferences prefs = getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = prefs.edit();
-                            JSONArray arrayOfSubjects = new JSONArray(prefs.getString("List", null));
-
-                            for (int i = 0; i < arrayOfSubjects.length(); i++) {
-                                SharedPreferences preferences = getSharedPreferences("Subject" + arrayOfSubjects.get(i), Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor2 = preferences.edit();
-                                editor2.clear().apply();
-                            }
-                            editor.clear().apply();
-
-                        } catch (Exception e) {
-                        }
-
-                        try {
-                            SharedPreferences prefs_notes = getSharedPreferences("ListOfSubjectsNotes", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = prefs_notes.edit();
-                            JSONArray set_notes = new JSONArray(prefs_notes.getString("ListNotes", null));
-                            for (int i = 0; i < set_notes.length(); i++) {
-                                SharedPreferences preferences = getSharedPreferences("SubjectNotes" + set_notes.get(i), Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor2 = preferences.edit();
-                                editor2.clear().apply();
-                            }
-                            editor.clear().apply();
-
-                        } catch (Exception e) {
-                        }
-
-                        try {
-                            SharedPreferences prefs_groupName = getSharedPreferences("ListOfSubjectsGroupName", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor_groupName = prefs_groupName.edit();
-                            JSONArray set_groupName = new JSONArray(prefs_groupName.getString("ListGroupName", null));
-
-                            for (int i = 0; i < set_groupName.length(); i++) {
-                                SharedPreferences preferences_groupName = getSharedPreferences("SubjectGroupName" + set_groupName.get(i), Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor2_groupName = preferences_groupName.edit();
-                                editor2_groupName.clear().apply();
-                            }
-                            editor_groupName.clear().apply();
-
-                        } catch (Exception e) {
-                        }
-
-                        SharedPreferences tasksPrefs = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
-                        tasksPrefs.edit().clear().commit();
-
-                        SharedPreferences doneTasksPrefs = getSharedPreferences("ListOfDoneTasks", Context.MODE_PRIVATE);
-                        doneTasksPrefs.edit().clear().commit();
-
-                        SharedPreferences gridPrefs = getSharedPreferences("GridView", Context.MODE_PRIVATE);
-                        gridPrefs.edit().clear().commit();
-
-                        SharedPreferences subjectGroupPrefs = getSharedPreferences("SubjectGroupName", Context.MODE_PRIVATE);
-                        subjectGroupPrefs.edit().clear().commit();
-
-                        SharedPreferences userPrefs = getSharedPreferences("User", MODE_PRIVATE);
-                        userPrefs.edit().clear().commit();
-
-                        SharedPreferences prefs = getSharedPreferences("PicturePath", Context.MODE_PRIVATE);
-                        prefs.edit().clear().commit();
-
-                        SharedPreferences prefsSchedule = getSharedPreferences("ImgChange", Context.MODE_PRIVATE);
-                        prefsSchedule.edit().clear().commit();
-
-
+                        clearApplicationData();
 
                         Toast.makeText(MainActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
 
                         updateUserDetails();
+
+                        System.exit(0);
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -336,6 +490,34 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         builder.show();
+    }
+
+    public void clearApplicationData() {
+        File cache = getCacheDir();
+        File appDir = new File(cache.getParent());
+        if (appDir.exists()) {
+            String[] children = appDir.list();
+            for (String s : children) {
+                if (!s.equals("lib")) {
+                    deleteDir(new File(appDir, s));
+                    Log.i("TAG", "**************** File /data/data/APP_PACKAGE/" + s + " DELETED *******************");
+                }
+            }
+        }
+    }
+
+    public static boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+
+        return dir.delete();
     }
 
     public void subjectDialog() {

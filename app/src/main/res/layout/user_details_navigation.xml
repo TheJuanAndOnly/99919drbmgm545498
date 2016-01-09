@@ -5,64 +5,111 @@
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/nav_drawer"
-    android:layout_weight="3"
-    android:padding="15dp">
+    android:layout_weight="3">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/usersPhotoLayout"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_margin="20dp">
+
+        <ImageView
+            android:layout_width="80.5dp"
+            android:layout_height="80.5dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/avatar_small" />
+
+        <ImageView
+            android:id="@+id/usersPhoto"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_centerInParent="true"/>
+
+    </RelativeLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/usersPhotoLayout"
+        android:layout_alignParentRight="true"
         android:orientation="vertical"
-        android:weightSum="5">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:weightSum="2"
-            android:layout_weight="1">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_weight="1"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:paddingRight="10dp">
-
-                <ImageView
-                    android:id="@+id/usersPhoto"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:layout_weight="1">
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-            </LinearLayout>
-
-        </LinearLayout>
+        android:layout_marginTop="40dp">
 
         <TextView
             android:id="@+id/usersNickname"
-            android:layout_width="fill_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:text="Username"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"/>
+
+        <TextView
+            android:id="@+id/overall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Overall:"
             android:textSize="14sp"
             android:textColor="@color/white"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="center"
-            android:layout_weight="4"/>
+            android:layout_toRightOf="@id/usersPhotoLayout"
+            android:layout_below="@id/usersNickname"
+            android:layout_marginTop="2dp"/>
 
     </LinearLayout>
+
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="-8dp"
+        android:id="@+id/levelProgress"
+        android:max="100"
+        android:progress="50"
+        style="?android:attr/progressBarStyleHorizontal"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/levelProgress"
+        android:layout_marginLeft="10dp"
+        android:layout_alignParentLeft="true"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:background="@drawable/dot1"
+            android:text="1"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:gravity="center"
+            android:id="@+id/levelDot"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Level 1"
+            android:layout_marginLeft="8dp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:id="@+id/levelText"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="25dp"
+        android:gravity="center"
+        android:id="@+id/xpProgress"
+        android:padding="4dp"
+        android:layout_above="@id/levelProgress"
+        android:text="100xp / 100xp"
+        android:textColor="@color/white"
+        android:textSize="10sp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"/>
 
 </RelativeLayout>
