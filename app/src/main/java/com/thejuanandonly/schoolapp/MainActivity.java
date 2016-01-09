@@ -51,6 +51,7 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -474,76 +475,13 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int arg0) {
 
-                        try {
-                            SharedPreferences prefs = getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = prefs.edit();
-                            JSONArray arrayOfSubjects = new JSONArray(prefs.getString("List", null));
-
-                            for (int i = 0; i < arrayOfSubjects.length(); i++) {
-                                SharedPreferences preferences = getSharedPreferences("Subject" + arrayOfSubjects.get(i), Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor2 = preferences.edit();
-                                editor2.clear().apply();
-                            }
-                            editor.clear().apply();
-
-                        } catch (Exception e) {
-                        }
-
-                        try {
-                            SharedPreferences prefs_notes = getSharedPreferences("ListOfSubjectsNotes", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = prefs_notes.edit();
-                            JSONArray set_notes = new JSONArray(prefs_notes.getString("ListNotes", null));
-                            for (int i = 0; i < set_notes.length(); i++) {
-                                SharedPreferences preferences = getSharedPreferences("SubjectNotes" + set_notes.get(i), Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor2 = preferences.edit();
-                                editor2.clear().apply();
-                            }
-                            editor.clear().apply();
-
-                        } catch (Exception e) {
-                        }
-
-                        try {
-                            SharedPreferences prefs_groupName = getSharedPreferences("ListOfSubjectsGroupName", Context.MODE_PRIVATE);
-                            SharedPreferences.Editor editor_groupName = prefs_groupName.edit();
-                            JSONArray set_groupName = new JSONArray(prefs_groupName.getString("ListGroupName", null));
-
-                            for (int i = 0; i < set_groupName.length(); i++) {
-                                SharedPreferences preferences_groupName = getSharedPreferences("SubjectGroupName" + set_groupName.get(i), Context.MODE_PRIVATE);
-                                SharedPreferences.Editor editor2_groupName = preferences_groupName.edit();
-                                editor2_groupName.clear().apply();
-                            }
-                            editor_groupName.clear().apply();
-
-                        } catch (Exception e) {
-                        }
-
-                        SharedPreferences tasksPrefs = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
-                        tasksPrefs.edit().clear().commit();
-
-                        SharedPreferences doneTasksPrefs = getSharedPreferences("ListOfDoneTasks", Context.MODE_PRIVATE);
-                        doneTasksPrefs.edit().clear().commit();
-
-                        SharedPreferences gridPrefs = getSharedPreferences("GridView", Context.MODE_PRIVATE);
-                        gridPrefs.edit().clear().commit();
-
-                        SharedPreferences subjectGroupPrefs = getSharedPreferences("SubjectGroupName", Context.MODE_PRIVATE);
-                        subjectGroupPrefs.edit().clear().commit();
-
-                        SharedPreferences userPrefs = getSharedPreferences("User", MODE_PRIVATE);
-                        userPrefs.edit().clear().commit();
-
-                        SharedPreferences prefs = getSharedPreferences("PicturePath", Context.MODE_PRIVATE);
-                        prefs.edit().clear().commit();
-
-                        SharedPreferences prefsSchedule = getSharedPreferences("ImgChange", Context.MODE_PRIVATE);
-                        prefsSchedule.edit().clear().commit();
-
-
+                        clearApplicationData();
 
                         Toast.makeText(MainActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
 
                         updateUserDetails();
+
+                        System.exit(0);
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
@@ -552,6 +490,34 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         builder.show();
+    }
+
+    public void clearApplicationData() {
+        File cache = getCacheDir();
+        File appDir = new File(cache.getParent());
+        if (appDir.exists()) {
+            String[] children = appDir.list();
+            for (String s : children) {
+                if (!s.equals("lib")) {
+                    deleteDir(new File(appDir, s));
+                    Log.i("TAG", "**************** File /data/data/APP_PACKAGE/" + s + " DELETED *******************");
+                }
+            }
+        }
+    }
+
+    public static boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+
+        return dir.delete();
     }
 
     public void subjectDialog() {
