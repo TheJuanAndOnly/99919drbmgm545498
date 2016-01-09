@@ -7,13 +7,17 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -55,10 +59,23 @@ public class LoginActivity extends Activity {
                 Intent loadImages = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 startActivityForResult(loadImages, RESULT_LOAD_IMAGE);
 
-
             }
         });
 
+
+
+        final Snackbar  snackbar = Snackbar.make(findViewById(android.R.id.content), "Click the circle to choose an avatar", Snackbar.LENGTH_INDEFINITE);
+        snackbar.show();
+        snackbar.setAction("got it", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                snackbar.dismiss();
+            }
+        });
+
+        View view = snackbar.getView();
+        TextView tv = (TextView) view.findViewById(android.support.design.R.id.snackbar_text);
+        tv.setTextColor(Color.WHITE);
 
         getStarted.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,6 +99,7 @@ public class LoginActivity extends Activity {
                     }
 
                     startActivity(toApp);
+                    finish();
                 } else {
 
                     Toast.makeText(LoginActivity.this, "Please choose a valid nickname", Toast.LENGTH_SHORT).show();
@@ -91,6 +109,20 @@ public class LoginActivity extends Activity {
             }
         });
     }
+
+    @Override
+    public void onBackPressed() {
+        quitApplication();
+    }
+
+    public void quitApplication(){
+
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
+
 
     public void checkGetNickname() {
 

@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Selection;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -51,6 +52,7 @@ public class PictureGroupActivity extends AppCompatActivity {
     public static Uri selectedImage;
     public static ArrayList<Bitmap> ALofSelectedImgs = new ArrayList<>();
     public static ArrayList<Bitmap> ALofRSelectedImgs = new ArrayList<>();
+    public static int height, width;
     ArrayList<String> arrayListPD = new ArrayList<>();
     private static int RESULT_LOAD_IMAGE = 1;
     private Menu menu;
@@ -69,14 +71,21 @@ public class PictureGroupActivity extends AppCompatActivity {
         setContentView(R.layout.picture_group_activity_layout);
         currentPictureGroup = getIntent().getExtras().getString("subjectDetailNotes", null);
 
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+
+        height = displaymetrics.heightPixels;
+        width = displaymetrics.widthPixels;
+
         theme();
+
         String subject_notes = getIntent().getExtras().getString("subNote", "SchoolApp");
         toolbar.setTitle(subject_notes);
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        SharedPreferences prefs = this.getSharedPreferences("GridView" + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
+        SharedPreferences prefs = this.getSharedPreferences("GridView" + getIntent().getExtras().getString("selected", null) + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
         try {
             arrayOfImgs = new JSONArray(prefs.getString("ListOfSubjectsGroupName", null));
         } catch (Exception e) {
@@ -101,13 +110,30 @@ public class PictureGroupActivity extends AppCompatActivity {
         gridView.deferNotifyDataSetChanged();
         registerForContextMenu(gridView);
 
+        ALofSelectedImgs.clear();
+        ALofRSelectedImgs.clear();
+
+        for (int i = 0; i < numberOfImgs; i++){
+            String s = null;
+            try {
+                s = arrayOfImgs.getString(i);
+            } catch (JSONException e) {
+            }
+            ALofRSelectedImgs.add(BitmapScaled(s, 750, 540));
+            //Collections.reverse(ALofRSelectedImgs);
+            ALofSelectedImgs.add(BitmapScaled(s, 100, 100));
+            //Collections.reverse(ALofSelectedImgs);
+
+        }
+
+
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 
-                Toast.makeText(PictureGroupActivity.this, "position: " + position , Toast.LENGTH_SHORT).show();
+                Toast.makeText(PictureGroupActivity.this, "position: " + position, Toast.LENGTH_SHORT).show();
                 Intent viewPager = new Intent(getApplicationContext(), GridViewPager.class);
                 viewPager.putExtra("position", position);
                 startActivity(viewPager);
@@ -134,7 +160,7 @@ public class PictureGroupActivity extends AppCompatActivity {
 
         ArrayList<String> arrayListOfImgs = new ArrayList<>();
 
-        SharedPreferences preferences = getSharedPreferences("GridView" + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("GridView" + getIntent().getExtras().getString("selected", null) + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
 
         try {
@@ -228,7 +254,7 @@ public class PictureGroupActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        SharedPreferences prefs = getSharedPreferences("GridView" + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("GridView" + getIntent().getExtras().getString("selected", null) + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
 
@@ -241,7 +267,6 @@ public class PictureGroupActivity extends AppCompatActivity {
                 arrayOfImgs = new JSONArray(prefs.getString("NoteImages", null));
             } catch (Exception e) {
             }
-
 
 
             selectedImage = data.getData();
@@ -260,7 +285,6 @@ public class PictureGroupActivity extends AppCompatActivity {
             //Collections.reverse(ALofRSelectedImgs);
             ALofSelectedImgs.add(BitmapScaled(picture, 100, 100));
             //Collections.reverse(ALofSelectedImgs);
-
 
 
             arrayOfImgs.put(picture);
@@ -283,7 +307,7 @@ public class PictureGroupActivity extends AppCompatActivity {
     protected void onResume() {
 
 
-        SharedPreferences prefs = this.getSharedPreferences("GridView" + getIntent().getExtras().getString("subNote"), Context.MODE_PRIVATE);
+        SharedPreferences prefs = this.getSharedPreferences("GridView" + getIntent().getExtras().getString("selected", null) + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
         try {
             arrayOfImgs = new JSONArray(prefs.getString("NoteImages", null));
         } catch (Exception e) {
@@ -302,7 +326,6 @@ public class PictureGroupActivity extends AppCompatActivity {
                 }
 
 
-
                 ALofSelectedImgs.add(BitmapScaled(imageUri, 100, 100));
                 //Collections.reverse(ALofSelectedImgs);
 
@@ -311,7 +334,6 @@ public class PictureGroupActivity extends AppCompatActivity {
 
             }
         }
-
 
         super.onResume();
 
@@ -346,7 +368,6 @@ public class PictureGroupActivity extends AppCompatActivity {
 
         return SizeSample;
     }
-
 
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

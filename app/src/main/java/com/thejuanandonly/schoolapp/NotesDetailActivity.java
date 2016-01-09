@@ -55,8 +55,8 @@ public class NotesDetailActivity extends AppCompatActivity {
     ListView listView;
     JSONArray arrayOfCategories, jsonArray;
     ArrayAdapter<String> arrayAdapter;
-    ArrayList<String> arrayList;
-    String subjectName, newSubCategoryName;
+    public static ArrayList<String> arrayList;
+    public static String subjectName, newSubCategoryName;
     String subCategoryName, update = "";
     String subCategory = "";
 
@@ -75,7 +75,7 @@ public class NotesDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        SharedPreferences prefs = getSharedPreferences("SubjectGroupName" + getIntent().getExtras().getString("notes", null), Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("SubjectGroupName" + getIntent().getExtras().getString("note", null), Context.MODE_PRIVATE);
         try {
             arrayOfCategories = new JSONArray(prefs.getString("ListOfSubjectsNotes", null));
         } catch (Exception e) {
@@ -96,11 +96,13 @@ public class NotesDetailActivity extends AppCompatActivity {
 
         setListView();
 
+        final String s = getIntent().getStringExtra("note");
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                SharedPreferences prefs = getSharedPreferences("ListOfSubjectsGroupName", Context.MODE_PRIVATE);
+                SharedPreferences prefs = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getStringExtra("note"), Context.MODE_PRIVATE);
                 JSONArray jsonArray = new JSONArray();
 
                 try {
@@ -127,6 +129,7 @@ public class NotesDetailActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 intent.putExtra("positionNotesDetail", position);
+                intent.putExtra("selected", s);
 
                 startActivity(intent);
             }
@@ -154,7 +157,10 @@ public class NotesDetailActivity extends AppCompatActivity {
         final SharedPreferences preferences = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getExtras().getString("note", null), Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = preferences.edit();
         JSONArray array = new JSONArray();
-        textView.getText();
+
+        try {
+            textView.getText();
+        } catch (NullPointerException e) {}
 
         SharedPreferences GroupNamePrefs = getSharedPreferences("SubjectGroupName" + subjectName, Context.MODE_PRIVATE);
         final SharedPreferences.Editor editorName = GroupNamePrefs.edit();
@@ -283,8 +289,9 @@ public class NotesDetailActivity extends AppCompatActivity {
                     }
                 }
 
-                arrayAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.subjectadder_textview_layout, arrayList);
+                arrayAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.notesdetail_listview_item, R.id.textView1, arrayList);
 
+                //noteAdapter = new CustomNoteAdapter(getApplicationContext(), arrayList);
                 listView.setAdapter(arrayAdapter);
             }
 
@@ -342,7 +349,7 @@ public class NotesDetailActivity extends AppCompatActivity {
 
         public void savePictureGroupName(String subject) {
 
-            SharedPreferences prefs = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getExtras().getString("note", null), Context.MODE_PRIVATE);
+            SharedPreferences prefs = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getStringExtra("note"), Context.MODE_PRIVATE);
             JSONArray jsonArray = new JSONArray();
             try {
                 jsonArray = new JSONArray(prefs.getString("ListGroupName", null));
@@ -357,15 +364,8 @@ public class NotesDetailActivity extends AppCompatActivity {
                 pictureGroupNameDialog();
             }
 
-            //SP pre kazdy predmet
-            SharedPreferences preferences = getSharedPreferences("SubjectGroupName" + subject, Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putString("subjectGroupName", subject).apply();
-
-            //Zoznam predmetov
-            SharedPreferences arrayPrefs = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getExtras().getString("note", null), Context.MODE_PRIVATE);
-            SharedPreferences.Editor arrayPrefsEditor = arrayPrefs.edit();
-            arrayPrefsEditor.putString("ListGroupName", jsonArray.toString()).apply();
+            prefs.edit().putString("ListGroupName", jsonArray.toString()).apply();
+            prefs.edit().commit();
 
             subjectName = subject;
 

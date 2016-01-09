@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:background="@color/darkbluebackground"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <ListView
+        android:id="@+id/SubjectListView_Notes"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/SubjectListView_Notes"
-        android:textColor="@color/black"
+        android:layout_margin="7dp"
         android:divider="@android:color/transparent"
         android:dividerHeight="4dp"
-        android:textSize="30sp"
-        android:layout_margin="7dp">
-    </ListView>
+        android:background="@color/darkbluebackground"
+        android:textColor="@color/white"
+        android:textSize="30sp"></ListView>
 
 </LinearLayout>

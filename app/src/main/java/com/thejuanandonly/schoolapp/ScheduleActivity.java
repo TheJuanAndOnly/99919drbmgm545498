@@ -11,9 +11,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.provider.MediaStore;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.MotionEvent;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -21,39 +24,57 @@ import android.widget.Toast;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
-public class ScheduleActivity extends Activity {
+public class ScheduleActivity extends AppCompatActivity {
 
     private static int RESULT_LOAD_IMAGE = 1;
-    ImageView imageView;
+    SubsamplingScaleImageView imageView;
     String picture;
+    Snackbar snackbar;
+    boolean changeImageViewd;
+    boolean spCheck;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.schedule_activity_layout);
-        String picturePath = loadPath();
 
-        SubsamplingScaleImageView imageView = (SubsamplingScaleImageView) findViewById(R.id.schedule_image_view);
+        String picturePath = loadPath();
+        imageView = (SubsamplingScaleImageView) findViewById(R.id.schedule_image_view);
+
 
         if (picturePath != null) {
-            Toast.makeText(this, "Long click on the image to change it", Toast.LENGTH_LONG).show(); //Sem dáme SNackbaríček
             imageView.setImage(ImageSource.bitmap(BitmapScaled(picturePath, 800, 800)));
-
-            imageView.setLongClickable(true);
-            imageView.setOnLongClickListener(new View.OnLongClickListener() {
+        } else {
+            snackbar = Snackbar.make(findViewById(android.R.id.content), "Please import your schedule", Snackbar.LENGTH_INDEFINITE);
+            snackbar.show();
+            snackbar.setAction("import", new View.OnClickListener() {
                 @Override
-                public boolean onLongClick(View v) {
+                public void onClick(View v) {
                     Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     startActivityForResult(i, RESULT_LOAD_IMAGE);
-                    return true;
                 }
             });
         }
+
+        imageView.setLongClickable(true);
+        imageView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(i, RESULT_LOAD_IMAGE);
+                return true;
+            }
+        });
+
+
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        SharedPreferences prefs = this.getSharedPreferences("ImgChange", Context.MODE_PRIVATE);
+        final SharedPreferences.Editor editor = prefs.edit();
 
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
             Uri selectedImage = data.getData();
@@ -66,11 +87,52 @@ public class ScheduleActivity extends Activity {
             picture = cursor.getString(columnIndex);
             cursor.close();
 
-            SubsamplingScaleImageView imageView = new SubsamplingScaleImageView(this);
-            imageView.setImage(ImageSource.bitmap(BitmapScaled(picture, 800, 800)));
-
+            try {
+                imageView.setImage(ImageSource.bitmap(BitmapScaled(picture, 800, 800)));
+            } catch (NullPointerException e) {
+                Toast.makeText(ScheduleActivity.this, "Picture" + picture, Toast.LENGTH_SHORT).show();
+            }
             savePath(picture);
+
+            try {
+                spCheck = prefs.getBoolean("ImgChangeViewed", false);
+
+                if (!spCheck) {
+                    snackbar = Snackbar.make(findViewById(android.R.id.content), "To change the image, click and hold the current one", Snackbar.LENGTH_INDEFINITE);
+                    snackbar.show();
+                    snackbar.setAction("got it", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            changeImageViewd = true;
+                            snackbar.dismiss();
+                            editor.putBoolean("ImgChangeViewed", changeImageViewd).apply();
+                        }
+                    });
+
+
+                }
+            } catch (Exception e) {}
+
         }
+    }
+
+    public void changeImageSnackbar() {
+
+        SharedPreferences prefs = this.getSharedPreferences("ImgChange", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+
+            snackbar = Snackbar.make(findViewById(android.R.id.content), "To change the image, click and hold your current image", Snackbar.LENGTH_INDEFINITE);
+            snackbar.show();
+            snackbar.setAction("got it", new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    changeImageViewd = true;
+                    snackbar.dismiss();
+                }
+            });
+
+        editor.putBoolean("ImgChangeViewed", changeImageViewd).apply();
     }
 
     private Bitmap BitmapScaled(String picturePath, int width, int height) {
@@ -99,7 +161,7 @@ public class ScheduleActivity extends Activity {
             SizeSample = heightRatio < widthRatio ? heightRatio : widthRatio;
         }
 
-            return SizeSample;
+        return SizeSample;
     }
 
     public String loadPath() {

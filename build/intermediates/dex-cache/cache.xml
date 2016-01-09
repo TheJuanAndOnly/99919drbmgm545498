@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" >
+<items version="2" />
 
+<<<<<<< HEAD
     <item
         jar="C:\JA\Android Studio\MySchoolAppv1.3\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.1\jars\classes.jar"
         jumboMode="false"
@@ -59,3 +60,5 @@
     </item>
 
 </items>
+=======
+>>>>>>> origin/master
