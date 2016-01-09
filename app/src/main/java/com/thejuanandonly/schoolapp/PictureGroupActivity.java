@@ -85,7 +85,7 @@ public class PictureGroupActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        SharedPreferences prefs = this.getSharedPreferences("GridView" + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
+        SharedPreferences prefs = this.getSharedPreferences("GridView" + getIntent().getExtras().getString("selected", null) + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
         try {
             arrayOfImgs = new JSONArray(prefs.getString("ListOfSubjectsGroupName", null));
         } catch (Exception e) {
@@ -109,6 +109,23 @@ public class PictureGroupActivity extends AppCompatActivity {
         gridView.setAdapter(new ImageGridAdapter(this));
         gridView.deferNotifyDataSetChanged();
         registerForContextMenu(gridView);
+
+        ALofSelectedImgs.clear();
+        ALofRSelectedImgs.clear();
+
+        for (int i = 0; i < numberOfImgs; i++){
+            String s = null;
+            try {
+                s = arrayOfImgs.getString(i);
+            } catch (JSONException e) {
+            }
+            ALofRSelectedImgs.add(BitmapScaled(s, 750, 540));
+            //Collections.reverse(ALofRSelectedImgs);
+            ALofSelectedImgs.add(BitmapScaled(s, 100, 100));
+            //Collections.reverse(ALofSelectedImgs);
+
+        }
+
 
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -143,7 +160,7 @@ public class PictureGroupActivity extends AppCompatActivity {
 
         ArrayList<String> arrayListOfImgs = new ArrayList<>();
 
-        SharedPreferences preferences = getSharedPreferences("GridView" + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences("GridView" + getIntent().getExtras().getString("selected", null) + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
 
         try {
@@ -238,7 +255,7 @@ public class PictureGroupActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        SharedPreferences prefs = getSharedPreferences("GridView" + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("GridView" + getIntent().getExtras().getString("selected", null) + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
 
@@ -291,7 +308,7 @@ public class PictureGroupActivity extends AppCompatActivity {
     protected void onResume() {
 
 
-        SharedPreferences prefs = this.getSharedPreferences("GridView" + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
+        SharedPreferences prefs = this.getSharedPreferences("GridView" + getIntent().getExtras().getString("selected", null) + getIntent().getExtras().getString("subNote", null), Context.MODE_PRIVATE);
         try {
             arrayOfImgs = new JSONArray(prefs.getString("NoteImages", null));
         } catch (Exception e) {
@@ -318,7 +335,6 @@ public class PictureGroupActivity extends AppCompatActivity {
 
             }
         }
-
 
         super.onResume();
 
