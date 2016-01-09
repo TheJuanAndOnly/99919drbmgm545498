@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.thejuanandonly.schoolapp.R;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -123,99 +124,20 @@ public class NotesFragment extends Fragment {
         final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         final int id = info.position;
         final TextView textView = (TextView) getView().findViewById(android.R.id.text1);
-        final ArrayList<String> arrayListRename = new ArrayList<>();
-        final ArrayList<String> arrayListItemName = new ArrayList<>();
         JSONArray array = new JSONArray();
         ArrayList<String> arrayList = new ArrayList<>();
 
         try {
             textView.getText();
-        } catch (NullPointerException e) {}
+        } catch (NullPointerException e) {
+        }
 
         SharedPreferences preferences = getActivity().getSharedPreferences("ListOfSubjectsNotes", Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = preferences.edit();
 
         SharedPreferences preferences_notes = getActivity().getSharedPreferences("SubjectNotes", Context.MODE_PRIVATE);
-        final SharedPreferences.Editor editorNotes = preferences_notes.edit();
 
         switch (item.getItemId()) {
-
-            case R.id.rename:
-
-
-                final AlertDialog.Builder alert = new AlertDialog.Builder(getView().getContext());
-                alert.setTitle("Rename");
-                final EditText editText = new EditText(getActivity().getApplicationContext());
-                editText.setTextColor(Color.BLACK);
-                alert.setView(editText);
-
-                jsonArray = new JSONArray();
-                jsonArrayName = new JSONArray();
-
-                try {
-
-                    jsonArray = new JSONArray(preferences.getString("ListNotes", jsonArray.toString()));
-                    subCategoryName = jsonArray.getString(id);
-
-                    jsonArrayName = new JSONArray(preferences_notes.getString("subjectNotes", jsonArrayName.toString()));
-                    subCategoryNameRename = jsonArrayName.getString(id);
-
-
-                } catch (Exception e) { }
-
-                editText.setText(subCategoryName);
-
-                for(int i = 0; i < jsonArrayName.length(); i++) {
-                    try {
-                        arrayListItemName.add(jsonArrayName.get(i).toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                for (int i = 0; i < jsonArray.length(); i++) {
-
-                    try {
-                        arrayListRename.add(jsonArray.get(i).toString());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-
-                alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        newSubCategoryName = editText.getText().toString();
-
-                        subCategoryName = newSubCategoryName;
-                        subCategoryNameRename = subCategoryName;
-
-                        arrayListRename.remove(id);
-                        arrayListRename.add(id, newSubCategoryName);
-
-                        Toast.makeText(getActivity().getApplicationContext(), "Updated text: " + subCategoryName, Toast.LENGTH_SHORT).show();
-
-
-                        editorNotes.putString("subjectNotes", subCategoryNameRename).apply();
-                        editor.putString("ListNotes", arrayListRename.toString()).apply();
-                        editor.apply();
-
-                        m_adapter_notes.notifyDataSetChanged();
-                        onResume();
-                    }
-                });
-
-                alert.setNegativeButton("Cancle", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-                alert.show();
-                return true;
-
 
             case R.id.delete:
 
@@ -226,7 +148,7 @@ public class NotesFragment extends Fragment {
                 }
 
 
-                for(int i = 0; i < array.length(); i++ ) {
+                for (int i = 0; i < array.length(); i++) {
 
                     try {
                         arrayList.add(array.get(i).toString());
@@ -262,12 +184,14 @@ public class NotesFragment extends Fragment {
         try {
             try {
                 set_notes = new JSONArray(arrayPrefs_notes.getString("ListNotes", null));
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
 
             for (int i = 0; i < set_notes.length(); i++) {
                 try {
                     arrayList.add(set_notes.getString(i));
-                } catch (JSONException e) {}
+                } catch (JSONException e) {
+                }
             }
 
             lv_notes = (ListView) getView().findViewById(R.id.SubjectListView_Notes);
@@ -284,7 +208,7 @@ public class NotesFragment extends Fragment {
         super.onResume();
     }
 
-    public static void reset(Context context){
+    public static void reset(Context context) {
         SharedPreferences arrayPrefs_notes = context.getSharedPreferences("ListOfSubjectsNotes", Context.MODE_PRIVATE);
         JSONArray set_notes = new JSONArray();
         arrayList = new ArrayList<String>();
@@ -292,12 +216,14 @@ public class NotesFragment extends Fragment {
         try {
             try {
                 set_notes = new JSONArray(arrayPrefs_notes.getString("ListNotes", null));
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
 
             for (int i = 0; i < set_notes.length(); i++) {
                 try {
                     arrayList.add(set_notes.getString(i));
-                } catch (JSONException e) {}
+                } catch (JSONException e) {
+                }
             }
 
             ListView lv_notes = (ListView) v.findViewById(R.id.SubjectListView_Notes);

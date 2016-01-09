@@ -157,55 +157,6 @@ public class NotesDetailActivity extends AppCompatActivity {
         final SharedPreferences.Editor editorName = GroupNamePrefs.edit();
 
         switch (item.getItemId()) {
-            case R.id.rename:
-            final AlertDialog.Builder alert = new AlertDialog.Builder(NotesDetailActivity.this);
-                alert.setTitle("Rename");
-                final EditText editText = new EditText(getApplicationContext());
-                editText.setTextColor(Color.BLACK);
-                alert.setView(editText);
-
-                jsonArray = new JSONArray();
-                try {
-                    jsonArray = new JSONArray(preferences.getString("ListGroupName", jsonArray.toString()));
-                    subCategoryName = jsonArray.getString(info.position);
-                } catch (Exception e) {
-                }
-
-                editText.setText(subCategoryName);
-
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    try {
-                        arrayListRename.add(jsonArray.get(i).toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    }
-
-                alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                newSubCategoryName = editText.getText().toString();
-                                subCategoryName = newSubCategoryName;
-
-                                arrayListRename.remove(info.position);
-                                arrayListRename.add(info.position, newSubCategoryName);
-
-                                Toast.makeText(NotesDetailActivity.this, "Updated text: " + subCategoryName, Toast.LENGTH_SHORT).show();
-
-                                editor.putString("ListGroupName", arrayListRename.toString()).apply();
-                                setListView();
-                            }
-                });
-
-                alert.setNegativeButton("Cancle", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                alert.show();
-                return true;
 
             case R.id.delete:
 
@@ -282,7 +233,6 @@ public class NotesDetailActivity extends AppCompatActivity {
 
                 arrayAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.notesdetail_listview_item, R.id.textView1, arrayList);
 
-                //noteAdapter = new CustomNoteAdapter(getApplicationContext(), arrayList);
                 listView.setAdapter(arrayAdapter);
             }
 

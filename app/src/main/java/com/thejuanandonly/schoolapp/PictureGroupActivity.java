@@ -133,7 +133,6 @@ public class PictureGroupActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 
-                Toast.makeText(PictureGroupActivity.this, "position: " + position, Toast.LENGTH_SHORT).show();
                 Intent viewPager = new Intent(getApplicationContext(), GridViewPager.class);
                 viewPager.putExtra("position", position);
                 startActivity(viewPager);
@@ -141,7 +140,6 @@ public class PictureGroupActivity extends AppCompatActivity {
             }
         });
 
-        Toast.makeText(PictureGroupActivity.this, "Number of Images is:" + prefs.getInt("numberOfImgs", 0), Toast.LENGTH_SHORT).show();
     }
 
     @Override

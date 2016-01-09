@@ -2,10 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group>
-        <item android:title="Rename"
-            android:theme="@style/ContextTheme"
-            android:id="@+id/rename">
-        </item>
 
         <item android:title="Delete"
             android:theme="@style/ContextTheme"
