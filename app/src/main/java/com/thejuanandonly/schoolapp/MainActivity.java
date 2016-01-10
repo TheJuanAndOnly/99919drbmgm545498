@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -398,15 +399,30 @@ public class MainActivity extends AppCompatActivity {
             xp.setText(String.valueOf(points) + "xp" + " / " + String.valueOf(borders[5]) + "xp");
 
         }else if (points >= borders[5]) {
-            levelText.setText("Level 7");
-            levelDot.setText("7");
-            levelDot.setBackgroundResource(R.drawable.dot7);
+
+            int finalBorder = borders[5];
+            int level = 6;
+            int imglvl = 0;
+            while (points >= finalBorder){
+                finalBorder += borders[5];
+                level++;
+
+                imglvl++;
+                if (imglvl == 7) imglvl = 0;
+            }
+
+            levelText.setText("Level " + level);
+            levelDot.setText(String.valueOf(level));
+
+            final TypedArray imgs = getResources().obtainTypedArray(R.array.dots_array);
+            final int resID = imgs.getResourceId(imglvl, 0);
+            levelDot.setBackgroundResource(resID);
 
             bar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.dotPink), PorterDuff.Mode.SRC_IN);
-            bar.setMax(1);
-            bar.setProgress(1);
+            bar.setMax(borders[5]);
+            bar.setProgress(points - (finalBorder - borders[5]));
 
-            xp.setText("Max level mate!");
+            xp.setText(String.valueOf(points) + "xp" + " / " + String.valueOf(finalBorder) + "xp");
         }
 
     }

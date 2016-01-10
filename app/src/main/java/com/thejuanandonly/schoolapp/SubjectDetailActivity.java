@@ -833,7 +833,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 String newCategory = nameEditText.getText().toString();
                 String grades = gradeEditText.getText().toString();
 
-                saveCategory(newCategory, grades);
+                saveCategory(newCategory, grades, false);
 
                 dialog.dismiss();
             }
@@ -847,7 +847,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         });
         dialog.show();
     }
-    public void saveCategory(String name, String gradesString){
+    public void saveCategory(String name, String gradesString, boolean edited){
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
@@ -860,31 +860,30 @@ public class SubjectDetailActivity extends AppCompatActivity {
             arrayOfPercentages = new JSONArray();
         }
 
+        int different = 0;
         for (int i = 0; i < arrayOfCategories.length(); i++) {
             try {
-                if (arrayOfCategories.getString(i).equals(name)) {
-
-                    Toast.makeText(this, "This category already exists", Toast.LENGTH_LONG).show();
-                    addCategory(null);
-                    return;
-
+                if (!arrayOfCategories.getString(i).equals(name)) {
+                    different++;
                 }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        if (different == arrayOfCategories.length()){
+
+            try {
+                arrayOfCategories.put(name);
+                editor.putString("ListOfCategories", arrayOfCategories.toString());
+
+                arrayOfPercentages.put(String.valueOf(100 / (arrayOfPercentages.length() + 1)));
+                editor.putString("ListOfPercentages", arrayOfPercentages.toString());
+
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
-        try {
-            arrayOfCategories.put(name);
-            editor.putString("ListOfCategories", arrayOfCategories.toString());
-
-            arrayOfPercentages.put(String.valueOf(100 / (arrayOfPercentages.length() + 1)));
-            editor.putString("ListOfPercentages", arrayOfPercentages.toString());
-
-            balancePercentages();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
         char[] chars = gradesString.toCharArray();
         JSONArray arrayOfGrades = new JSONArray();
@@ -1220,7 +1219,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                         deleteOldCategory(finalCategory, position);
                     }
 
-                    saveCategory(newCategory, grades);
+                    saveCategory(newCategory, grades, true);
 
                     dialog.dismiss();
                 }
