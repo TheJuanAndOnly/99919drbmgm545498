@@ -14,6 +14,7 @@
         android:dividerHeight="4dp"
         android:background="@color/darkbluebackground"
         android:textColor="@color/white"
-        android:textSize="30sp"></ListView>
+        android:textSize="30sp">
+    </ListView>
 
 </LinearLayout>

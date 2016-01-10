@@ -8,11 +8,13 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,6 +36,7 @@ public class LoginActivity extends Activity {
     Button getStarted;
     String picture;
     String getNickname;
+    ImageView logo, character;
     boolean nicknameSelected = false;
     private static int RESULT_LOAD_IMAGE = 1;
     public static Uri avatarURI;
@@ -46,6 +49,24 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.login_layout);
 
         nickname = (EditText) findViewById(R.id.nickname);
+
+        logo = (ImageView) findViewById(R.id.login_icons);
+        character = (ImageView) findViewById(R.id.character);
+
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        int height = displaymetrics.heightPixels;
+        int width = displaymetrics.widthPixels;
+
+        if (height <= 853) {
+            logo.getLayoutParams().width = 360;
+            logo.getLayoutParams().height = 220;
+            logo.requestLayout();
+
+            character.getLayoutParams().width = 50;
+            character.getLayoutParams().height = 80;
+            character.requestLayout();
+        }
 
 
         avatar_circle = (ImageView) findViewById(R.id.avatar_circle);

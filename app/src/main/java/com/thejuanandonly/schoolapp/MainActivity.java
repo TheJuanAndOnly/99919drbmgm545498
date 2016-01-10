@@ -139,6 +139,13 @@ public class MainActivity extends AppCompatActivity {
                     invalidateOptionsMenu();
                 }
 
+                if (menuItem.getItemId() == R.id.nav_item_support) {
+                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.containerView, new SupportFragment()).commit();
+                    actualFragment = 5;
+                    invalidateOptionsMenu();
+                }
+
                 return false;
             }
 
@@ -167,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
             PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), 0);
             alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
             FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();;
+            fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
             taskAdded = false;
         }
 
@@ -201,8 +208,10 @@ public class MainActivity extends AppCompatActivity {
             getMenuInflater().inflate(R.menu.menu_tasks, menu);
         } else if (actualFragment == 3) {
             getMenuInflater().inflate(R.menu.menu_notes, menu);
-        } else {
+        } else if (actualFragment == 4){
             getMenuInflater().inflate(R.menu.menu_settings, menu);
+        } else {
+            getMenuInflater().inflate(R.menu.menu_support, menu);
         }
         return true;
     }
@@ -558,7 +567,6 @@ public class MainActivity extends AppCompatActivity {
         JSONArray set = new JSONArray();
 
         SharedPreferences prefs = getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
-        ArrayList<String> m_listItems = new ArrayList<>();
         try {
             set = new JSONArray(prefs.getString("List", null));
 
