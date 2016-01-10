@@ -433,9 +433,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void notificationsClick(View view) {
-        Switch notificationsCheckBox = (Switch) findViewById(R.id.notificationsCheckBox);
-        Switch soundsCheckBox = (Switch) findViewById(R.id.soundsNotificationCheckBox);
-        Switch vibrationsCheckBox = (Switch) findViewById(R.id.vibrationsNotificationCheckBox);
+                Switch notificationsCheckBox, soundsCheckBox, vibrationsCheckBox;
+        notificationsCheckBox = (Switch) findViewById(R.id.notificationsCheckBox);
+        soundsCheckBox = (Switch) findViewById(R.id.soundsNotificationCheckBox);
+        vibrationsCheckBox = (Switch) findViewById(R.id.vibrationsNotificationCheckBox);
 
         boolean isChecked = notificationsCheckBox.isChecked();
         soundsCheckBox.setChecked(isChecked);
@@ -448,12 +449,16 @@ public class MainActivity extends AppCompatActivity {
             soundsCheckBox.setVisibility(View.VISIBLE);
             vibrationsCheckBox.setVisibility(View.VISIBLE);
         }
+
+        updateNotification();
     }
 
     public void soundsNotificationClick(View view) {
+        updateNotification();
     }
 
     public void vibrationsNotificationClick(View view) {
+        updateNotification();
     }
 
     public void setTheme(View view) {
@@ -701,49 +706,57 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateNotification() {
-        SharedPreferences prefs = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
-        JSONArray arrayName;
-        int numberOfTask = prefs.getInt("NumberOfTask", 0);
-        try {
-            arrayName = new JSONArray(prefs.getString("TaskName", null));
-        } catch (Exception e) {
-            arrayName = new JSONArray();
-        }
+        SharedPreferences prefss = getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
 
-        ArrayList<String> listNamez = new ArrayList<String>();
-        for (int i = 0; i < arrayName.length(); i++){
+        boolean n = prefss.getBoolean("notifications", true),
+                s = prefss.getBoolean("sounds", true),
+                v = prefss.getBoolean("vibrations", true);
+
+        if (n == true) {
+            SharedPreferences prefs = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+            JSONArray arrayName;
+            int numberOfTask = prefs.getInt("NumberOfTask", 0);
             try {
-                listNamez.add(arrayName.getString(i));
+                arrayName = new JSONArray(prefs.getString("TaskName", null));
             } catch (Exception e) {
-            }
-        }
-
-        String childWithNames = listNamez.toString();
-
-        if (numberOfTask > 0) {
-            String nameForAlways = null;
-            if (numberOfTask == 1) {
-                nameForAlways = " todo task";
-            } else if (numberOfTask > 1) {
-                nameForAlways = " todo tasks";
+                arrayName = new JSONArray();
             }
 
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("fromNotification", true);
-            PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
+            ArrayList<String> listNamez = new ArrayList<String>();
+            for (int i = 0; i < arrayName.length(); i++){
+                try {
+                    listNamez.add(arrayName.getString(i));
+                } catch (Exception e) {
+                }
+            }
 
-            Notification notification = new Notification.Builder(this)
-                    .setContentTitle(numberOfTask + nameForAlways)
-                    .setContentText(childWithNames.substring(1, childWithNames.length()-1))
-                    .setSmallIcon(R.drawable.ic_event_available_white_24dp)
-                    .setContentIntent(contentIntent).build();
+            String childWithNames = listNamez.toString();
 
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            notification.flags |= Notification.FLAG_NO_CLEAR;
-            notificationManager.notify(0, notification);
-        } else {
-            NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.cancel(0);
+            if (numberOfTask > 0) {
+                String nameForAlways = null;
+                if (numberOfTask == 1) {
+                    nameForAlways = " todo task";
+                } else if (numberOfTask > 1) {
+                    nameForAlways = " todo tasks";
+                }
+
+                Intent intent = new Intent(this, MainActivity.class);
+                intent.putExtra("fromNotification", true);
+                PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+                Notification notification = new Notification.Builder(this)
+                        .setContentTitle(numberOfTask + nameForAlways)
+                        .setContentText(childWithNames.substring(1, childWithNames.length()-1))
+                        .setSmallIcon(R.drawable.ic_event_available_white_24dp)
+                        .setContentIntent(contentIntent).build();
+
+                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                notification.flags |= Notification.FLAG_NO_CLEAR;
+                notificationManager.notify(0, notification);
+            } else {
+                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                notificationManager.cancel(0);
+            }
         }
     }
 }

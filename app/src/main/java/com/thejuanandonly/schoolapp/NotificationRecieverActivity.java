@@ -68,20 +68,51 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
     }
 
     public void notifyUser(Context context, String name, String what) {
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.putExtra("fromNotification", true);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        SharedPreferences prefs = context.getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
 
-        Notification notification = new Notification.Builder(context)
-                .setContentTitle(name)
-                .setContentText(what)
-                .setVibrate(new long[]{500, 500, 500, 500})
-                .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
-                .setSmallIcon(R.drawable.ic_event_available_white_24dp)
-                .setContentIntent(contentIntent).build();
+        boolean n = prefs.getBoolean("notifications", true),
+                s = prefs.getBoolean("sounds", true),
+                v = prefs.getBoolean("vibrations", true);
 
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
-        notification.flags |= Notification.FLAG_AUTO_CANCEL;
-        notificationManager.notify(1, notification);
+        if (n == true) {
+            Intent intent = new Intent(context, MainActivity.class);
+            intent.putExtra("fromNotification", true);
+            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
+
+            Notification notification = null;
+            if (s == false && v == true) {
+                notification = new Notification.Builder(context)
+                        .setContentTitle(name)
+                        .setContentText(what)
+                        .setVibrate(new long[]{500, 500, 500, 500})
+                        .setSmallIcon(R.drawable.ic_event_available_white_24dp)
+                        .setContentIntent(contentIntent).build();
+            } else if (v == false && s == true) {
+                notification = new Notification.Builder(context)
+                        .setContentTitle(name)
+                        .setContentText(what)
+                        .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                        .setSmallIcon(R.drawable.ic_event_available_white_24dp)
+                        .setContentIntent(contentIntent).build();
+            } else if (s == false && v == false) {
+                notification = new Notification.Builder(context)
+                        .setContentTitle(name)
+                        .setContentText(what)
+                        .setSmallIcon(R.drawable.ic_event_available_white_24dp)
+                        .setContentIntent(contentIntent).build();
+            } else {
+                notification = new Notification.Builder(context)
+                        .setContentTitle(name)
+                        .setContentText(what)
+                        .setVibrate(new long[]{500, 500, 500, 500})
+                        .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                        .setSmallIcon(R.drawable.ic_event_available_white_24dp)
+                        .setContentIntent(contentIntent).build();
+            }
+
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+            notification.flags |= Notification.FLAG_AUTO_CANCEL;
+            notificationManager.notify(1, notification);
+        }
     }
 }

@@ -208,10 +208,10 @@ public class TaskAdder extends ActionBarActivity {
             if (nameTask.getText().length() > 0 && whatTask.getText().length() > 0 && time.getTime() > System.currentTimeMillis()) {
                 if (editing == true) {
                     editTask();
-                    alwaysOnScreen(this, numberOfTask+"");
+                    alwaysOnScreen(this, numberOfTask + "");
                 } else {
                     addTask();
-                    alwaysOnScreen(this, numberOfTask+"");
+                    alwaysOnScreen(this, numberOfTask + "");
                 }
             } else if (nameTask.getText().length() == 0 || whatTask.getText().length() == 0) {
                 final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Don't leave the space blank!", Snackbar.LENGTH_INDEFINITE);
@@ -309,9 +309,10 @@ public class TaskAdder extends ActionBarActivity {
     }
 
     public void editTask() {
-        if (nameTask.getText().toString() != null && nameTask.getText().toString().length() > 0 && whatTask.getText().toString() != null && whatTask.getText().toString().length() > 0) {
+        if (nameTask.getText().toString() != null && nameTask.getText().toString().length() > 0 && whatTask.getText().toString() != null && whatTask.getText().toString().length() > 0 && time.getTime() > System.currentTimeMillis()) {
             SharedPreferences prefs = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
+            numberOfTask = prefs.getInt("NumberOfTask", 0);
 
             try {
                 arrayName = new JSONArray(prefs.getString("TaskName", null));
@@ -377,36 +378,47 @@ public class TaskAdder extends ActionBarActivity {
     }
 
     public void alwaysOnScreen(Context context, String name) {
-        String nameForAlways = null;
-        if (numberOfTask == 1) {
-            nameForAlways = " todo task";
-        } else if (numberOfTask > 1) {
-            nameForAlways = " todo tasks";
-        }
+        SharedPreferences prefs = getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
 
-        ArrayList<String> listNamez = new ArrayList<String>();
-        for (int i = 0; i < arrayName.length(); i++){
-            try {
-                listNamez.add(arrayName.getString(i));
-            } catch (Exception e) {
+        boolean n = prefs.getBoolean("notifications", true),
+                s = prefs.getBoolean("sounds", true),
+                v = prefs.getBoolean("vibrations", true);
+
+        if (n == true) {
+            String nameForAlways = null;
+            if (numberOfTask == 1) {
+                nameForAlways = " todo task";
+            } else if (numberOfTask > 1) {
+                nameForAlways = " todo tasks";
             }
+
+            ArrayList<String> listNamez = new ArrayList<String>();
+            for (int i = 0; i < arrayName.length(); i++){
+                try {
+                    listNamez.add(arrayName.getString(i));
+                } catch (Exception e) {
+                }
+            }
+
+            String childWithNames = listNamez.toString();
+
+            Intent intent = new Intent(context, MainActivity.class);
+            intent.putExtra("fromNotification", true);
+            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
+
+            Notification notification = new Notification.Builder(context)
+                    .setContentTitle(name + nameForAlways)
+                    .setContentText(childWithNames.substring(1, childWithNames.length()-1))
+                    .setSmallIcon(R.drawable.ic_event_available_white_24dp)
+                    .setContentIntent(contentIntent).build();
+
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+            notification.flags |= Notification.FLAG_NO_CLEAR;
+            notificationManager.notify(0, notification);
+        } else {
+            NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(0);
         }
-
-        String childWithNames = listNamez.toString();
-
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.putExtra("fromNotification", true);
-        PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
-        Notification notification = new Notification.Builder(context)
-                .setContentTitle(name + nameForAlways)
-                .setContentText(childWithNames.substring(1, childWithNames.length()-1))
-                .setSmallIcon(R.drawable.ic_event_available_white_24dp)
-                .setContentIntent(contentIntent).build();
-
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
-        notification.flags |= Notification.FLAG_NO_CLEAR;
-        notificationManager.notify(0, notification);
     }
 
 }
