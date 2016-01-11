@@ -95,8 +95,8 @@ public class TaskAdder extends ActionBarActivity {
         }
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        toolbar.setTitle(null);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(null);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         btnTime.setOnClickListener(new View.OnClickListener() {
@@ -388,9 +388,9 @@ public class TaskAdder extends ActionBarActivity {
         if (n == true) {
             String nameForAlways = null;
             if (numberOfTask == 1) {
-                nameForAlways = " todo task";
+                nameForAlways = " active task";
             } else if (numberOfTask > 1) {
-                nameForAlways = " todo tasks";
+                nameForAlways = " active tasks";
             }
 
             ArrayList<String> listNamez = new ArrayList<String>();
