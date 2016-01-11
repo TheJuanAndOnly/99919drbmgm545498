@@ -458,7 +458,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void notificationsClick(View view) {
-                Switch notificationsCheckBox, soundsCheckBox, vibrationsCheckBox;
+        Switch notificationsCheckBox, soundsCheckBox, vibrationsCheckBox;
         notificationsCheckBox = (Switch) findViewById(R.id.notificationsCheckBox);
         soundsCheckBox = (Switch) findViewById(R.id.soundsNotificationCheckBox);
         vibrationsCheckBox = (Switch) findViewById(R.id.vibrationsNotificationCheckBox);
@@ -475,14 +475,35 @@ public class MainActivity extends AppCompatActivity {
             vibrationsCheckBox.setVisibility(View.VISIBLE);
         }
 
+        SharedPreferences prefs = getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
+        boolean n = !prefs.getBoolean("notifications", true),
+                s = !prefs.getBoolean("sounds", true),
+                v = !prefs.getBoolean("vibrations", true);
+        if (n == false) {
+            s = false;
+            v = false;
+        }
+        prefs.edit().putBoolean("notifications", n).putBoolean("sounds", s).putBoolean("vibrations", v).apply();
+        prefs.edit().commit();
+
         updateNotification();
     }
 
     public void soundsNotificationClick(View view) {
+        SharedPreferences prefs = getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
+        boolean s = !prefs.getBoolean("sounds", true);
+        prefs.edit().putBoolean("sounds", s).apply();
+        prefs.edit().commit();
+
         updateNotification();
     }
 
     public void vibrationsNotificationClick(View view) {
+        SharedPreferences prefs = getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
+        boolean v = !prefs.getBoolean("vibrations", true);
+        prefs.edit().putBoolean("vibrations", v).apply();
+        prefs.edit().commit();
+
         updateNotification();
     }
 
@@ -510,6 +531,9 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
 
                         updateUserDetails();
+
+                        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                        notificationManager.cancel(0);
 
                         System.exit(0);
                     }
@@ -732,9 +756,7 @@ public class MainActivity extends AppCompatActivity {
     public void updateNotification() {
         SharedPreferences prefss = getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
 
-        boolean n = prefss.getBoolean("notifications", true),
-                s = prefss.getBoolean("sounds", true),
-                v = prefss.getBoolean("vibrations", true);
+        boolean n = prefss.getBoolean("notifications", true);
 
         if (n == true) {
             SharedPreferences prefs = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
@@ -759,9 +781,9 @@ public class MainActivity extends AppCompatActivity {
             if (numberOfTask > 0) {
                 String nameForAlways = null;
                 if (numberOfTask == 1) {
-                    nameForAlways = " todo task";
+                    nameForAlways = " task";
                 } else if (numberOfTask > 1) {
-                    nameForAlways = " todo tasks";
+                    nameForAlways = " tasks";
                 }
 
                 Intent intent = new Intent(this, MainActivity.class);
@@ -777,10 +799,10 @@ public class MainActivity extends AppCompatActivity {
                 NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 notification.flags |= Notification.FLAG_NO_CLEAR;
                 notificationManager.notify(0, notification);
-            } else {
-                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                notificationManager.cancel(0);
             }
+        } else {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            notificationManager.cancel(0);
         }
     }
 }

@@ -245,10 +245,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
         timerTime = timerTime - System.currentTimeMillis();
 
-        int days = (int) (timerTime / (1000*60*60*24));
-        int hours = (int) ((timerTime - (1000*60*60*24*days)) / (1000*60*60));
-        int minutes = (int) (timerTime - (1000*60*60*24*days) - (1000*60*60*hours)) / (1000*60);
-
         new CountDownTimer(timerTime, 1000) {
 
 
@@ -266,7 +262,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             }
 
             public void onFinish() {
-                txtTimer.setText("notified");
+                txtTimer.setText("time expired");
             }
         }.start();
 

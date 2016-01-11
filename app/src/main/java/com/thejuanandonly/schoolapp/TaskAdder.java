@@ -95,6 +95,7 @@ public class TaskAdder extends ActionBarActivity {
         }
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        toolbar.setTitle(null);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
