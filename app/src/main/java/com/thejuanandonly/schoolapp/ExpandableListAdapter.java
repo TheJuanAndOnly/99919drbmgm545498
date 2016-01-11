@@ -253,19 +253,20 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
 
             public void onTick(long millisUntilFinished) {
-                int days = (int) (millisUntilFinished / (1000*60*60*24));
-                int hours = (int) ((millisUntilFinished - (1000*60*60*24*days)) / (1000*60*60));
-                int minutes = (int) (millisUntilFinished - (1000*60*60*24*days) - (1000*60*60*hours)) / (1000*60);
+                int seconds = (int) (millisUntilFinished / 1000) % 60 ;
+                int minutes = (int) ((millisUntilFinished / (1000*60)) % 60);
+                int hours   = (int) ((millisUntilFinished / (1000*60*60)) % 24);
+                int days = (int) ((millisUntilFinished / (1000*60*60*24)));
 
-                if (millisUntilFinished > 60000) {
-                    txtTimer.setText(days + "d " + hours + "h " + minutes + "m");
+                if (millisUntilFinished < 60000) {
+                    txtTimer.setText(seconds + "s");
                 } else {
-                    txtTimer.setText(millisUntilFinished/1000 + "s");
+                    txtTimer.setText(days + "d " + hours + "h " + minutes + "m");
                 }
             }
 
             public void onFinish() {
-                txtTimer.setText("Done!");
+                txtTimer.setText("notified");
             }
         }.start();
 
