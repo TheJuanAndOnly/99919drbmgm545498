@@ -781,9 +781,9 @@ public class MainActivity extends AppCompatActivity {
             if (numberOfTask > 0) {
                 String nameForAlways = null;
                 if (numberOfTask == 1) {
-                    nameForAlways = " task";
+                    nameForAlways = " active task";
                 } else if (numberOfTask > 1) {
-                    nameForAlways = " tasks";
+                    nameForAlways = " active tasks";
                 }
 
                 Intent intent = new Intent(this, MainActivity.class);

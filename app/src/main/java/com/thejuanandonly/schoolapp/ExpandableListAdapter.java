@@ -9,7 +9,9 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,7 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 
@@ -222,6 +225,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.group_item, null);
+        }
+        ImageView img = (ImageView) convertView.findViewById(R.id.imgIndicatorGroup);
+        if (isExpanded == false) {
+            img.setBackground(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_white_24dp));
+        } else if (isExpanded == true) {
+            img.setBackground(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_white_24dp));
         }
 
         TextView item = (TextView) convertView.findViewById(R.id.taskName);

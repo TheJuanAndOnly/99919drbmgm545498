@@ -3,7 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="10dp"
+    android:paddingTop="10dp"
+    android:paddingLeft="10dp"
+    android:paddingBottom="10dp"
+    android:paddingRight="5dp"
     android:background="@color/darkbluebackground">
 
     <TextView
@@ -39,11 +42,20 @@
         android:layout_height="wrap_content"
         android:text="unset"
         android:id="@+id/txtTime"
-        android:paddingRight="25dp"
-        android:layout_alignParentTop="true"
+        android:paddingRight="5dp"
+        android:textColor="@color/white"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/imgIndicatorGroup"
+        android:layout_toStartOf="@+id/imgIndicatorGroup" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imgIndicatorGroup"
+        android:background="@drawable/ic_keyboard_arrow_down_white_24dp"
+        android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:textColor="@color/white"/>
+        android:layout_alignParentEnd="true" />
 
 
 </RelativeLayout>

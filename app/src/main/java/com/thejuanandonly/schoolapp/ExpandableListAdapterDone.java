@@ -36,6 +36,7 @@ public class ExpandableListAdapterDone extends BaseExpandableListAdapter {
     }
 
     public Object getChild(int groupPosition, int childPosition) {
+
         return taskWhat.get(taskName.get(groupPosition)).get(childPosition);
     }
 
@@ -237,6 +238,13 @@ public class ExpandableListAdapterDone extends BaseExpandableListAdapter {
             LayoutInflater infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.group_item_done, null);
         }
+        ImageView img = (ImageView) convertView.findViewById(R.id.imgIndicatorGroup);
+        if (isExpanded == false) {
+            img.setBackground(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_white_24dp));
+        } else if (isExpanded == true) {
+            img.setBackground(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_white_24dp));
+        }
+
         TextView item = (TextView) convertView.findViewById(R.id.taskName);
         item.setText(TaskName);
         return convertView;

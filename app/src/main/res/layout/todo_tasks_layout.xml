@@ -8,7 +8,7 @@
         android:layout_height="fill_parent"
         android:divider="@color/lightbluebackground"
         android:dividerHeight="1dp"
-        android:groupIndicator="@drawable/group_indicator_tasks"
+        android:groupIndicator="@android:color/transparent"
         android:background="@color/darkbluebackground">
     </ExpandableListView>
 
