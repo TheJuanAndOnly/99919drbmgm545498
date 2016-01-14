@@ -9,18 +9,22 @@
     android:paddingRight="5dp"
     android:background="@color/darkbluebackground">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="40dp" />
+
     <TextView
-        android:id="@+id/taskName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textColor="@color/white"
-        android:paddingLeft="15dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_toLeftOf="@+id/txtTime"
-        android:layout_toStartOf="@+id/txtTime"/>
+    android:id="@+id/taskName"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textSize="20sp"
+    android:textColor="@color/white"
+    android:paddingLeft="15dp"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentStart="true"
+    android:layout_toLeftOf="@+id/txtTime"
+    android:layout_toStartOf="@+id/txtTime"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -42,9 +46,10 @@
         android:layout_height="wrap_content"
         android:text="unset"
         android:id="@+id/txtTime"
-        android:paddingRight="5dp"
+        android:paddingLeft="5dp"
         android:textColor="@color/white"
         android:layout_centerVertical="true"
+        android:gravity="center"
         android:layout_toLeftOf="@+id/imgIndicatorGroup"
         android:layout_toStartOf="@+id/imgIndicatorGroup" />
 
@@ -57,5 +62,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="40dp" />
 
 </RelativeLayout>

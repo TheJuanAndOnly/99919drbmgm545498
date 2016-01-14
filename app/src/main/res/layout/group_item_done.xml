@@ -9,6 +9,10 @@
     android:paddingRight="5dp"
     android:background="@color/darkbluebackground">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="40dp" />
+
     <TextView
         android:id="@+id/taskName"
         android:layout_width="wrap_content"
@@ -47,5 +51,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="40dp" />
 
 </RelativeLayout>
