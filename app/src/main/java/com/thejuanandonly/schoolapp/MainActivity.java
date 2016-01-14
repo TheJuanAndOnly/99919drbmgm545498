@@ -755,10 +755,12 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateNotification() {
         SharedPreferences prefss = getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
+        SharedPreferences prefsss = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
 
         boolean n = prefss.getBoolean("notifications", true);
+        int numberOfTasks = prefsss.getInt("NumberOfTask", 0);
 
-        if (n == true) {
+        if (n == true && numberOfTasks > 0) {
             SharedPreferences prefs = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
             JSONArray arrayName;
             int numberOfTask = prefs.getInt("NumberOfTask", 0);
