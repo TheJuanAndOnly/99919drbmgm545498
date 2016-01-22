@@ -1,8 +1,10 @@
 package com.thejuanandonly.schoolapp;
 
+import android.annotation.TargetApi;
 import android.app.Fragment;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.internal.app.ToolbarActionBar;
@@ -12,6 +14,8 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -33,6 +37,8 @@ public class SupportFragment extends android.support.v4.app.Fragment {
         toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("Support");
         toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
+
+        theme();
 
         ImageView img = (ImageView) getActivity().findViewById(R.id.overviewImg);
         img.setVisibility(View.GONE);
@@ -74,7 +80,7 @@ public class SupportFragment extends android.support.v4.app.Fragment {
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                         "mailto","danymalach@gmail.com", null));
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, "BUG REPORT");
-                emailIntent.putExtra(Intent.EXTRA_TEXT, "");
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "-- Do not edit the subject please. -- \n \n");
                 startActivity(Intent.createChooser(emailIntent, "Send email..."));
             }
         });
@@ -86,7 +92,7 @@ public class SupportFragment extends android.support.v4.app.Fragment {
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                         "mailto","danymalach@gmail.com", null));
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, "FEEDBACK");
-                emailIntent.putExtra(Intent.EXTRA_TEXT, "");
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "-- Do not edit the subject please. -- \n \n");
                 startActivity(Intent.createChooser(emailIntent, "Send email..."));
 
             }
@@ -94,4 +100,15 @@ public class SupportFragment extends android.support.v4.app.Fragment {
 
         return rootView;
     }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void theme() {
+
+        Window window = getActivity().getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.mainblue800));
+    }
+
 }

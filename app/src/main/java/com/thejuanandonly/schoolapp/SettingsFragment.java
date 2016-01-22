@@ -19,6 +19,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -44,8 +46,13 @@ public class SettingsFragment extends Fragment {
         return inflater.inflate(R.layout.settings_layout, null);
     }
 
+
+
     @Override
     public void onStart() {
+        percentageListener();
+        theme();
+
         toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("Settings");
         toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
@@ -140,10 +147,50 @@ public class SettingsFragment extends Fragment {
         conversionArray.put(et2.getText().toString());
         conversionArray.put(et3.getText().toString());
         conversionArray.put(et4.getText().toString());
+        conversionArray.put("0");
 
         preferences.edit().putString("conversion", conversionArray.toString()).apply();
 
         super.onStop();
+    }
+
+    public void percentageListener(){
+        Button arrow = (Button) getView().findViewById(R.id.rollDownSettingsPerc);
+        arrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listen();
+            }
+        });
+        RelativeLayout layout = (RelativeLayout) getView().findViewById(R.id.percConversionTv);
+        layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listen();
+            }
+        });
+    }
+    public void listen(){
+        LinearLayout layout = (LinearLayout) getView().findViewById(R.id.percConversionLayout);
+        Button button = (Button) getView().findViewById(R.id.rollDownSettingsPerc);
+
+        if (layout.getVisibility() == View.VISIBLE){
+            layout.setVisibility(View.GONE);
+            button.setBackground(getResources().getDrawable(R.drawable.ic_arrow_drop_down_white_24dp));
+        }else {
+            layout.setVisibility(View.VISIBLE);
+            button.setBackground(getResources().getDrawable(R.drawable.ic_arrow_drop_up_white_24dp));
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void theme() {
+
+        Window window = getActivity().getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.mainblue800));
     }
 
 }

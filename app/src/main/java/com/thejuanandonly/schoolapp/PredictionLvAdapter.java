@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,35 +49,38 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
         int currentGrade = prefs.getInt("currentGrade", 0);
         int gradeType = prefs.getInt("GradeType", 0);
 
+        if (gradeType == 1){
+            TextView plus = (TextView) convertView.findViewById(R.id.grade_plus_text_view);
+            plus.setVisibility(View.VISIBLE);
+        }
+
         String[] strings = new String[]{};
         switch (gradeType){
             case 0:
                 strings = new String[]{"1", "2", "3", "4", "5"};
                 break;
             case 1:
-                strings = new String[]{"90", "75", "50", "30", "0"};
+                try {
+                    SharedPreferences convPrefs = getContext().getSharedPreferences("Global", Context.MODE_PRIVATE);
+                    JSONArray conversion = new JSONArray(convPrefs.getString("conversion", null));
+
+                    strings = new String[5];
+                    for (int i = 0; i < conversion.length(); i++){
+                        strings[i] = conversion.getString(i);
+                    }
+
+                }catch (Exception ex) {
+                    strings = new String[]{"90", "75", "50", "30", "0"};
+                }
                 break;
             case 2:
                 strings = new String[]{"0", "1", "2", "3", "4"};
                 break;
+            case 3:
+                strings = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
+                break;
         }
         t1.setText(strings[position]);
-
-        if (gradeType == 1){
-            LinearLayout tv = (LinearLayout) convertView.findViewById(R.id.tvlayout);
-            LinearLayout et = (LinearLayout) convertView.findViewById(R.id.etlayout);
-
-            tv.setVisibility(View.GONE);
-            et.setVisibility(View.VISIBLE);
-
-            EditText editText = (EditText) convertView.findViewById(R.id.grade_edit_text);
-            try{
-                JSONArray array = new JSONArray(prefs.getString("predictionPercentages", null));
-                editText.setText(array.getString(position));
-            }catch (Exception e){
-                editText.setText(strings[position]);
-            }
-        }
 
         int testsToWrite = prefs.getInt("testsToWrite", 1);
 
@@ -133,6 +137,10 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
                             break;
                         case 2:
                             sc = numberToLetter(alphabeticGradeRound(c)) + ", ";
+                            break;
+                        case 3:
+                            sc = String.valueOf(c + 1) + ", ";
+                            break;
                     }
                 }
 
@@ -149,6 +157,10 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
                                 break;
                             case 2:
                                 sd = numberToLetter(alphabeticGradeRound(d)) + " and ";
+                                break;
+                            case 3:
+                                sd = String.valueOf(d + 1) + " and ";
+                                break;
                         }
                     }
 
@@ -165,6 +177,10 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
                                     break;
                                 case 2:
                                     se = numberToLetter(alphabeticGradeRound(e));
+                                    break;
+                                case 3:
+                                    se = String.valueOf(e + 1);
+                                    break;
                             }
                         }
 
@@ -196,11 +212,10 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
                                     break;
 
                                 case 1:
-                                    EditText editText = (EditText) convertView.findViewById(R.id.grade_edit_text);
 
-                                    int percentage = (Integer.parseInt(String.valueOf(editText.getText().charAt(0))) * 10);
+                                    int percentage = (Integer.parseInt(String.valueOf(strings[position])) * 10);
                                     try{
-                                        percentage += Integer.parseInt(String.valueOf(editText.getText().charAt(1)));
+                                        percentage += Integer.parseInt(String.valueOf(strings[position]));
                                     }catch (NumberFormatException ex){
                                         percentage /= 10;
                                     }
@@ -229,7 +244,19 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
 
                                 case 2:
 
-                                    if (prediction == position) {
+                                    if (prediction == Integer.parseInt(strings[position + 1])) {
+
+                                        ci = true;
+
+                                        line.set(1, sc + sd + se);
+
+                                    }
+
+                                    break;
+
+                                case 3:
+
+                                    if (prediction == (position + 1)) {
 
                                         ci = true;
 
@@ -535,6 +562,21 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
                                 }
 
                                 break;
+
+                            case 3:
+
+                                if (prediction == position + 1) {
+
+                                    line.set(1, String.valueOf((i + 1) - (pocetZnamok * k)));
+
+                                    line.set(2, "from");
+
+                                    line.set(3, arrayOfCategories.getString(k));
+
+                                    Log.d("debugB", String.valueOf(line) + position);
+                                }
+
+                                break;
                         }
 
                     } catch (JSONException e) {
@@ -620,6 +662,28 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
                                                 line.set(1, (arrayLists.get(arrayLists.size() - 1).get(1).charAt(0) + " to " + line.get(1)));
                                             }
                                         }
+                                        break;
+
+                                    case 3:
+
+                                        if (arrayLists.get(arrayLists.size() - 1).get(1).length() <= 2) {
+
+                                            line.set(1, (arrayLists.get(arrayLists.size() - 1).get(1) + "/" + line.get(1)));
+                                        } else {
+
+                                            String s = String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(0));
+
+                                            if (arrayLists.get(arrayLists.size() - 1).get(1).charAt(0) == '1' &&
+                                                    arrayLists.get(arrayLists.size() - 1).get(1).charAt(1) == '0'){
+                                                s += String.valueOf(arrayLists.get(arrayLists.size() - 1).get(1).charAt(1));
+                                            }
+
+                                            s += " - " + line.get(1);
+
+                                            line.set(1, s);
+                                        }
+
+                                        break;
                                 }
 
                                 arrayLists.set(arrayLists.size() - 1, line);

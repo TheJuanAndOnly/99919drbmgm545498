@@ -95,6 +95,7 @@ public class TaskAdder extends ActionBarActivity {
         }
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        toolbar.setTitle("Add a task");
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -252,8 +253,6 @@ public class TaskAdder extends ActionBarActivity {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void theme() {
-        SharedPreferences prefs = getSharedPreferences("themeSave", Context.MODE_PRIVATE);
-        int theme = prefs.getInt("theme", 0);
 
         Window window = this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -261,13 +260,9 @@ public class TaskAdder extends ActionBarActivity {
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.tool_bar);
 
-        switch (theme) {
-            default:
+        toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
 
-                toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.mainblue800));
-        }
+        if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.mainblue800));
     }
 
     public void addTask() {

@@ -3,9 +3,11 @@ package com.thejuanandonly.schoolapp;
 import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -80,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         api = android.os.Build.VERSION.SDK_INT;
-        theme();
 
         drawerFull = (LinearLayout) findViewById(R.id.drawerFull);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
         updateUserDetails();
         setLevel();
         setQuote();
+        setOverall();
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
 
@@ -111,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 mDrawerLayout.closeDrawers();
 
                 setLevel();
+                setOverall();
 
                 if (menuItem.getItemId() == R.id.nav_item_overview) {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
@@ -180,25 +183,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         super.onResume();
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void theme() {
-        /*SharedPreferences prefs = getSharedPreferences("themeSave", Context.MODE_PRIVATE);
-        theme = prefs.getInt("theme", 0);
-
-        Window window = this.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
-        switch (theme) {
-            default:
-
-                toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
-
-                if (api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.mainblue800));
-        }*/
     }
 
     @Override
@@ -307,7 +291,7 @@ public class MainActivity extends AppCompatActivity {
                             Log.d("debug", String.valueOf(array[5]));
                         }
                         break;
-                    case 3:
+                    case 2:
                         if (avg < 0.67) {
                             points += array[1];
                             Log.d("debug", String.valueOf(array[1]));
@@ -326,6 +310,95 @@ public class MainActivity extends AppCompatActivity {
                         }
                         break;
                 }
+
+                try {
+
+                    JSONArray categories = new JSONArray(prefs.getString("ListOfCategories", null));
+
+                    for (int j = 0; j < categories.length(); j++){
+
+                        JSONArray arrayOfGrades = new JSONArray(prefs.getString(categories.getString(j) + "Grades" + prefs.getInt("GradeType" , 0), null));
+
+                        for (int k = 0; k < arrayOfGrades.length(); k++){
+
+                            switch (prefs.getInt("GradeType", 0)){
+                                case 0:
+                                    switch ((int) Math.round(Double.parseDouble(arrayOfGrades.getString(k)))){
+                                        case 1:
+                                            points += array[8];
+                                            Log.d("debug", String.valueOf(array[8]));
+                                            break;
+                                        case 2:
+                                            points += array[9];
+                                            Log.d("debug", String.valueOf(array[9]));
+                                            break;
+                                        case 3:
+                                            points += array[10];
+                                            Log.d("debug", String.valueOf(array[10]));
+                                            break;
+                                        case 4:
+                                            points += array[11];
+                                            Log.d("debug", String.valueOf(array[11]));
+                                            break;
+                                        case 5:
+                                            points += array[12];
+                                            Log.d("debug", String.valueOf(array[12]));
+                                            break;
+                                    }
+                                    break;
+                                case 1:
+                                    int grade = (int) Math.round(Double.parseDouble(arrayOfGrades.getString(k)));
+                                    if (grade >= 90) {
+                                        points += array[8];
+                                        Log.d("debug", String.valueOf(array[8]));
+
+                                    } else if (grade < 90 && grade >= 75) {
+                                        points += array[9];
+                                        Log.d("debug", String.valueOf(array[9]));
+
+                                    } else if (grade < 75 && grade >= 50) {
+                                        points += array[10];
+                                        Log.d("debug", String.valueOf(array[10]));
+
+                                    } else if (grade < 50 && grade >= 30) {
+                                        points += array[11];
+                                        Log.d("debug", String.valueOf(array[11]));
+
+                                    } else if (grade < 30) {
+                                        points += array[12];
+                                        Log.d("debug", String.valueOf(array[12]));
+
+                                    }
+                                    break;
+                                case 2:
+                                    String gradeS = arrayOfGrades.getString(k);
+                                    if (gradeS.contains("A")) {
+                                        points += array[8];
+                                        Log.d("debug", String.valueOf(array[8]));
+
+                                    } else if (gradeS.contains("B")) {
+                                        points += array[9];
+                                        Log.d("debug", String.valueOf(array[9]));
+
+                                    } else if (gradeS.contains("C")) {
+                                        points += array[10];
+                                        Log.d("debug", String.valueOf(array[10]));
+
+                                    } else if (gradeS.contains("D")) {
+                                        points += array[11];
+                                        Log.d("debug", String.valueOf(array[11]));
+
+                                    } else if (gradeS.contains("F")) {
+                                        points += array[12];
+                                        Log.d("debug", String.valueOf(array[12]));
+
+                                    }
+                                    break;
+                            }
+                        }
+
+                    }
+                }catch (Exception e){}
             }
         }
 
@@ -436,6 +509,167 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void setOverall(){
+
+        TextView overallTv = (TextView) findViewById(R.id.overall);
+
+        int ovr = 0;
+        int ovrCnt = 0;
+        ArrayList<Integer> types = new ArrayList<>();
+        int normal = 0;
+        int percent = 0;
+        int alphab = 0;
+        int tenGrade = 0;
+
+        SharedPreferences arrayPrefs = getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
+
+        JSONArray arrayOfSubjects = new JSONArray();
+        try {
+            arrayOfSubjects = new JSONArray(arrayPrefs.getString("List", null));
+        }catch (Exception e) {}
+
+        for (int i = 0; i < arrayOfSubjects.length(); i++){
+
+            String currentSubj = "";
+            try {
+                currentSubj = arrayOfSubjects.getString(i);
+            } catch (JSONException e) {
+            }
+
+            SharedPreferences prefs = getSharedPreferences("Subject" + currentSubj, Context.MODE_PRIVATE);
+            int gradeType = prefs.getInt("GradeType" , 0);
+
+            switch (gradeType){
+                case 0:
+                    normal++;
+                    break;
+                case 1:
+                    percent++;
+                    break;
+                case 2:
+                    alphab++;
+                    break;
+                case 3:
+                    tenGrade++;
+                    break;
+            }
+            types.add(gradeType);
+        }
+
+        if ((normal != 0 || percent != 0) && alphab == 0 && tenGrade == 0){
+            for (int i = 0; i < arrayOfSubjects.length(); i++) {
+
+                String currentSubj = "";
+                try {
+                    currentSubj = arrayOfSubjects.getString(i);
+                } catch (JSONException e) {
+                }
+
+                SharedPreferences prefs = getSharedPreferences("Subject" + currentSubj, Context.MODE_PRIVATE);
+                int gradeType = prefs.getInt("GradeType", 0);
+                double avg = Double.parseDouble(prefs.getString("AvgGrade", "0"));
+
+                if (gradeType == 0){
+                    ovr += avg;
+                    ovrCnt++;
+                }
+                else if (gradeType == 1){
+                    SharedPreferences conv = getSharedPreferences("Global", Context.MODE_PRIVATE);
+                    try{
+                        JSONArray conversionArray = new JSONArray(conv.getString("conversion", null));
+
+                        if (avg >= conversionArray.getInt(0)){
+                            ovr += 1;
+                            ovrCnt++;
+                        }
+                        else if (avg >= conversionArray.getInt(1)){
+                            ovr += 2;
+                            ovrCnt++;
+                        }
+                        else if (avg >= conversionArray.getInt(2)){
+                            ovr += 3;
+                            ovrCnt++;
+                        }
+                        else if (avg >= conversionArray.getInt(3)){
+                            ovr += 4;
+                            ovrCnt++;
+                        }else {
+                            ovr += 5;
+                            ovrCnt++;
+                        }
+                    }
+                    catch (Exception e){}
+                }
+            }
+
+            try{
+                double d = Double.parseDouble(String.valueOf(ovr)) / Double.parseDouble(String.valueOf(ovrCnt));
+                String s;
+                try{
+                    s = String.valueOf(d).substring(0, 4);
+                }catch (StringIndexOutOfBoundsException e){
+                    s = String.valueOf(d);
+                }
+                overallTv.setText("Overall: " + s);
+
+                Log.d("debugC", ovr + ", " + ovrCnt + ", " + d);
+            }catch (ArithmeticException e){
+                //overallTv.setText("");
+                Log.e("debug", e.toString());
+            }
+
+        }else {
+            for (int i = 0; i < arrayOfSubjects.length(); i++) {
+
+                String currentSubj = "";
+                try {
+                    currentSubj = arrayOfSubjects.getString(i);
+                } catch (JSONException e) {
+                }
+
+                SharedPreferences prefs = getSharedPreferences("Subject" + currentSubj, Context.MODE_PRIVATE);
+                int gradeType = prefs.getInt("GradeType", 0);
+                double avg = Double.parseDouble(prefs.getString("AvgGrade", "0"));
+
+                switch (gradeType){
+                    case 0:
+                        ovr += avg * 2;
+                        ovrCnt++;
+                        break;
+                    case 1:
+                        ovr += Math.round(avg / 10);
+                        ovrCnt++;
+                        break;
+                    case 2:
+                        ovr += Math.round((avg / 4) * 10);
+                        ovrCnt++;
+                        break;
+                    case 3:
+                        ovr += avg;
+                        ovrCnt++;
+                        break;
+                }
+            }
+
+            try{
+                double d = Double.parseDouble(String.valueOf(ovr)) / Double.parseDouble(String.valueOf(ovrCnt));
+                String s;
+                try{
+                    s = String.valueOf(d).substring(0, 4);
+                }catch (StringIndexOutOfBoundsException e){
+                    s = String.valueOf(d);
+                }
+
+                overallTv.setText("Overall: " + s + " / 10");
+
+                Log.d("debugC", ovr + ", " + ovrCnt + ", " + d);
+            }catch (ArithmeticException e){
+                //overallTv.setText("");
+                Log.e("debug", e.toString());
+            }
+        }
+    }
+
     public void setQuote(){
         TextView quoteTv = (TextView) findViewById(R.id.quote);
         TextView authorTv = (TextView) findViewById(R.id.author);
@@ -443,7 +677,7 @@ public class MainActivity extends AppCompatActivity {
         String[] quotes = getResources().getStringArray(R.array.quotes);
         String[] authors = getResources().getStringArray(R.array.authors);
 
-        int rnd = (int) (Math.random() * 26);
+        int rnd = (int) (Math.random() * 27);
 
         quoteTv.setText(quotes[rnd]);
         authorTv.setText(authors[rnd]);
