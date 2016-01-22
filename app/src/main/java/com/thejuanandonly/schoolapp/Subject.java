@@ -2,6 +2,8 @@ package com.thejuanandonly.schoolapp;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.design.widget.Snackbar;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,19 +56,34 @@ public class Subject {
 
             if (doubleAvg >= 100){
                 DecimalFormat df = new DecimalFormat("#");
-                doubleAvg = Double.valueOf(df.format(doubleAvg));
+                try {
+                    doubleAvg = Double.valueOf(df.format(doubleAvg));
+                } catch (NumberFormatException e) {
+                }
             }else if (doubleAvg >= 10){
                 DecimalFormat df = new DecimalFormat("#.#");
-                doubleAvg = Double.valueOf(df.format(doubleAvg));
+                try {
+                    doubleAvg = Double.valueOf(df.format(doubleAvg));
+                } catch (NumberFormatException e) {
+                }
             }else {
                 DecimalFormat df = new DecimalFormat("#.##");
-                doubleAvg = Double.valueOf(df.format(doubleAvg));
+                try {
+                    doubleAvg = Double.valueOf(df.format(doubleAvg));
+                } catch (NumberFormatException e) {
+                }
             }
 
             average = String.valueOf(doubleAvg);
 
             if (average.length() == 3){
                 average += "0";
+            } else if (average.length() > 4) {
+                average = average.substring(0, 4);
+                String ss = average.substring(3, 4);
+                if (ss.equals(".")) {
+                    average = average.substring(0, 3);
+                }
             }
 
             subject.add(new Subject(subjectName, average));

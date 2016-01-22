@@ -140,10 +140,14 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
         TextView averageTV = (TextView) findViewById(R.id.averageTextView);
         int gradeType = prefs.getInt("GradeType" , 0);
+        String average = prefs.getString("AvgGrade", "0");
+        if (average.length() > 6) {
+            average = average.substring(0, 6);
+        }
         if (gradeType == 2){
-            averageTV.setText("GPA: " + prefs.getString("AvgGrade", "0"));
+            averageTV.setText("GPA: " + average);
         }else {
-            averageTV.setText("Average: " + prefs.getString("AvgGrade", "0"));
+            averageTV.setText("Average: " + average);
         }
 
 
@@ -604,7 +608,10 @@ public class SubjectDetailActivity extends AppCompatActivity {
             average /= semiAverage.size();
 
             DecimalFormat df = new DecimalFormat("#.####");
-            average = Double.valueOf(df.format(average));
+            try {
+                average = Double.valueOf(df.format(average));
+            } catch (NumberFormatException e) {
+            }
 
 
 
@@ -638,7 +645,10 @@ public class SubjectDetailActivity extends AppCompatActivity {
             average /= count;
 
             DecimalFormat df = new DecimalFormat("#.####");
-            average = Double.valueOf(df.format(average));
+            try {
+                average = Double.valueOf(df.format(average));
+            } catch (NumberFormatException e) {
+            }
 
             if (String.valueOf(average).equals("NaN")){
                 return 0;
@@ -669,7 +679,10 @@ public class SubjectDetailActivity extends AppCompatActivity {
             }
 
             DecimalFormat df = new DecimalFormat("#.####");
-            average = Double.valueOf(df.format(average));
+            try {
+                average = Double.valueOf(df.format(average));
+            } catch (NumberFormatException e) {
+            }
 
             if (String.valueOf(average).equals("NaN")){
                 return 0;
