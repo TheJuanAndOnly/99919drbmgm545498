@@ -1,12 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" >
+<items version="2" />
 
-    <item
-        jar="C:\Users\Daniel\Documents\GitHub\MySchoolAppv1.3\app\build\intermediates\incremental-classes\debug\classes.jar"
-        jumboMode="false"
-        revision="23.0.2"
-        sha1="313c845332efe5f6debe048f4661c4fbeacdac3e">
-        <dex dex="C:\Users\Daniel\Documents\GitHub\MySchoolAppv1.3\app\build\intermediates\pre-dexed\debug\classes_94d5671fd813a9b3381c72cd15554bcb65358595.jar" />
-    </item>
-
-</items>

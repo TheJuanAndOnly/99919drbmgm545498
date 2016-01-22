@@ -77,9 +77,11 @@ public class PictureGroupActivity extends AppCompatActivity {
         height = displaymetrics.heightPixels;
         width = displaymetrics.widthPixels;
 
+        String subject_notes = getIntent().getExtras().getString("subNote", "SchoolApp");
+
         theme();
 
-        String subject_notes = getIntent().getExtras().getString("subNote", "SchoolApp");
+        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.subjectDetailToolbar);
         toolbar.setTitle(subject_notes);
 
         setSupportActionBar(toolbar);
@@ -140,6 +142,16 @@ public class PictureGroupActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void theme() {
+
+        Window window = this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.mainblue800));
     }
 
     @Override
@@ -365,28 +377,5 @@ public class PictureGroupActivity extends AppCompatActivity {
         }
 
         return SizeSample;
-    }
-
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void theme() {
-        SharedPreferences prefs = getSharedPreferences("themeSave", Context.MODE_PRIVATE);
-        int theme = prefs.getInt("theme", 0);
-
-        Window window = this.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.subjectDetailToolbar);
-
-        switch (theme) {
-            case 1:
-                toolbar.setBackgroundColor(getResources().getColor(R.color.blueT));
-
-                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                    window.setStatusBarColor(getResources().getColor(R.color.blueTy));
-
-                break;
-        }
     }
 }
