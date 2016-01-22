@@ -63,8 +63,6 @@ public class DoneTasksTabFragment extends Fragment {
         expListAdapterDone = new ExpandableListAdapterDone(getActivity(), groupList, taskWhat);
         expListView.setAdapter(expListAdapterDone);
 
-        setGroupIndicatorToRight();
-
         return view;
     }
 
@@ -80,22 +78,6 @@ public class DoneTasksTabFragment extends Fragment {
         childList = new ArrayList<String>();
         for (String taskWhat : tasksWhat)
             childList.add(taskWhat);
-    }
-
-    private void setGroupIndicatorToRight() {
-        DisplayMetrics metrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        int width = metrics.widthPixels;
-
-        expListView.setIndicatorBounds(width - GetPixelFromDips(50), width - GetPixelFromDips(0));
-    }
-
-    public int GetPixelFromDips(float pixels) {
-        // Get the screen's density scale
-        final float scale = getResources().getDisplayMetrics().density;
-        // Convert the dps to pixels, based on density scale
-        return (int) (pixels * scale + 0.5f);
-
     }
 
     @Override
