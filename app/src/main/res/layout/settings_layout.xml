@@ -49,38 +49,34 @@
 
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:layout_below="@id/soundsAndVibrationsLayout"
-        android:id="@+id/separator2"
-        android:visibility="visible"
-        android:background="@color/mainblue"/>
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/separator2"
-        android:text="Delete Everything"
+        android:text="Reset all"
         android:id="@+id/deleteButton"
-        android:onClick="deleteAll"/>
+        android:onClick="deleteAll"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="16dp"
-        android:layout_below="@id/deleteButton"
-        android:id="@+id/separator3"
+        android:id="@+id/separator"
         android:visibility="visible"
-        android:background="@color/mainblue"/>
+        android:background="@color/mainblue"
+        android:layout_below="@+id/switch_active"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/percConversionTv"
-        android:layout_below="@id/separator3">
+        android:layout_below="@+id/separator"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <TextView
             android:layout_width="wrap_content"
@@ -265,5 +261,19 @@
         </LinearLayout>
 
     </LinearLayout>
+
+    <Switch
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Active tasks"
+        android:textColor="@color/greyText"
+        android:textSize="18sp"
+        android:id="@+id/switch_active"
+        android:onClick="activeTasksClick"
+        android:layout_below="@+id/soundsAndVibrationsLayout"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"/>
 
 </RelativeLayout>

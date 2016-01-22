@@ -376,11 +376,9 @@ public class TaskAdder extends ActionBarActivity {
     public void alwaysOnScreen(Context context, String name) {
         SharedPreferences prefs = getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
 
-        boolean n = prefs.getBoolean("notifications", true),
-                s = prefs.getBoolean("sounds", true),
-                v = prefs.getBoolean("vibrations", true);
+        boolean a = prefs.getBoolean("active", true);
 
-        if (n == true) {
+        if (a == true) {
             String nameForAlways = null;
             if (numberOfTask == 1) {
                 nameForAlways = " active task";

@@ -69,16 +69,19 @@ public class SettingsFragment extends Fragment {
         Switch notificationsCheckBox = (Switch) getView().findViewById(R.id.notificationsCheckBox);
         Switch soundsCheckBox = (Switch) getView().findViewById(R.id.soundsNotificationCheckBox);
         Switch vibrationsCheckBox = (Switch) getView().findViewById(R.id.vibrationsNotificationCheckBox);
+        Switch activeTasksCheckBox = (Switch) getView().findViewById(R.id.switch_active);
 
         SharedPreferences prefs = getActivity().getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
 
         boolean n = prefs.getBoolean("notifications", true),
                 s = prefs.getBoolean("sounds", true),
-                v = prefs.getBoolean("vibrations", true);
+                v = prefs.getBoolean("vibrations", true),
+                a = prefs.getBoolean("active", true);
 
         notificationsCheckBox.setChecked(n);
         soundsCheckBox.setChecked(s);
         vibrationsCheckBox.setChecked(v);
+        activeTasksCheckBox.setChecked(a);
 
         if (!n) {
             soundsCheckBox.setVisibility(View.GONE);
@@ -112,10 +115,12 @@ public class SettingsFragment extends Fragment {
         Switch notificationsCheckBox = (Switch) getView().findViewById(R.id.notificationsCheckBox);
         Switch soundsCheckBox = (Switch) getView().findViewById(R.id.soundsNotificationCheckBox);
         Switch vibrationsCheckBox = (Switch) getView().findViewById(R.id.vibrationsNotificationCheckBox);
+        Switch activeTasksCheckBox = (Switch) getView().findViewById(R.id.switch_active);
 
         boolean n = notificationsCheckBox.isChecked(),
                 s = soundsCheckBox.isChecked(),
-                v = vibrationsCheckBox.isChecked();
+                v = vibrationsCheckBox.isChecked(),
+                a = activeTasksCheckBox.isChecked();
 
         SharedPreferences prefs = getActivity().getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -123,6 +128,7 @@ public class SettingsFragment extends Fragment {
         editor.putBoolean("notifications", n);
         editor.putBoolean("sounds", s);
         editor.putBoolean("vibrations", v);
+        editor.putBoolean("active", a);
         editor.apply();
 
         SharedPreferences themePrefs = getActivity().getSharedPreferences("themeSave", Context.MODE_PRIVATE);

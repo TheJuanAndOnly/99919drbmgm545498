@@ -692,7 +692,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void notificationsClick(View view) {
-        Switch notificationsCheckBox, soundsCheckBox, vibrationsCheckBox;
+        Switch notificationsCheckBox, soundsCheckBox, vibrationsCheckBox, activeTasksCheckBox;
         notificationsCheckBox = (Switch) findViewById(R.id.notificationsCheckBox);
         soundsCheckBox = (Switch) findViewById(R.id.soundsNotificationCheckBox);
         vibrationsCheckBox = (Switch) findViewById(R.id.vibrationsNotificationCheckBox);
@@ -719,8 +719,6 @@ public class MainActivity extends AppCompatActivity {
         }
         prefs.edit().putBoolean("notifications", n).putBoolean("sounds", s).putBoolean("vibrations", v).apply();
         prefs.edit().commit();
-
-        updateNotification();
     }
 
     public void soundsNotificationClick(View view) {
@@ -728,8 +726,6 @@ public class MainActivity extends AppCompatActivity {
         boolean s = !prefs.getBoolean("sounds", true);
         prefs.edit().putBoolean("sounds", s).apply();
         prefs.edit().commit();
-
-        updateNotification();
     }
 
     public void vibrationsNotificationClick(View view) {
@@ -737,7 +733,14 @@ public class MainActivity extends AppCompatActivity {
         boolean v = !prefs.getBoolean("vibrations", true);
         prefs.edit().putBoolean("vibrations", v).apply();
         prefs.edit().commit();
+    }
 
+    public void activeTasksClick(View view) {
+        SharedPreferences prefs = getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
+        boolean a = !prefs.getBoolean("active", true);
+        prefs.edit().putBoolean("active", a).apply();
+        prefs.edit().commit();
+        
         updateNotification();
     }
 
@@ -991,10 +994,10 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefss = getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
         SharedPreferences prefsss = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
 
-        boolean n = prefss.getBoolean("notifications", true);
+        boolean a = prefss.getBoolean("active", true);
         int numberOfTasks = prefsss.getInt("NumberOfTask", 0);
 
-        if (n == true && numberOfTasks > 0) {
+        if (a == true && numberOfTasks > 0) {
             SharedPreferences prefs = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
             JSONArray arrayName;
             int numberOfTask = prefs.getInt("NumberOfTask", 0);
