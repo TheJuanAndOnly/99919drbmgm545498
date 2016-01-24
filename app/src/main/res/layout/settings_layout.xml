@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:paddingLeft="0dp"
     android:paddingRight="0dp"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -10,9 +11,11 @@
     <ScrollView
 
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="75dp">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/imageView3">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -20,7 +23,7 @@
 
             <RelativeLayout
                 android:layout_width="wrap_content"
-                android:layout_height="630dp"
+                android:layout_height="match_parent"
                 android:paddingLeft="@dimen/activity_vertical_margin"
                 android:paddingRight="@dimen/activity_vertical_margin"
                 android:id="@+id/relativeLayout2"
@@ -29,6 +32,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_marginBottom="18dp"
                 android:layout_marginTop="25dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -37,23 +41,63 @@
                     android:layout_marginTop="17dp"
                     android:layout_alignParentTop="true">
 
-                    <Switch
+                    <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Notifications"
-                        android:textColor="@color/greyText"
-                        android:layout_marginBottom="4dp"
-                        android:textSize="18sp"
-                        android:id="@+id/notificationsCheckBox"
-                        android:onClick="notificationsClick"/>
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Notifications"
+                                android:id="@+id/textView3"
+                                android:textSize="20sp"
+                                android:textColor="@color/white" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Sounds, Vibrations"
+                                android:id="@+id/textView4"
+                                android:textSize="16sp"
+                                android:textColor="@color/settingsGrey"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center|right"
+                            android:id="@+id/linearLayout3">
+
+                        </LinearLayout>
+
+                        <Switch
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:id="@+id/notificationsCheckBox"
+                            android:onClick="notificationsClick"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="true" />
+
+                    </RelativeLayout>
 
                     <Switch
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
                         android:layout_marginBottom="4dp"
                         android:layout_marginLeft="20dp"
                         android:text="Sounds"
-                        android:textColor="@color/greyText"
+                        android:textColor="@color/white"
                         android:textSize="16sp"
                         android:id="@+id/soundsNotificationCheckBox"
                         android:onClick="soundsNotificationClick"
@@ -64,21 +108,32 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:text="Vibrations"
-                        android:textColor="@color/greyText"
+                        android:textColor="@color/white"
                         android:textSize="16sp"
                         android:id="@+id/vibrationsNotificationCheckBox"
                         android:onClick="vibrationsNotificationClick"
                         android:visibility="visible"/>
 
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:id="@+id/separatorZ"
+                        android:visibility="visible"
+                        android:background="@color/settingsSeparator"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginBottom="15dp"/>
+
                     <Switch
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="Active tasks"
-                        android:textColor="@color/greyText"
+                        android:textColor="@color/white"
                         android:textSize="18sp"
                         android:id="@+id/switch_active"
                         android:onClick="activeTasksClick"
-                        android:layout_below="@+id/soundsAndVibrationsLayout"
+                        android:layout_below="@+id/separatorZ"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_marginBottom="5dp"
@@ -87,26 +142,17 @@
 
                 </LinearLayout>
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Reset All"
-                    android:id="@+id/deleteButton"
-                    android:onClick="deleteAll"
-                    android:layout_below="@+id/percConversionTv"
-                    android:layout_alignRight="@+id/percConversionTv"
-                    android:layout_alignEnd="@+id/percConversionTv" />
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:id="@+id/separator"
                     android:visibility="visible"
-                    android:background="@color/mainblue"
+                    android:background="@color/settingsSeparator"
                     android:layout_below="@+id/soundsAndVibrationsLayout"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"/>
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"/>
 
                 <RelativeLayout
                     android:layout_width="match_parent"
@@ -114,7 +160,7 @@
                     android:id="@+id/percConversionTv"
                     android:layout_alignTop="@+id/separator"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="5dp">
+                    android:layout_marginTop="15dp">
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -122,15 +168,16 @@
                         android:text="Percentage conversion"
                         android:layout_centerVertical="true"
                         android:layout_alignParentLeft="true"
-                        android:textColor="@color/greyText"
+                        android:textColor="@color/white"
                         android:textSize="18sp" />
 
-                    <Button
+                    <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_alignParentRight="true"
                         android:background="@drawable/ic_arrow_drop_down_white_24dp"
                         android:id="@+id/rollDownSettingsPerc" />
+
                 </RelativeLayout>
 
                 <LinearLayout
@@ -138,7 +185,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:background="@color/mainblue"
+
                     android:layout_marginTop="10dp"
                     android:layout_below="@id/percConversionTv"
                     android:weightSum="2"
@@ -385,5 +432,17 @@
             android:layout_alignParentEnd="true" />
 
     </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/deleteButton"
+        android:tint="@color/white"
+        app:backgroundTint="@color/mainblue"
+        android:onClick="deleteAll"
+        android:src="@drawable/ic_settings_backup_restore_white_24dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/relativeLayout4"
+        android:layout_alignEnd="@+id/relativeLayout4"/>
 
 </RelativeLayout>

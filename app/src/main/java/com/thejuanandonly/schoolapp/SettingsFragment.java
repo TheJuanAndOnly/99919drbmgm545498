@@ -292,7 +292,7 @@ public class SettingsFragment extends Fragment {
     }
 
     public void percentageListener(){
-        Button arrow = (Button) getView().findViewById(R.id.rollDownSettingsPerc);
+        ImageView arrow = (ImageView) getView().findViewById(R.id.rollDownSettingsPerc);
         arrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -309,7 +309,7 @@ public class SettingsFragment extends Fragment {
     }
     public void listen(){
         LinearLayout layout = (LinearLayout) getView().findViewById(R.id.percConversionLayout);
-        Button button = (Button) getView().findViewById(R.id.rollDownSettingsPerc);
+        ImageView button = (ImageView) getView().findViewById(R.id.rollDownSettingsPerc);
 
         if (layout.getVisibility() == View.VISIBLE){
             layout.setVisibility(View.GONE);
