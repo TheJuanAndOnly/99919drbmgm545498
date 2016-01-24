@@ -36,14 +36,14 @@
     </style>
 
 
-        <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-            <item name="android:windowIsTranslucent">true</item>
-            <item name="android:windowBackground">@color/schedule_fade</item>
-            <item name="android:windowContentOverlay">@null</item>
-            <item name="android:windowNoTitle">true</item>
-            <item name="android:backgroundDimEnabled">false</item>
-            <item name="windowNoTitle">true</item>
-            <item name="windowActionBar">false</item>
-        </style>
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@color/schedule_fade</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+    </style>
 
 </resources>

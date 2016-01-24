@@ -1,279 +1,448 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/darkbluebackground">
 
-    <LinearLayout
+    <ScrollView
+
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/soundsAndVibrationsLayout"
-        android:orientation="vertical">
-
-        <Switch
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Notifications"
-            android:textColor="@color/greyText"
-            android:layout_marginBottom="4dp"
-            android:textSize="18sp"
-            android:id="@+id/notificationsCheckBox"
-            android:onClick="notificationsClick"/>
-
-        <Switch
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="4dp"
-            android:layout_marginLeft="20dp"
-            android:text="Sounds"
-            android:textColor="@color/greyText"
-            android:textSize="16sp"
-            android:id="@+id/soundsNotificationCheckBox"
-            android:onClick="soundsNotificationClick"
-            android:visibility="visible"/>
-
-        <Switch
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:text="Vibrations"
-            android:textColor="@color/greyText"
-            android:textSize="16sp"
-            android:id="@+id/vibrationsNotificationCheckBox"
-            android:onClick="vibrationsNotificationClick"
-            android:visibility="visible"/>
-
-    </LinearLayout>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Reset all"
-        android:id="@+id/deleteButton"
-        android:onClick="deleteAll"
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
-    <View
+        android:layout_below="@+id/imageView3">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingLeft="@dimen/activity_vertical_margin"
+                android:paddingRight="@dimen/activity_vertical_margin"
+                android:id="@+id/relativeLayout2"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginBottom="18dp"
+                android:layout_marginTop="25dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/soundsAndVibrationsLayout"
+                    android:orientation="vertical"
+                    android:layout_marginTop="17dp"
+                    android:layout_alignParentTop="true">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Notifications"
+                                android:id="@+id/textView3"
+                                android:textSize="20sp"
+                                android:textColor="@color/white" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Sounds, Vibrations"
+                                android:id="@+id/textView4"
+                                android:textSize="16sp"
+                                android:textColor="@color/settingsGrey"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:gravity="center|right"
+                            android:id="@+id/linearLayout3">
+
+                        </LinearLayout>
+
+                        <Switch
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:id="@+id/notificationsCheckBox"
+                            android:onClick="notificationsClick"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_alignParentEnd="true" />
+
+                    </RelativeLayout>
+
+                    <Switch
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginLeft="20dp"
+                        android:text="Sounds"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:id="@+id/soundsNotificationCheckBox"
+                        android:onClick="soundsNotificationClick"
+                        android:visibility="visible"/>
+
+                    <Switch
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:text="Vibrations"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:id="@+id/vibrationsNotificationCheckBox"
+                        android:onClick="vibrationsNotificationClick"
+                        android:visibility="visible"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:id="@+id/separatorZ"
+                        android:visibility="visible"
+                        android:background="@color/settingsSeparator"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginBottom="15dp"/>
+
+                    <Switch
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Active tasks"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:id="@+id/switch_active"
+                        android:onClick="activeTasksClick"
+                        android:layout_below="@+id/separatorZ"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="5dp"
+                        android:checked="false" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:id="@+id/separator"
+                    android:visibility="visible"
+                    android:background="@color/settingsSeparator"
+                    android:layout_below="@+id/soundsAndVibrationsLayout"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="15dp"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/percConversionTv"
+                    android:layout_alignTop="@+id/separator"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Percentage conversion"
+                        android:layout_centerVertical="true"
+                        android:layout_alignParentLeft="true"
+                        android:textColor="@color/white"
+                        android:textSize="18sp" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/ic_arrow_drop_down_white_24dp"
+                        android:id="@+id/rollDownSettingsPerc" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/percConversionLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+
+                    android:layout_marginTop="10dp"
+                    android:layout_below="@id/percConversionTv"
+                    android:weightSum="2"
+                    android:visibility="gone"
+                    xmlns:android="http://schemas.android.com/apk/res/android">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:weightSum="2"
+                        android:layout_weight="1">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingTop="4dp"
+                            android:paddingLeft="4dp"
+                            android:paddingRight="4dp"
+                            android:layout_weight="1"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_looks_one_white_24dp"/>
+
+                            <EditText
+                                android:id="@+id/etPerc1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:singleLine="true"
+                                android:textColor="@color/greyText"
+                                android:textSize="16sp"
+                                android:text="90"
+                                android:inputType="numberDecimal"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="16sp"
+                                android:textColor="@color/greyText"
+                                android:text="%"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingLeft="4dp"
+                            android:paddingRight="4dp"
+                            android:layout_weight="1"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_looks_3_white_24dp"/>
+
+                            <EditText
+                                android:id="@+id/etPerc3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:singleLine="true"
+                                android:textColor="@color/greyText"
+                                android:textSize="16sp"
+                                android:text="50"
+                                android:inputType="numberDecimal"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="16sp"
+                                android:textColor="@color/greyText"
+                                android:text="%"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:weightSum="2"
+                        android:layout_weight="1"
+                        android:gravity="center">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingLeft="4dp"
+                            android:paddingRight="4dp"
+                            android:layout_weight="1"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_looks_two_white_24dp"/>
+
+                            <EditText
+                                android:id="@+id/etPerc2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:singleLine="true"
+                                android:textColor="@color/greyText"
+                                android:textSize="16sp"
+                                android:text="75"
+                                android:inputType="numberDecimal"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="16sp"
+                                android:textColor="@color/greyText"
+                                android:text="%"/>
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingLeft="4dp"
+                            android:paddingRight="4dp"
+                            android:layout_weight="1"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ic_looks_4_white_24dp"/>
+
+                            <EditText
+                                android:id="@+id/etPerc4"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:singleLine="true"
+                                android:textColor="@color/greyText"
+                                android:textSize="16sp"
+                                android:text="30"
+                                android:inputType="numberDecimal"/>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="16sp"
+                                android:textColor="@color/greyText"
+                                android:text="%"/>
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:id="@+id/separator"
-        android:visibility="visible"
-        android:background="@color/mainblue"
-        android:layout_below="@+id/switch_active"
+        android:layout_height="90dp"
+        android:background="@drawable/blue_bar"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"/>
+        android:layout_marginBottom="0dp"
+        android:id="@+id/imageView3"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignBottom="@+id/relativeLayout4" />
 
     <RelativeLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/percConversionTv"
-        android:layout_below="@+id/separator"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
+        android:id="@+id/relativeLayout3">
 
-        <TextView
+        <AbsoluteLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Percentage conversion"
-            android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:textColor="@color/greyText"
-            android:textSize="18sp"/>
+            android:id="@+id/linearLayout2">
 
-        <Button
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/ic_arrow_drop_down_white_24dp"
-            android:id="@+id/rollDownSettingsPerc"/>
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:background="@drawable/avatar_small"
+                android:layout_x="18dp"
+                android:layout_y="14dp"
+                android:id="@+id/changeAvatar" />
+
+            <ImageView
+                android:layout_width="92dp"
+                android:layout_height="92dp"
+                android:layout_x="22dp"
+                android:layout_y="18dp"
+                android:id="@+id/avatarSettings"/>
+
+        </AbsoluteLayout>
 
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/percConversionLayout"
+    <RelativeLayout
         android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_toRightOf="@+id/relativeLayout3"
+        android:layout_toEndOf="@+id/relativeLayout3"
+        android:id="@+id/relativeLayout4">
+
+        <EditText
+            android:layout_width="145dp"
+            android:layout_height="wrap_content"
+            android:layout_x="119dp"
+            android:layout_y="40dp"
+            android:id="@+id/changeName"
+            android:textSize="22sp"
+            android:background="@android:color/transparent"
+            android:singleLine="true"
+            android:scrollHorizontally="true"
+            android:layout_marginLeft="9dp"
+            android:layout_marginStart="9dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_toLeftOf="@+id/settings_set"
+            android:layout_toStartOf="@+id/settings_set" />
+
+        <Button
+            android:layout_width="54dp"
+            android:layout_height="36dp"
+            android:text="SET"
+            android:textColor="@color/white"
+            android:layout_x="265dp"
+            android:layout_y="34dp"
+            android:background="@color/mainblue"
+            android:id="@+id/settings_set"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@color/mainblue"
-        android:layout_marginTop="10dp"
-        android:layout_below="@id/percConversionTv"
-        android:weightSum="2"
-        android:visibility="gone"
-        xmlns:android="http://schemas.android.com/apk/res/android">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:weightSum="2"
-            android:layout_weight="1">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingTop="4dp"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:layout_weight="1"
-                android:gravity="center">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_looks_one_white_24dp"/>
-
-                <EditText
-                    android:id="@+id/etPerc1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true"
-                    android:textColor="@color/greyText"
-                    android:textSize="16sp"
-                    android:text="90"
-                    android:inputType="numberDecimal"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="@color/greyText"
-                    android:text="%"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:layout_weight="1"
-                android:gravity="center">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_looks_3_white_24dp"/>
-
-                <EditText
-                    android:id="@+id/etPerc3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true"
-                    android:textColor="@color/greyText"
-                    android:textSize="16sp"
-                    android:text="50"
-                    android:inputType="numberDecimal"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="@color/greyText"
-                    android:text="%"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:weightSum="2"
-            android:layout_weight="1"
-            android:gravity="center">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:layout_weight="1"
-                android:gravity="center">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_looks_two_white_24dp"/>
-
-                <EditText
-                    android:id="@+id/etPerc2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true"
-                    android:textColor="@color/greyText"
-                    android:textSize="16sp"
-                    android:text="75"
-                    android:inputType="numberDecimal"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="@color/greyText"
-                    android:text="%"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingLeft="4dp"
-                android:paddingRight="4dp"
-                android:layout_weight="1"
-                android:gravity="center">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_looks_4_white_24dp"/>
-
-                <EditText
-                    android:id="@+id/etPerc4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true"
-                    android:textColor="@color/greyText"
-                    android:textSize="16sp"
-                    android:text="30"
-                    android:inputType="numberDecimal"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="@color/greyText"
-                    android:text="%"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <Switch
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Active tasks"
-        android:textColor="@color/greyText"
-        android:textSize="18sp"
-        android:id="@+id/switch_active"
-        android:onClick="activeTasksClick"
-        android:layout_below="@+id/soundsAndVibrationsLayout"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"/>
+        android:id="@+id/deleteButton"
+        android:tint="@color/white"
+        app:backgroundTint="@color/mainblue"
+        android:onClick="deleteAll"
+        android:src="@drawable/ic_settings_backup_restore_white_24dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignRight="@+id/relativeLayout4"
+        android:layout_alignEnd="@+id/relativeLayout4"/>
 
 </RelativeLayout>

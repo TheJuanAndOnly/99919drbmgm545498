@@ -3,9 +3,14 @@ package com.thejuanandonly.schoolapp;
 import android.annotation.TargetApi;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -34,11 +39,18 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
 
+import java.io.IOException;
+
 public class SettingsFragment extends Fragment {
-    private Spinner themeSpinner;
-    String[] stringArray;
     int position;
     android.support.v7.widget.Toolbar toolbar;
+    private static int RESULT_LOAD_IMAGE = 1;
+    public static Uri avatarURI;
+    String picture, newUserName;
+    ImageView changeAvatar, userPhotoimgview;
+    EditText changeName;
+    TextView userNicktxtview;
+    Button set;
 
     @Nullable
     @Override
@@ -107,7 +119,114 @@ public class SettingsFragment extends Fragment {
 
         }catch (Exception e){}
 
+        changeAvatar = (ImageView) getView().findViewById(R.id.avatarSettings);
+        changeAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences sharedPreferences = getActivity().getSharedPreferences("User", getContext().MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                newUserName = changeName.getText().toString();
+                editor.putString("nickname", newUserName).apply();
+
+                Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                startActivityForResult(i, RESULT_LOAD_IMAGE);
+            }
+        });
+
+
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("User", getContext().MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        userPhotoimgview = (ImageView) getView().findViewById(R.id.usersPhoto);
+        userNicktxtview = (TextView) getView().findViewById(R.id.usersNickname);
+
+        changeName = (EditText) getView().findViewById(R.id.changeName);
+        changeName.setTextColor(getResources().getColor(R.color.white));
+        changeName.setText(sharedPreferences.getString("nickname", null));
+
+        String imageUriString = sharedPreferences.getString("avatar", null);
+
+        try {
+            Bitmap bitmap = null;
+            int w = 0, h = 0;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), Uri.parse(imageUriString));
+                w = bitmap.getWidth();
+                h = bitmap.getHeight();
+            } catch (IOException e) {
+                Toast.makeText(getContext(), "exception", Toast.LENGTH_SHORT).show();
+            }
+            int radius = w > h ? h : w;
+            Bitmap roundBitmap = ImageToCircle.getCroppedBitmap(bitmap, radius);
+
+            changeAvatar.setImageBitmap(roundBitmap);
+        } catch (NullPointerException e) { }
+
+
+        set = (Button) getView().findViewById(R.id.settings_set);
+        set.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                newUserName = changeName.getText().toString();
+                editor.putString("nickname", newUserName).apply();
+
+                Intent updateUserDet = new Intent(getContext(), MainActivity.class);
+                startActivity(updateUserDet);
+            }
+        });
+
         super.onStart();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("User", getContext().MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == getActivity().RESULT_OK && null != data) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            Cursor cursor = getContext().getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+
+            picture = cursor.getString(columnIndex);
+            avatarURI = selectedImage;
+            cursor.close();
+
+            Bitmap bitmap = null;
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getActivity().getApplicationContext().getContentResolver(), avatarURI);
+            } catch (IOException e) {
+                Toast.makeText(getActivity().getApplicationContext(), "exce", Toast.LENGTH_SHORT).show();}
+
+            int w = bitmap.getWidth(), h = bitmap.getHeight();
+            int radius = w > h ? h : w;
+
+            Bitmap roundBitmap = ImageToCircle.getCroppedBitmap(bitmap, radius);
+            changeAvatar.setImageBitmap(roundBitmap);
+            editor.putString("avatar", avatarURI.toString()).apply();
+
+            set = (Button) getView().findViewById(R.id.settings_set);
+            set.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    newUserName = changeName.getText().toString();
+                    editor.putString("nickname", newUserName).apply();
+                    editor.putString("avatar", avatarURI.toString()).apply();
+
+                    Intent updateUserDet = new Intent(getContext(), MainActivity.class);
+                    startActivity(updateUserDet);
+                }
+            });
+
+            onStop();
+        }
     }
 
     @Override
@@ -123,7 +242,7 @@ public class SettingsFragment extends Fragment {
                 a = activeTasksCheckBox.isChecked();
 
         SharedPreferences prefs = getActivity().getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
+        final SharedPreferences.Editor editor = prefs.edit();
 
         editor.putBoolean("notifications", n);
         editor.putBoolean("sounds", s);
@@ -157,11 +276,23 @@ public class SettingsFragment extends Fragment {
 
         preferences.edit().putString("conversion", conversionArray.toString()).apply();
 
+        set = (Button) getView().findViewById(R.id.settings_set);
+        set.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newUserName = changeName.getText().toString();
+                editor.putString("nickname", newUserName).apply();
+
+                Intent updateUserDet = new Intent(getContext(), MainActivity.class);
+                startActivity(updateUserDet);
+            }
+        });
+
         super.onStop();
     }
 
     public void percentageListener(){
-        Button arrow = (Button) getView().findViewById(R.id.rollDownSettingsPerc);
+        ImageView arrow = (ImageView) getView().findViewById(R.id.rollDownSettingsPerc);
         arrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -178,7 +309,7 @@ public class SettingsFragment extends Fragment {
     }
     public void listen(){
         LinearLayout layout = (LinearLayout) getView().findViewById(R.id.percConversionLayout);
-        Button button = (Button) getView().findViewById(R.id.rollDownSettingsPerc);
+        ImageView button = (ImageView) getView().findViewById(R.id.rollDownSettingsPerc);
 
         if (layout.getVisibility() == View.VISIBLE){
             layout.setVisibility(View.GONE);

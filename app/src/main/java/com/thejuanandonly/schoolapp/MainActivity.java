@@ -688,7 +688,7 @@ public class MainActivity extends AppCompatActivity {
         String[] quotes = getResources().getStringArray(R.array.quotes);
         String[] authors = getResources().getStringArray(R.array.authors);
 
-        int rnd = (int) (Math.random() * 27);
+        int rnd = (int) (Math.random() * 26);
 
         quoteTv.setText(quotes[rnd]);
         authorTv.setText(authors[rnd]);
@@ -751,7 +751,7 @@ public class MainActivity extends AppCompatActivity {
         boolean a = !prefs.getBoolean("active", true);
         prefs.edit().putBoolean("active", a).apply();
         prefs.edit().commit();
-        
+
         updateNotification();
     }
 
@@ -767,9 +767,9 @@ public class MainActivity extends AppCompatActivity {
     public void deleteDialogBox() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
-        builder.setTitle("Delete Everything");
+        builder.setTitle("Reset");
 
-        builder.setMessage("Are you sure you want to delete everything?")
+        builder.setMessage("Are you sure?")
 
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int arg0) {
@@ -779,6 +779,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
 
                         checkStoragePermission();
+
 
                         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                         notificationManager.cancel(0);
