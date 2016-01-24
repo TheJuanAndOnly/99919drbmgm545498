@@ -9,6 +9,7 @@ import android.support.v7.internal.app.ToolbarActionBar;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,6 +67,14 @@ public class SupportFragment extends android.support.v4.app.Fragment {
         bugReport = (Button) rootView.findViewById(R.id.bug_report);
         feedback = (Button) rootView.findViewById(R.id.feedback);
 
+        Display display = getActivity().getWindowManager().getDefaultDisplay();
+
+        String s = "Hardware info:";
+        s += "\n Model: " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")";
+        s += "\n API Level: " + android.os.Build.VERSION.SDK_INT;
+        s += "\n Screen: " + display.getWidth() + "x" + display.getHeight();
+
+        final String finalS = s;
 
         bugReport.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,7 +83,7 @@ public class SupportFragment extends android.support.v4.app.Fragment {
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
                         "mailto","danymalach@gmail.com", null));
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, "BUG REPORT");
-                emailIntent.putExtra(Intent.EXTRA_TEXT, "");
+                emailIntent.putExtra(Intent.EXTRA_TEXT, finalS);
                 startActivity(Intent.createChooser(emailIntent, "Send email..."));
             }
         });
