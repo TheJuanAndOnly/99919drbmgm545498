@@ -140,14 +140,10 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
         TextView averageTV = (TextView) findViewById(R.id.averageTextView);
         int gradeType = prefs.getInt("GradeType" , 0);
-        String average = prefs.getString("AvgGrade", "0");
-        if (average.length() > 6) {
-            average = average.substring(0, 6);
-        }
         if (gradeType == 2){
-            averageTV.setText("GPA: " + average);
+            averageTV.setText("GPA: " + prefs.getString("AvgGrade", "0"));
         }else {
-            averageTV.setText("Average: " + average);
+            averageTV.setText("Average: " + prefs.getString("AvgGrade", "0"));
         }
 
 
@@ -292,7 +288,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
             listView.setAdapter(adapter);
 
-            /*ViewGroup.LayoutParams params = listView.getLayoutParams();
+            ViewGroup.LayoutParams params = listView.getLayoutParams();
 
             DisplayMetrics displayMetrics = new DisplayMetrics();
             WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
@@ -301,9 +297,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
             params.height = adapter.getCount() * (screenHeight / (screenHeight / 113));
             listView.setLayoutParams(params);
-            listView.requestLayout();*/
-
-            setTotalHeightOfListView(listView);
+            listView.requestLayout();
 
             try {
 
@@ -438,13 +432,9 @@ public class SubjectDetailActivity extends AppCompatActivity {
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_PHONE);
                     editText.setHint("Percentage Format: 94, 82, ...");
                     break;
-                case 2:
+                default:
                     editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
                     editText.setHint("Add Grades (A - F)");
-                    break;
-                case 3:
-                    editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_PHONE);
-                    editText.setHint("Add Grades (1 - 10)");
                     break;
             }
 
@@ -546,24 +536,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 }
                 editor.putString(category + "Grades" + gradeType, jsonArray.toString()).apply();
                 break;
-            case 3:
-                for (int i = 0; i < chars.length; i++) {
-                    if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5' ||
-                        chars[i] == '6' || chars[i] == '7' || chars[i] == '8' || chars[i] == '9') {
-                        String string = String.valueOf(chars[i]);
-
-                        try {
-                            if (chars[i] == '1' && chars[i + 1] == '0') {
-                                string += chars[i + 1];
-                                i++;
-                            }
-                        }catch (ArrayIndexOutOfBoundsException e){}
-
-                        jsonArray.put(string);
-                    }
-                }
-                editor.putString(category + "Grades" + gradeType, jsonArray.toString()).apply();
-                break;
             default:
                 for (int i = 0; i < chars.length; i++) {
                     if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5') {
@@ -632,10 +604,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
             average /= semiAverage.size();
 
             DecimalFormat df = new DecimalFormat("#.####");
-            try {
-                average = Double.valueOf(df.format(average));
-            } catch (NumberFormatException e) {
-            }
+            average = Double.valueOf(df.format(average));
 
 
 
@@ -669,10 +638,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
             average /= count;
 
             DecimalFormat df = new DecimalFormat("#.####");
-            try {
-                average = Double.valueOf(df.format(average));
-            } catch (NumberFormatException e) {
-            }
+            average = Double.valueOf(df.format(average));
 
             if (String.valueOf(average).equals("NaN")){
                 return 0;
@@ -703,10 +669,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
             }
 
             DecimalFormat df = new DecimalFormat("#.####");
-            try {
-                average = Double.valueOf(df.format(average));
-            } catch (NumberFormatException e) {
-            }
+            average = Double.valueOf(df.format(average));
 
             if (String.valueOf(average).equals("NaN")){
                 return 0;
@@ -857,13 +820,9 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 gradeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_PHONE);
                 gradeEditText.setHint("Percentage Format: 94, 82, ...");
                 break;
-            case 2:
+            default:
                 gradeEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
                 gradeEditText.setHint("Add Grades (A - F)");
-                break;
-            case 3:
-                gradeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_PHONE);
-                gradeEditText.setHint("Add Grades (1 - 10)");
                 break;
         }
 
@@ -935,7 +894,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 int percentage = 0;
                 for (int i = 0; i < chars.length; i++){
                     if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5' ||
-                            chars[i] == '6' || chars[i] == '7' || chars[i] == '8' || chars[i] == '9'){
+                            chars[i] == '6' || chars[i] == '7' || chars[i] == '8' || chars[i] == '9' || chars[i] == '0'){
 
                         int num = Character.getNumericValue(chars[i]);
                         if (percentage == -1) percentage = 0;
@@ -960,21 +919,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
                                 string += String.valueOf(chars[j]);
                             }
                         }catch (ArrayIndexOutOfBoundsException e){}
-
-                        arrayOfGrades.put(string);
-                    }
-                }
-                break;
-            case 3:
-                for (int i = 0; i < chars.length; i++) {
-                    if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5' ||
-                            chars[i] == '6' || chars[i] == '7' || chars[i] == '8' || chars[i] == '9' || chars[i] == '0') {
-                        String string = String.valueOf(chars[i]);
-
-                        if (chars[i] == '1' && chars[i+1] == '0'){
-                            string += chars[i+1];
-                            i++;
-                        }
 
                         arrayOfGrades.put(string);
                     }
@@ -1039,23 +983,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
                             if (chars[j] == '+' || chars[j] == '-') {
                                 string += String.valueOf(chars[j]);
-                            }
-                        }catch (ArrayIndexOutOfBoundsException e){}
-
-                        arrayOfGrades.put(string);
-                    }
-                }
-                break;
-            case 3:
-                for (int i = 0; i < chars.length; i++) {
-                    if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5' ||
-                            chars[i] == '6' || chars[i] == '7' || chars[i] == '8' || chars[i] == '9' || chars[i] == '0') {
-                        String string = String.valueOf(chars[i]);
-
-                        try {
-                            if (chars[i] == '1' && chars[i + 1] == '0') {
-                                string += chars[i + 1];
-                                i++;
                             }
                         }catch (ArrayIndexOutOfBoundsException e){}
 
@@ -1195,13 +1122,9 @@ public class SubjectDetailActivity extends AppCompatActivity {
                     gradeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_PHONE);
                     gradeEditText.setHint("Percentage Format: 94, 82, ...");
                     break;
-                case 2:
+                default:
                     gradeEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
                     gradeEditText.setHint("Add Grades (A - F)");
-                    break;
-                case 3:
-                    gradeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_PHONE);
-                    gradeEditText.setHint("Add Grades (1 - 5)");
                     break;
             }
             gradeEditText.setSingleLine(false);
@@ -1276,13 +1199,9 @@ public class SubjectDetailActivity extends AppCompatActivity {
                     gradeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_PHONE);
                     gradeEditText.setHint("Percentage Format: 94, 82, ...");
                     break;
-                case 2:
+                default:
                     gradeEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
                     gradeEditText.setHint("Add Grades (A - F)");
-                    break;
-                case 3:
-                    gradeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_PHONE);
-                    gradeEditText.setHint("Add Grades (1 - 5)");
                     break;
             }
             gradeEditText.setSingleLine(false);
@@ -1365,7 +1284,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         dialog.setTitle("Settings");
 
         final Spinner spinner = (Spinner) dialog.findViewById(R.id.detailSettingsSpinner);
-        String[] strings = {"Numeric (1 - 5)", "Percentage", "Alphabetic (A - F)", "10 Grade"};
+        String[] strings = {"Numeric (1 - 5)", "Percentage", "Alphabetic (A - F)"};
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, strings);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
@@ -1743,9 +1662,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 case 2:
                     pocetZnamok = 13;
                     break;
-                case 3:
-                    pocetZnamok = 10;
-                    break;
             }
 
             String cat1;
@@ -1967,65 +1883,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
                     }
 
                     break;
-                case 3:
-
-                    for (int c = 1; c <= 10; c++) {
-
-                        if (Integer.parseInt(textView.getText().toString()) >= 3){
-                            arrayOfGrades.put(String.valueOf(c));
-                        }
-
-                        ArrayList<String> arrayList = new ArrayList<>();
-
-                        for (int d = c; d <= 10; d++) {
-
-                            if (Integer.parseInt(textView.getText().toString()) >= 2){
-                                arrayOfGrades.put(String.valueOf(d));
-                            }
-
-                            for (int e = d; e <= 10; e++) {
-
-                                arrayOfGrades.put(String.valueOf(e));
-
-                                editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                                avgsAfter.add(countAverage());
-
-                                arrayList = new ArrayList<>();
-                                for (int k = 0; k < arrayOfGrades.length(); k++){
-                                    try {
-                                        arrayList.add(arrayOfGrades.getString(k));
-                                    } catch (JSONException ex) {
-                                        Log.e("debug3", ex.toString());
-                                    }
-                                }
-                                arrayList.remove(arrayList.size() - 1);
-
-                                arrayOfGrades = new JSONArray(arrayList);
-
-                                editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                            }
-                            if (Integer.parseInt(textView.getText().toString()) == 1){
-                                break;
-                            }
-
-                            arrayList.remove(arrayList.size() - 1);
-                            arrayOfGrades = new JSONArray(arrayList);
-                            editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                        }
-                        if (Integer.parseInt(textView.getText().toString()) <= 2){
-                            break;
-                        }
-
-                        arrayList.remove(arrayList.size() - 1);
-                        arrayOfGrades = new JSONArray(arrayList);
-                        editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                    }
-
-                    break;
             }
 
         }
@@ -2156,9 +2013,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
                         }
 
                         break;
-                    case 3:
-
-                        break;
                 }
             }
         }
@@ -2179,8 +2033,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
             case 2:
                 strings = new String[]{"4", "3", "2", "1", "0"};
                 break;
-            case 3:
-                strings = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
         }
 
 

@@ -1,15 +1,11 @@
 package com.thejuanandonly.schoolapp;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.FragmentTransaction;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,7 +25,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 
@@ -61,42 +56,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             convertView = inflater.inflate(R.layout.child_item, null);
         }
 
-        TextView time = (TextView) convertView.findViewById(R.id.txtTime);
         TextView item = (TextView) convertView.findViewById(R.id.taskWhat);
 
         item.setText(TaskWhat);
-
-        JSONArray arrayTime = null;
-        SharedPreferences prefs = context.getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
-        long timerDate = 0;
-        try {
-            arrayTime = new JSONArray(prefs.getString("TaskTime", null));
-        } catch (Exception e) {
-        }
-        try {
-            timerDate = arrayTime.getLong(groupPosition);
-        } catch (Exception e) {
-        }
-
-        String newLine = System.getProperty("line.separator");
-
-        Date date = new Date(timerDate);
-        if (date.getTime() > System.currentTimeMillis()) {
-            String minutes = "";
-            if (date.getMinutes() < 10) {
-                minutes = "0" + date.getMinutes();
-            } else {
-                minutes = "" + date.getMinutes();
-            }
-            int h = date.getHours();
-
-            int m = date.getMonth() + 1;
-            int d = date.getDate();
-
-            time.setText(h + " : " + minutes + newLine + d + ". " + m + ".");
-        } else {
-            time.setText("time expired");
-        }
 
         ImageView imgEdit = (ImageView) convertView.findViewById(R.id.imgEdit);
         ImageView imgDone = (ImageView) convertView.findViewById(R.id.imgDone);
@@ -234,10 +196,6 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 editorDone.putInt("NumberOfDoneTask", numberOfDoneTask).apply();
                 editorDone.commit();
 
-                AlarmManager alarmManager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
-                PendingIntent mAlarmSender = PendingIntent.getBroadcast(context, 0, new Intent(context, NotificationRecieverActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-                alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
-
                 ((MainActivity) context).updateListTasks();
                 ((MainActivity) context).updateNotification();
             }
@@ -262,16 +220,16 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         return groupPosition;
     }
 
-    public View getGroupView(int groupPosition, final boolean isExpanded, View convertView, ViewGroup parent) {
+    public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
         String TaskName = (String) getGroup(groupPosition);
         if (convertView == null) {
             LayoutInflater infalInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = infalInflater.inflate(R.layout.group_item, null);
         }
         ImageView img = (ImageView) convertView.findViewById(R.id.imgIndicatorGroup);
-        if (!isExpanded) {
+        if (isExpanded == false) {
             img.setBackground(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_down_white_24dp));
-        } else if (isExpanded) {
+        } else if (isExpanded == true) {
             img.setBackground(context.getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_white_24dp));
         }
 
@@ -294,52 +252,28 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         } catch (Exception e) {
         }
 
-        if (timerTime > System.currentTimeMillis()) {
-            Date date = new Date(timerTime);
-            int days = date.getDay();
-            int weeks = (int) ((date.getTime() - System.currentTimeMillis()) / (1000*60*60*24*7));
+        timerTime = timerTime - System.currentTimeMillis();
 
-            String day = null;
-            if (days == 1) {
-                day = "Monday";
-            } else if (days == 2) {
-                day = "Tuesday";
-            } else if (days == 3) {
-                day = "Wednesday";
-            } else if (days == 4) {
-                day = "Thursday";
-            } else if (days == 5) {
-                day = "Friday";
-            } else if (days == 6) {
-                day = "Saturday";
-            } else if (days == 0) {
-                day = "Sunday";
+        new CountDownTimer(timerTime, 1000) {
+
+
+            public void onTick(long millisUntilFinished) {
+                int seconds = (int) (millisUntilFinished / 1000) % 60 ;
+                int minutes = (int) ((millisUntilFinished / (1000*60)) % 60);
+                int hours   = (int) ((millisUntilFinished / (1000*60*60)) % 24);
+                int days = (int) ((millisUntilFinished / (1000*60*60*24)));
+
+                if (millisUntilFinished < 60000) {
+                    txtTimer.setText(seconds + "s");
+                } else {
+                    txtTimer.setText(days + "d " + hours + "h " + minutes + "m");
+                }
             }
 
-            Date today = new Date();
-            String newLine = System.getProperty("line.separator");
-
-            if (weeks == 0) {
-                String minutes = "";
-                if (date.getMinutes() < 10) {
-                    minutes = "0" + date.getMinutes();
-                } else {
-                    minutes = "" + date.getMinutes();
-                }
-
-                if (date.getDate() == today.getDate()) {
-                    txtTimer.setText("today (" + date.getHours() + ":" + minutes + ")");
-                } else {
-                    txtTimer.setText("next " +  day);
-                }
-            } else if (weeks == 1) {
-                txtTimer.setText("next week" + newLine + "(" +  day + ")");
-            } else {
-                txtTimer.setText(weeks + " weeks" + newLine + "(" +  day + ")");
+            public void onFinish() {
+                txtTimer.setText("time expired");
             }
-        } else {
-            txtTimer.setText("ended");
-        }
+        }.start();
 
         return convertView;
     }

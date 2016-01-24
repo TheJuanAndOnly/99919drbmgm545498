@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class NotificationRecieverActivity extends BroadcastReceiver {
-
     @Override
     public void onReceive(Context context, Intent intent) {
         SharedPreferences prefs = context.getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
@@ -114,10 +113,6 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
             notification.flags |= Notification.FLAG_AUTO_CANCEL;
             notificationManager.notify(1, notification);
-
-            PowerManager.WakeLock screenLock = ((PowerManager) context.getSystemService(context.POWER_SERVICE)).newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
-            screenLock.acquire();
-            screenLock.release();
         }
     }
 }

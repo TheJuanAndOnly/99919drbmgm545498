@@ -14,12 +14,6 @@
         <item name="tasks">20</item>
         <item name="tasksDone">30</item>
 
-        <item name="grade1">5</item>
-        <item name="grade2">2</item>
-        <item name="grade3">0</item>
-        <item name="grade4">-2</item>
-        <item name="grade5">-5</item>
-
     </integer-array>
 
     <integer-array name="borders">

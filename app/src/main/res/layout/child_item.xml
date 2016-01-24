@@ -14,19 +14,7 @@
         android:layout_centerVertical="true"
         android:padding="10dp"
         android:textColor="@color/white"
-        android:layout_marginBottom="10dp"
-        android:layout_toLeftOf="@+id/txtTime"
-        android:layout_toStartOf="@+id/txtTime" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="unset"
-        android:id="@+id/txtTime"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"/>
+        android:layout_marginBottom="10dp"/>
 
     <ImageView
         android:layout_width="fill_parent"

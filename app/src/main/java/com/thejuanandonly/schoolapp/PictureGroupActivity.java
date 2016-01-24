@@ -12,48 +12,34 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Selection;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Adapter;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.amirarcane.recentimages.thumbnailOptions.ImageAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.StringTokenizer;
 
 /**
  * Created by Daniel on 11/7/2015.
  */
 public class PictureGroupActivity extends AppCompatActivity {
 
-    public static Context initialContext;
     public static String currentPictureGroup;
     public static Uri selectedImage;
     public static ArrayList<Bitmap> ALofSelectedImgs = new ArrayList<>();
     public static ArrayList<Bitmap> ALofRSelectedImgs = new ArrayList<>();
     public static int height, width;
-    ArrayList<String> arrayListPD = new ArrayList<>();
     private static int RESULT_LOAD_IMAGE = 1;
     private Menu menu;
     public JSONArray arrayOfImgs = new JSONArray();
@@ -77,11 +63,9 @@ public class PictureGroupActivity extends AppCompatActivity {
         height = displaymetrics.heightPixels;
         width = displaymetrics.widthPixels;
 
-        String subject_notes = getIntent().getExtras().getString("subNote", "SchoolApp");
-
         theme();
 
-        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.subjectDetailToolbar);
+        String subject_notes = getIntent().getExtras().getString("subNote", "SchoolApp");
         toolbar.setTitle(subject_notes);
 
         setSupportActionBar(toolbar);
@@ -144,16 +128,6 @@ public class PictureGroupActivity extends AppCompatActivity {
 
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void theme() {
-
-        Window window = this.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-        if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.mainblue800));
-    }
-
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
@@ -187,8 +161,7 @@ public class PictureGroupActivity extends AppCompatActivity {
                     try {
                         arrayListOfImgs.add(arrayOfImgs.getString(i));
                     } catch (JSONException e) {
-                    }
-                }
+                    }}
 
                 arrayListOfImgs.remove(id);
                 arrayOfImgs = new JSONArray(arrayListOfImgs);
@@ -377,5 +350,28 @@ public class PictureGroupActivity extends AppCompatActivity {
         }
 
         return SizeSample;
+    }
+
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void theme() {
+        SharedPreferences prefs = getSharedPreferences("themeSave", Context.MODE_PRIVATE);
+        int theme = prefs.getInt("theme", 0);
+
+        Window window = this.getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.subjectDetailToolbar);
+
+        switch (theme) {
+            case 1:
+                toolbar.setBackgroundColor(getResources().getColor(R.color.blueT));
+
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
+                    window.setStatusBarColor(getResources().getColor(R.color.blueTy));
+
+                break;
+        }
     }
 }

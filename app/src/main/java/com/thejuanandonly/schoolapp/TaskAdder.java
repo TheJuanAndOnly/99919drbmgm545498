@@ -10,9 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.os.CountDownTimer;
-import android.os.PowerManager;
-import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -98,7 +95,6 @@ public class TaskAdder extends ActionBarActivity {
         }
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        toolbar.setTitle("Add a task");
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -256,6 +252,8 @@ public class TaskAdder extends ActionBarActivity {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void theme() {
+        SharedPreferences prefs = getSharedPreferences("themeSave", Context.MODE_PRIVATE);
+        int theme = prefs.getInt("theme", 0);
 
         Window window = this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -263,9 +261,13 @@ public class TaskAdder extends ActionBarActivity {
 
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.tool_bar);
 
-        toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
+        switch (theme) {
+            default:
 
-        if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.mainblue800));
+                toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
+
+                if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.mainblue800));
+        }
     }
 
     public void addTask() {
@@ -303,7 +305,6 @@ public class TaskAdder extends ActionBarActivity {
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
             PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), 0);
             alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
-
         }
 
     }
@@ -372,18 +373,19 @@ public class TaskAdder extends ActionBarActivity {
             finish();
 
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-            PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), 0);
             alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
-
         }
     }
 
     public void alwaysOnScreen(Context context, String name) {
         SharedPreferences prefs = getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
 
-        boolean a = prefs.getBoolean("active", true);
+        boolean n = prefs.getBoolean("notifications", true),
+                s = prefs.getBoolean("sounds", true),
+                v = prefs.getBoolean("vibrations", true);
 
-        if (a == true) {
+        if (n == true) {
             String nameForAlways = null;
             if (numberOfTask == 1) {
                 nameForAlways = " active task";
