@@ -330,7 +330,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 if (date.getDate() == today.getDate()) {
                     txtTimer.setText("today (" + date.getHours() + ":" + minutes + ")");
                 } else {
-                    txtTimer.setText("next " +  day);
+                    txtTimer.setText(day + " (" + date.getHours() + ":" + minutes + ")");
                 }
             } else if (weeks == 1) {
                 txtTimer.setText("next week" + newLine + "(" +  day + ")");
