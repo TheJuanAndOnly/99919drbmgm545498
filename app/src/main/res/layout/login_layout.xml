@@ -13,6 +13,7 @@
         android:layout_y="388dp"
         android:hint="Your name"
         android:textColorHint="#6fc2d1"
+        android:inputType="textPersonName"
         android:gravity="center"
         android:id="@+id/nickname"
         android:layout_below="@+id/textView"

@@ -1,16 +1,20 @@
 package com.thejuanandonly.schoolapp;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.text.InputType;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -23,9 +27,12 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -116,6 +123,35 @@ public class NotesFragment extends Fragment {
         return rootView;
     }
 
+    public void checkStoragePermission(){
+
+        if (ContextCompat.checkSelfPermission(getActivity(),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ListView listView = (ListView) getView().findViewById(R.id.SubjectListView_Notes);
+            LinearLayout permis = (LinearLayout) getView().findViewById(R.id.permissionLayoutNotes);
+            listView.setVisibility(View.GONE);
+            permis.setVisibility(View.VISIBLE);
+
+            Button turnOn = (Button) getView().findViewById(R.id.turnOnNotes);
+
+            turnOn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    ActivityCompat.requestPermissions(getActivity(),
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            2);
+                }
+            });
+        }
+    }
+
+    public void permissionDone(){
+
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public void theme() {
 
@@ -193,6 +229,9 @@ public class NotesFragment extends Fragment {
 
     @Override
     public void onResume() {
+
+        checkStoragePermission();
+
         SharedPreferences arrayPrefs_notes = getActivity().getSharedPreferences("ListOfSubjectsNotes", Context.MODE_PRIVATE);
         JSONArray set_notes = new JSONArray();
         arrayList = new ArrayList<String>();

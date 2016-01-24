@@ -303,7 +303,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
             listView.setLayoutParams(params);
             listView.requestLayout();*/
 
-            setTotalHeightOfListView(listView);
+            //setTotalHeightOfListView(listView);
 
             try {
 
@@ -935,7 +935,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 int percentage = 0;
                 for (int i = 0; i < chars.length; i++){
                     if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5' ||
-                            chars[i] == '6' || chars[i] == '7' || chars[i] == '8' || chars[i] == '9'){
+                            chars[i] == '6' || chars[i] == '7' || chars[i] == '8' || chars[i] == '9' || chars[i] == '0'){
 
                         int num = Character.getNumericValue(chars[i]);
                         if (percentage == -1) percentage = 0;
@@ -1013,6 +1013,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         int gradeType = prefs.getInt("GradeType", 0);
         switch (gradeType){
             case 1:
+
                 int percentage = 0;
                 for (int i = 0; i < chars.length; i++){
                     if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5' ||
@@ -1193,7 +1194,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                     break;
                 case 1:
                     gradeEditText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_PHONE);
-                    gradeEditText.setHint("Percentage Format: 94, 82, ...");
+                    gradeEditText.setHint("Add Percentage (0 - 100)");
                     break;
                 case 2:
                     gradeEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);

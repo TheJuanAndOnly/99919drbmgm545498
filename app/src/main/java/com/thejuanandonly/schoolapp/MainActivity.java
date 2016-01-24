@@ -1,5 +1,6 @@
 package com.thejuanandonly.schoolapp;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -12,6 +13,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -25,8 +27,10 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -38,10 +42,12 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 
 import android.widget.ImageView;
@@ -88,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         userPhotoimgview = (ImageView) findViewById(R.id.usersPhoto);
         userNicktxtview = (TextView) findViewById(R.id.usersNickname);
 
-        updateUserDetails();
+        checkStoragePermission();
         setLevel();
         setQuote();
         setOverall();
@@ -131,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (menuItem.getItemId() == R.id.nav_item_notes) {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.containerView, new NotesFragment()).commit();
+                    fragmentTransaction.replace(R.id.containerView, new NotesFragment(), "NotesFragment").commit();
                     actualFragment = 3;
                     invalidateOptionsMenu();
                 }
@@ -528,6 +534,11 @@ public class MainActivity extends AppCompatActivity {
             arrayOfSubjects = new JSONArray(arrayPrefs.getString("List", null));
         }catch (Exception e) {}
 
+        if (arrayOfSubjects.length() == 0){
+            overallTv.setText("");
+            return;
+        }
+
         for (int i = 0; i < arrayOfSubjects.length(); i++){
 
             String currentSubj = "";
@@ -682,7 +693,7 @@ public class MainActivity extends AppCompatActivity {
         quoteTv.setText(quotes[rnd]);
         authorTv.setText(authors[rnd]);
 
-        if (rnd == 24 || rnd == 23){
+        if (quotes[rnd].length() >= 120){
             quoteTv.setTextSize(16);
             authorTv.setTextSize(14);
         }else {
@@ -767,7 +778,7 @@ public class MainActivity extends AppCompatActivity {
 
                         Toast.makeText(MainActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
 
-                        updateUserDetails();
+                        checkStoragePermission();
 
                         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                         notificationManager.cancel(0);
@@ -961,17 +972,99 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
     }
 
-    public void updateUserDetails() {
+    public void checkStoragePermission(){
+
         SharedPreferences sharedPreferences = getSharedPreferences("User", MODE_PRIVATE);
         userNickname = sharedPreferences.getString("nickname", null);
-        String imageUriString = sharedPreferences.getString("avatar", null);
-
         if (userNickname == null) {
             startActivity(new Intent(this, LoginActivity.class));
             return;
         }
 
-        if (imageUriString != null) {
+        if (getSharedPreferences("Global", Context.MODE_PRIVATE).getBoolean("doPermissionCheck", true)) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED) {
+
+                RelativeLayout user = (RelativeLayout) findViewById(R.id.userDetailLayout);
+                LinearLayout permis = (LinearLayout) findViewById(R.id.permissionLayout);
+                user.setVisibility(View.GONE);
+                permis.setVisibility(View.VISIBLE);
+
+                Button turnOn = (Button) findViewById(R.id.turnOn);
+                Button notNow = (Button) findViewById(R.id.notNow);
+
+                turnOn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        ActivityCompat.requestPermissions(MainActivity.this,
+                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                1);
+                    }
+                });
+                notNow.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        getSharedPreferences("Global", Context.MODE_PRIVATE).edit().putBoolean("doPermissionCheck", false).apply();
+                        updateUserDetails(false);
+                    }
+                });
+            } else {
+                updateUserDetails(true);
+            }
+        }else {
+            updateUserDetails(false);
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case 1: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    updateUserDetails(true);
+
+                } else {
+
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    updateUserDetails(false);
+                }
+                break;
+            }
+            case 2:
+
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    super.recreate();
+                }
+
+                break;
+
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+    public void updateUserDetails(boolean usePhotos) {
+        SharedPreferences sharedPreferences = getSharedPreferences("User", MODE_PRIVATE);
+        userNickname = sharedPreferences.getString("nickname", null);
+        String imageUriString = sharedPreferences.getString("avatar", null);
+
+        RelativeLayout user = (RelativeLayout) findViewById(R.id.userDetailLayout);
+        LinearLayout permis = (LinearLayout) findViewById(R.id.permissionLayout);
+        user.setVisibility(View.VISIBLE);
+        permis.setVisibility(View.GONE);
+
+        if (usePhotos && imageUriString != null) {
             Bitmap bitmap = null;
             int w = 0, h = 0;
             try {
@@ -985,6 +1078,12 @@ public class MainActivity extends AppCompatActivity {
             Bitmap roundBitmap = ImageToCircle.getCroppedBitmap(bitmap, radius);
 
             userPhotoimgview.setImageBitmap(roundBitmap);
+        }
+        else {
+            user.setBackgroundResource(R.drawable.not_now);
+
+            RelativeLayout photos = (RelativeLayout) findViewById(R.id.usersPhotoLayout);
+            photos.setVisibility(View.INVISIBLE);
         }
 
         userNicktxtview.setText(userNickname);
