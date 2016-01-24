@@ -785,6 +785,9 @@ public class MainActivity extends AppCompatActivity {
                         notificationManager.cancel(0);
 
                         System.exit(0);
+
+                        Intent intent = new Intent("com.thejuanandonly.schoolapp");
+                        startActivity(intent);
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
