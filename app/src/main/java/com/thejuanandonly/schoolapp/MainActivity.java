@@ -740,7 +740,7 @@ public class MainActivity extends AppCompatActivity {
         boolean a = !prefs.getBoolean("active", true);
         prefs.edit().putBoolean("active", a).apply();
         prefs.edit().commit();
-        
+
         updateNotification();
     }
 

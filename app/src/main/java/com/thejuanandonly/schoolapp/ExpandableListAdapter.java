@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.FragmentTransaction;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -231,6 +233,10 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 editorDone.putString("DoneTaskTime", arrayTimeDone.toString()).apply();
                 editorDone.putInt("NumberOfDoneTask", numberOfDoneTask).apply();
                 editorDone.commit();
+
+                AlarmManager alarmManager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+                PendingIntent mAlarmSender = PendingIntent.getBroadcast(context, 0, new Intent(context, NotificationRecieverActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
 
                 ((MainActivity) context).updateListTasks();
                 ((MainActivity) context).updateNotification();
