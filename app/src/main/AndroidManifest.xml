@@ -9,7 +9,9 @@
         android:theme="@style/Widget.AppCompat.PopupWindow">
     </uses-permission>
 
-    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
 
     <application
         android:allowBackup="true"
