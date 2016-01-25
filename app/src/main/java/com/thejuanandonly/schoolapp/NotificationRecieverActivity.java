@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.PowerManager;
 import android.os.Vibrator;
@@ -86,20 +87,20 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
                         .setContentTitle(name)
                         .setContentText(what)
                         .setVibrate(new long[]{500, 500, 500, 500})
-                        .setSmallIcon(R.drawable.ic_event_available_white_24dp)
+                        .setSmallIcon(R.drawable.classic_notification)
                         .setContentIntent(contentIntent).build();
             } else if (v == false && s == true) {
                 notification = new Notification.Builder(context)
                         .setContentTitle(name)
                         .setContentText(what)
                         .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
-                        .setSmallIcon(R.drawable.ic_event_available_white_24dp)
+                        .setSmallIcon(R.drawable.classic_notification)
                         .setContentIntent(contentIntent).build();
             } else if (s == false && v == false) {
                 notification = new Notification.Builder(context)
                         .setContentTitle(name)
                         .setContentText(what)
-                        .setSmallIcon(R.drawable.ic_event_available_white_24dp)
+                        .setSmallIcon(R.drawable.classic_notification)
                         .setContentIntent(contentIntent).build();
             } else {
                 notification = new Notification.Builder(context)
@@ -107,7 +108,7 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
                         .setContentText(what)
                         .setVibrate(new long[]{500, 500, 500, 500})
                         .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
-                        .setSmallIcon(R.drawable.ic_event_available_white_24dp)
+                        .setSmallIcon(R.drawable.classic_notification)
                         .setContentIntent(contentIntent).build();
             }
 

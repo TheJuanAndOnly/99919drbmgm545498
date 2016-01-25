@@ -1,3 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" />
+<items version="2" >
 
+    <item
+        jar="D:\Data\MySchoolAppv1.3\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.0.1\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="d86429b0f0b3f3cafbeb78dda1b9d89119ccb05d">
+        <dex dex="D:\Data\MySchoolAppv1.3\app\build\intermediates\pre-dexed\debug\com.android.support-appcompat-v7-23.0.1_8390427922e1e1abdd05cbfc17550c3e240d623f.jar" />
+    </item>
+    <item
+        jar="D:\Data\MySchoolAppv1.3\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.1\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="c31e21b53ff2f74664e498248d01453a32e32d48">
+        <dex dex="D:\Data\MySchoolAppv1.3\app\build\intermediates\pre-dexed\debug\com.android.support-support-v4-23.0.1_0c8b57eaf4e60b5a2810864b073c320b2dbbbc7c.jar" />
+    </item>
+    <item
+        jar="D:\Data\MySchoolAppv1.3\app\build\intermediates\exploded-aar\com.amirarcane.recent-images\recentimages\1.0.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="302e0a2fe777109ad17d6441c124f04452fc37ef">
+        <dex dex="D:\Data\MySchoolAppv1.3\app\build\intermediates\pre-dexed\debug\com.amirarcane.recent-images-recentimages-1.0.0_92c90584d66b42322b814b377e2816a9aea7392b.jar" />
+    </item>
+    <item
+        jar="D:\Data\MySchoolAppv1.3\app\build\intermediates\exploded-aar\com.davemorrissey.labs\subsampling-scale-image-view\3.4.1\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="36cea48a105ddeef047b645ab0f86f72993e8676">
+        <dex dex="D:\Data\MySchoolAppv1.3\app\build\intermediates\pre-dexed\debug\com.davemorrissey.labs-subsampling-scale-image-view-3.4.1_51cd4d25f6fabbbdac9b7a71e3b65b6326ea3c8a.jar" />
+    </item>
+    <item
+        jar="D:\Data\MySchoolAppv1.3\app\build\intermediates\exploded-aar\it.sephiroth.android.library.imagezoom\imagezoom\2.2.4\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="2df65d287bcfe491b42060d85a99217ad4e7c534">
+        <dex dex="D:\Data\MySchoolAppv1.3\app\build\intermediates\pre-dexed\debug\it.sephiroth.android.library.imagezoom-imagezoom-2.2.4_c738caaeef5688b67fd99745b23dd2cea36aaa4c.jar" />
+    </item>
+    <item
+        jar="D:\Data\MySchoolAppv1.3\app\build\intermediates\exploded-aar\com.android.support\design\23.0.1\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="e5c61a3169221a89654ffcaaed47bba51cf071ad">
+        <dex dex="D:\Data\MySchoolAppv1.3\app\build\intermediates\pre-dexed\debug\com.android.support-design-23.0.1_0bfbcf67177da912e5d226a7ee1515d01b957062.jar" />
+    </item>
+    <item
+        jar="D:\ProgramFiles\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\23.0.1\support-annotations-23.0.1.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="1fce89a6428c51467090d7f424e4c9c3dbd55f7e">
+        <dex dex="D:\Data\MySchoolAppv1.3\app\build\intermediates\pre-dexed\debug\support-annotations-23.0.1_730dbffd774d7ed1b47ba1073744b8baa0d8ec56.jar" />
+    </item>
+    <item
+        jar="D:\Data\MySchoolAppv1.3\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.0.1\jars\libs\internal_impl-23.0.1.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="aa92916125166649d8ad4ba3940c3dd7515596d3">
+        <dex dex="D:\Data\MySchoolAppv1.3\app\build\intermediates\pre-dexed\debug\internal_impl-23.0.1_2da0bb972765df95c020f28b67eec2bd104265d5.jar" />
+    </item>
+
+</items>
