@@ -93,7 +93,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             int m = date.getMonth() + 1;
             int d = date.getDate();
 
-            time.setText(h + " : " + minutes + newLine + d + ". " + m + ".");
+            time.setText(h + ":" + minutes + newLine + d + "." + m + ".");
         } else {
             time.setText("time expired");
         }

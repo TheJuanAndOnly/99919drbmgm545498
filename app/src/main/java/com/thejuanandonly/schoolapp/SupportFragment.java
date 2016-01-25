@@ -70,9 +70,11 @@ public class SupportFragment extends android.support.v4.app.Fragment {
         Display display = getActivity().getWindowManager().getDefaultDisplay();
 
         String s = "Hardware info:";
-        s += "\n Model: " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")";
-        s += "\n API Level: " + android.os.Build.VERSION.SDK_INT;
-        s += "\n Screen: " + display.getWidth() + "x" + display.getHeight();
+        s += "\n    Model: " + android.os.Build.MODEL + " ("+ android.os.Build.PRODUCT + ")";
+        s += "\n    API Level: " + android.os.Build.VERSION.SDK_INT;
+        s += "\n    Screen: " + display.getWidth() + "x" + display.getHeight();
+        s += "\n";
+        s += "\n --------YOUR MESSAGE HERE--------";
 
         final String finalS = s;
 
@@ -81,7 +83,7 @@ public class SupportFragment extends android.support.v4.app.Fragment {
             public void onClick(View v) {
 
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                        "mailto","danymalach@gmail.com", null));
+                        "mailto","gradeday.team@gmail.com", null));
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, "BUG REPORT");
                 emailIntent.putExtra(Intent.EXTRA_TEXT, finalS);
                 startActivity(Intent.createChooser(emailIntent, "Send email..."));
@@ -93,7 +95,7 @@ public class SupportFragment extends android.support.v4.app.Fragment {
             public void onClick(View v) {
 
                 Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                        "mailto","danymalach@gmail.com", null));
+                        "mailto","gradeday.team@gmail.com", null));
                 emailIntent.putExtra(Intent.EXTRA_SUBJECT, "FEEDBACK");
                 emailIntent.putExtra(Intent.EXTRA_TEXT, "");
                 startActivity(Intent.createChooser(emailIntent, "Send email..."));

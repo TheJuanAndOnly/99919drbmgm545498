@@ -35,6 +35,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -72,13 +73,14 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout drawerFull;
     public ImageView userPhotoimgview;
     public TextView userNicktxtview;
-
+    RelativeLayout NAVd;
     public int actualFragment = 1;
     public static int api;
     public static int theme;
     public boolean willSend = false;
     public static boolean taskAdded = false;
     android.support.v7.widget.Toolbar toolbar;
+    String reset;
 
     public String userNickname;
 
@@ -100,6 +102,18 @@ public class MainActivity extends AppCompatActivity {
         setOverall();
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+
+        int height = displaymetrics.heightPixels;
+
+        NAVd = (RelativeLayout)findViewById(R.id.userDetails);
+        if (height <= 853) {
+            NAVd.setBackgroundDrawable(getResources().getDrawable(R.drawable.blueprint));
+        } else {
+            NAVd.setBackgroundDrawable(getResources().getDrawable(R.drawable.nav_bckg));
+        }
 
         mFragmentManager = getSupportFragmentManager();
         mFragmentTransaction = mFragmentManager.beginTransaction();
@@ -767,9 +781,10 @@ public class MainActivity extends AppCompatActivity {
     public void deleteDialogBox() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
-        builder.setTitle("Reset");
 
-        builder.setMessage("Are you sure?")
+        builder.setTitle("Reset All");
+
+        builder.setMessage("Are you sure you want to reset everything?")
 
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int arg0) {
@@ -1081,7 +1096,19 @@ public class MainActivity extends AppCompatActivity {
             userPhotoimgview.setImageBitmap(roundBitmap);
         }
         else {
-            user.setBackgroundResource(R.drawable.not_now);
+
+          DisplayMetrics displaymetrics = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+
+            int height = displaymetrics.heightPixels;
+
+            NAVd = (RelativeLayout)findViewById(R.id.userDetails);
+            if (height <= 853) {
+                user.setBackgroundResource(R.drawable.not_now_lowres);
+            } else {
+                user.setBackgroundResource(R.drawable.not_now);
+            }
+
 
             RelativeLayout photos = (RelativeLayout) findViewById(R.id.usersPhotoLayout);
             photos.setVisibility(View.INVISIBLE);
