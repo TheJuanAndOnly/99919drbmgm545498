@@ -87,20 +87,20 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
                         .setContentTitle(name)
                         .setContentText(what)
                         .setVibrate(new long[]{500, 500, 500, 500})
-                        .setSmallIcon(R.drawable.classic_notification)
+                        .setSmallIcon(R.drawable.ic_event_available_white_24dp)
                         .setContentIntent(contentIntent).build();
             } else if (v == false && s == true) {
                 notification = new Notification.Builder(context)
                         .setContentTitle(name)
                         .setContentText(what)
                         .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
-                        .setSmallIcon(R.drawable.classic_notification)
+                        .setSmallIcon(R.drawable.ic_event_available_white_24dp)
                         .setContentIntent(contentIntent).build();
             } else if (s == false && v == false) {
                 notification = new Notification.Builder(context)
                         .setContentTitle(name)
                         .setContentText(what)
-                        .setSmallIcon(R.drawable.classic_notification)
+                        .setSmallIcon(R.drawable.ic_event_available_white_24dp)
                         .setContentIntent(contentIntent).build();
             } else {
                 notification = new Notification.Builder(context)
@@ -108,7 +108,7 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
                         .setContentText(what)
                         .setVibrate(new long[]{500, 500, 500, 500})
                         .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
-                        .setSmallIcon(R.drawable.classic_notification)
+                        .setSmallIcon(R.drawable.ic_event_available_white_24dp)
                         .setContentIntent(contentIntent).build();
             }
 
