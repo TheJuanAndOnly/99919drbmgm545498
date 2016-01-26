@@ -4,7 +4,6 @@
     android:id="@+id/userDetails"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/nav_bckg"
     android:layout_weight="3">
 
     <RelativeLayout
@@ -48,6 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Username"
+                android:maxLines="2"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="@color/white"/>
@@ -146,7 +146,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:textSize="14sp"
-            android:text="This lets you use features like User Avatar and many more."
+            android:text="This lets you use features like User Avatar and more."
             android:gravity="center"
             android:layout_marginBottom="8dp"/>
 

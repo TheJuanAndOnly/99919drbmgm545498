@@ -116,7 +116,7 @@ public class LoginActivity extends Activity {
                     try {
                         toApp.putExtra("avatar", avatarURI.toString());
                     } catch (NullPointerException e) {
-                        Toast.makeText(LoginActivity.this, "No image was selected", Toast.LENGTH_SHORT).show();
+
                     }
 
                     startActivity(toApp);

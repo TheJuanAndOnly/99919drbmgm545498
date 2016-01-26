@@ -138,9 +138,7 @@ public class NotesFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
 
-                    ActivityCompat.requestPermissions(getActivity(),
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            2);
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 2);
                 }
             });
         }

@@ -93,7 +93,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             int m = date.getMonth() + 1;
             int d = date.getDate();
 
-            time.setText(h + " : " + minutes + newLine + d + ". " + m + ".");
+            time.setText(h + ":" + minutes + newLine + d + "." + m + ".");
         } else {
             time.setText("time expired");
         }
@@ -330,7 +330,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 if (date.getDate() == today.getDate()) {
                     txtTimer.setText("today (" + date.getHours() + ":" + minutes + ")");
                 } else {
-                    txtTimer.setText("next " +  day);
+                    txtTimer.setText(day + " (" + date.getHours() + ":" + minutes + ")");
                 }
             } else if (weeks == 1) {
                 txtTimer.setText("next week" + newLine + "(" +  day + ")");
