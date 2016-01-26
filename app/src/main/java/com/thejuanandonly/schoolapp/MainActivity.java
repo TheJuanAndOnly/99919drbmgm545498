@@ -166,6 +166,22 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
+
+
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.VIBRATE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(this, "vibrate", Toast.LENGTH_SHORT).show();
+        }
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WAKE_LOCK)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(this, "wake lock", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     @Override
@@ -580,36 +596,35 @@ public class MainActivity extends AppCompatActivity {
                 int gradeType = prefs.getInt("GradeType", 0);
                 double avg = Double.parseDouble(prefs.getString("AvgGrade", "0"));
 
-                if (gradeType == 0){
-                    ovr += avg;
-                    ovrCnt++;
-                }
-                else if (gradeType == 1){
-                    SharedPreferences conv = getSharedPreferences("Global", Context.MODE_PRIVATE);
-                    try{
-                        JSONArray conversionArray = new JSONArray(conv.getString("conversion", null));
+                if (avg != 0) {
 
-                        if (avg >= conversionArray.getInt(0)){
-                            ovr += 1;
-                            ovrCnt++;
-                        }
-                        else if (avg >= conversionArray.getInt(1)){
-                            ovr += 2;
-                            ovrCnt++;
-                        }
-                        else if (avg >= conversionArray.getInt(2)){
-                            ovr += 3;
-                            ovrCnt++;
-                        }
-                        else if (avg >= conversionArray.getInt(3)){
-                            ovr += 4;
-                            ovrCnt++;
-                        }else {
-                            ovr += 5;
-                            ovrCnt++;
+                    if (gradeType == 0) {
+                        ovr += avg;
+                        ovrCnt++;
+                    } else if (gradeType == 1) {
+                        SharedPreferences conv = getSharedPreferences("Global", Context.MODE_PRIVATE);
+                        try {
+                            JSONArray conversionArray = new JSONArray(conv.getString("conversion", null));
+
+                            if (avg >= conversionArray.getInt(0)) {
+                                ovr += 1;
+                                ovrCnt++;
+                            } else if (avg >= conversionArray.getInt(1)) {
+                                ovr += 2;
+                                ovrCnt++;
+                            } else if (avg >= conversionArray.getInt(2)) {
+                                ovr += 3;
+                                ovrCnt++;
+                            } else if (avg >= conversionArray.getInt(3)) {
+                                ovr += 4;
+                                ovrCnt++;
+                            } else {
+                                ovr += 5;
+                                ovrCnt++;
+                            }
+                        } catch (Exception e) {
                         }
                     }
-                    catch (Exception e){}
                 }
             }
 
