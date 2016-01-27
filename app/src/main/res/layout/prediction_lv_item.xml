@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="20dp"
+    android:id="@+id/Linear2"
+    android:gravity="center_vertical"
+    android:background="@color/darkbluebackground">
+
+    <TextView
+        android:layout_width="29.5dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/getOr_text_view"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:paddingLeft="4dp"
+        android:paddingRight="2dp"
+        android:gravity="right"
+        android:text="Get"
+        android:background="@android:color/transparent"
+        android:minHeight="5dp"
+        android:textColor="@color/greyText"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/grade_to_get_text_view"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:paddingRight="2dp"
+        android:paddingLeft="2dp"
+        android:text="0"
+        android:background="@android:color/transparent"
+        android:minHeight="5dp"
+        android:textStyle="bold"
+        android:textColor="@color/greyText"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/from_text_view"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:paddingRight="2dp"
+        android:paddingLeft="2dp"
+        android:text="from"
+        android:background="@android:color/transparent"
+        android:minHeight="5dp"
+        android:textColor="@color/greyText"
+        android:textSize="14sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/grade_category_text_view"
+        android:textAppearance="?android:attr/textAppearanceListItemSmall"
+        android:paddingRight="2dp"
+        android:paddingLeft="2dp"
+        android:text="Cat"
+        android:background="@android:color/transparent"
+        android:minHeight="5dp"
+        android:textStyle="italic"
+        android:textColor="@color/greyText"
+        android:textSize="14sp"/>
+
+</LinearLayout>

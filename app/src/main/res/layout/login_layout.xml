@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/login_bckg"
+    android:orientation="vertical">
+
+    <EditText
+        android:layout_width="190dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|bottom"
+        android:layout_x="93dp"
+        android:layout_y="388dp"
+        android:hint="Your name"
+        android:textColorHint="#6fc2d1"
+        android:inputType="textPersonName"
+        android:gravity="center"
+        android:id="@+id/nickname"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/avatar_small"
+        android:layout_x="123dp"
+        android:layout_y="249dp"
+        android:id="@+id/imageView2"
+        android:layout_alignTop="@+id/avatar_circle"
+        android:layout_alignLeft="@+id/avatar_circle"
+        android:layout_alignStart="@+id/avatar_circle" />
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_login"
+        android:layout_x="67dp"
+        android:layout_y="386dp"
+        android:id="@+id/character"
+        android:layout_alignTop="@+id/nickname"
+        android:layout_alignLeft="@+id/login_icons"
+        android:layout_alignStart="@+id/login_icons" />
+
+    <ImageView
+        android:layout_width="108dp"
+        android:layout_height="108dp"
+        android:layout_x="127dp"
+        android:layout_y="253dp"
+        android:id="@+id/avatar_circle"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="4dp"
+        android:paddingRight="4dp"
+        android:paddingBottom="4dp"
+        android:paddingLeft="4dp"
+        android:padding="4dp" />
+
+    <Button
+        android:layout_width="240dp"
+        android:layout_height="65dp"
+        android:layout_x="70dp"
+        android:layout_y="461dp"
+        android:background="#169fb6"
+        android:text="GET STARTED"
+        android:textSize="20dp"
+        android:textColor="#ffff"
+        android:clickable="true"
+        android:textStyle="normal"
+        android:typeface="normal"
+        android:id="@+id/getStarted"
+        android:layout_below="@+id/character"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Avatar"
+        android:textSize="15dp"
+        android:textColor="#fff"
+        android:id="@+id/textView"
+        android:layout_below="@+id/imageView2"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="290dp"
+        android:layout_height="190dp"
+        android:background="@drawable/login_icons"
+        android:id="@+id/login_icons"
+        android:layout_marginTop="23dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+
+</RelativeLayout>

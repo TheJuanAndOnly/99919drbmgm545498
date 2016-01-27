@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/darkbluebackground"
+    android:gravity="center_horizontal">
+
+
+    <ImageView
+        android:layout_width="210dp"
+        android:layout_height="210dp"
+        android:background="@drawable/support"
+        android:layout_x="67dp"
+        android:layout_y="4dp"
+        android:id="@+id/HugeBug"
+        android:layout_above="@+id/textView2"
+        android:layout_alignLeft="@+id/bug_report"
+        android:layout_alignStart="@+id/bug_report"
+        android:layout_marginBottom="26dp"
+        android:layout_marginTop="30dp" />
+
+
+    <TextView
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:text="Found any bugs or want to see something specific in the next update?"
+        android:textSize="15dp"
+        android:gravity="center"
+        android:id="@+id/longText"
+        android:layout_centerVertical="true"
+        android:layout_alignLeft="@+id/LetUsKnow"
+        android:layout_alignStart="@+id/LetUsKnow" />
+
+    <TextView
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="17dp"
+        android:text="LET US KNOW!"
+        android:gravity="center"
+        android:id="@+id/LetUsKnow"
+        android:layout_marginBottom="18dp"
+        android:layout_above="@+id/bug_report"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp" />
+
+    <Button
+        android:layout_width="210dp"
+        android:layout_height="50dp"
+        android:text="BUG REPORT"
+        android:fontFamily="monospace"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:id="@+id/bug_report"
+        android:layout_marginBottom="25dp"
+        android:background="@drawable/rounded_button"
+        android:layout_above="@+id/feedback"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+
+    <Button
+        android:layout_width="210dp"
+        android:layout_height="50dp"
+        android:text="FEEDBACK"
+        android:fontFamily="monospace"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:id="@+id/feedback"
+        android:layout_marginBottom="58dp"
+        android:background="@drawable/rounded_button"
+        android:layout_alignParentBottom="true"
+        android:layout_alignLeft="@+id/bug_report"
+        android:layout_alignStart="@+id/bug_report" />
+
+
+</LinearLayout>

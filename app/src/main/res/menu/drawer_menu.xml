@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/top"
+        android:checkableBehavior="single">
+        <item android:title="Overview"
+            android:id="@+id/nav_item_overview"
+            android:icon="@drawable/ic_dvr_white_24dp" />
+
+        <item android:title="Tasks"
+            android:id="@+id/nav_item_tasks"
+            android:icon="@drawable/ic_event_available_white_24dp"/>
+
+        <item android:title="Notes"
+            android:id="@+id/nav_item_notes"
+            android:icon="@drawable/ic_speaker_notes_white_24dp"/>
+    </group>
+    <group android:id="@+id/bottom"
+        android:checkableBehavior="single">
+        <item android:title="Settings"
+            android:id="@+id/nav_item_settings"
+            android:icon="@drawable/ic_settings_white_24dp"/>
+
+        <item android:title="Support"
+            android:id="@+id/nav_item_support"
+            android:icon="@drawable/ic_bug_report_white_24dp"/>
+    </group>
+
+</menu>

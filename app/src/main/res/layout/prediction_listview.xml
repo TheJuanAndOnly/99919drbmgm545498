@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/darkbluebackground">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvlayout"
+        android:visibility="visible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/grade_text_view"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:paddingLeft="4dp"
+            android:text="1"
+            android:background="@android:color/transparent"
+            android:minHeight="5dp"
+            android:textStyle="bold"
+            android:textColor="@color/greyText"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/grade_plus_text_view"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:paddingRight="4dp"
+            android:text="+"
+            android:background="@android:color/transparent"
+            android:minHeight="5dp"
+            android:textStyle="bold"
+            android:textColor="@color/greyText"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dash_text_view"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:paddingRight="4dp"
+            android:paddingLeft="4dp"
+            android:text=" - "
+            android:background="@android:color/transparent"
+            android:minHeight="5dp"
+            android:textColor="@color/greyText"
+            android:textSize="16sp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/Linear1"
+        android:orientation="vertical">
+
+        <!-- sem sa pridavaju z javy itemy -->
+
+    </LinearLayout>
+
+</LinearLayout>
