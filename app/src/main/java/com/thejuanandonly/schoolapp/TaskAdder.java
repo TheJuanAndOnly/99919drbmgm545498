@@ -1,5 +1,6 @@
 package com.thejuanandonly.schoolapp;
 
+import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.Dialog;
@@ -9,11 +10,16 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -27,6 +33,9 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
+
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 
 import org.json.JSONArray;
 
@@ -42,7 +51,9 @@ public class TaskAdder extends ActionBarActivity {
     public String editName, editWhat;
     public long editTime;
     public Date time;
-    private Button btnTime, btnDate;
+    private Button btnTime, btnDate, btnShowSchedule;
+
+    SubsamplingScaleImageView imageView;
 
     public boolean editing;
 
@@ -69,6 +80,9 @@ public class TaskAdder extends ActionBarActivity {
 
         btnTime = (Button) findViewById(R.id.btnTime);
         btnDate = (Button) findViewById(R.id.btnDate);
+        btnShowSchedule = (Button) findViewById(R.id.btnShowSchedule);
+
+        imageView = (SubsamplingScaleImageView) findViewById(R.id.schedule_image_view);
 
         editing = false;
 
@@ -124,6 +138,54 @@ public class TaskAdder extends ActionBarActivity {
             }
         });
         theme();
+
+        final SharedPreferences prefs = getSharedPreferences("PicturePath", Context.MODE_PRIVATE);
+        if (prefs.getString("Path", null) == null) {
+            btnShowSchedule.setVisibility(View.GONE);
+        } else {
+            btnShowSchedule.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    btnShowSchedule.setVisibility(View.GONE);
+
+                        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(TaskAdder.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
+                        }
+
+                    imageView.setImage(ImageSource.bitmap(BitmapScaled(prefs.getString("Path", null), 800, 800)));
+                    imageView.setVisibility(View.VISIBLE);
+                }
+            });
+        }
+    }
+
+    private Bitmap BitmapScaled(String picturePath, int width, int height) {
+        BitmapFactory.Options sizeOptions = new BitmapFactory.Options();
+        sizeOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(picturePath, sizeOptions);
+
+        int inSampleSize = calculateInSampleSize(sizeOptions, width, height);
+
+        sizeOptions.inJustDecodeBounds = false;
+        sizeOptions.inSampleSize = inSampleSize;
+
+        return BitmapFactory.decodeFile(picturePath, sizeOptions);
+    }
+
+    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int SizeSample = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+
+            SizeSample = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+
+        return SizeSample;
     }
 
     private void setTime(int hour, int minute) {

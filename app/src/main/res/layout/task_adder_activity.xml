@@ -67,6 +67,33 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show me schedule"
+        android:textColor="@color/white"
+        android:background="@color/mainblue"
+        android:visibility="visible"
+        android:gravity="center"
+        android:id="@+id/btnShowSchedule"
+        android:padding="15dp"
+        android:layout_below="@+id/editText_whatTask"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitCenter"
+        android:clickable="true"
+        android:id="@+id/schedule_image_view"
+        android:layout_below="@+id/editText_whatTask"
+        android:layout_above="@+id/textView_whenTask"
+        android:visibility="gone"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
