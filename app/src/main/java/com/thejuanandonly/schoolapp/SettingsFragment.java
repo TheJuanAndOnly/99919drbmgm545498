@@ -90,7 +90,7 @@ public class SettingsFragment extends Fragment {
         Switch vibrationsCheckBox = (Switch) getView().findViewById(R.id.vibrationsNotificationCheckBox);
         Switch activeTasksCheckBox = (Switch) getView().findViewById(R.id.switch_active);
 
-        SharedPreferences prefs = getActivity().getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
+        SharedPreferences prefs = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
 
         boolean n = prefs.getBoolean("notifications", true),
                 s = prefs.getBoolean("sounds", true),
@@ -248,7 +248,7 @@ public class SettingsFragment extends Fragment {
                 v = vibrationsCheckBox.isChecked(),
                 a = activeTasksCheckBox.isChecked();
 
-        SharedPreferences prefs = getActivity().getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
+        SharedPreferences prefs = getActivity().getSharedPreferences("settings", Context.MODE_PRIVATE);
         final SharedPreferences.Editor editor = prefs.edit();
 
         editor.putBoolean("notifications", n);

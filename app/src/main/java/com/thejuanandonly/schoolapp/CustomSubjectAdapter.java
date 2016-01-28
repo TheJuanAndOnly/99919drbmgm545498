@@ -81,6 +81,8 @@ public class CustomSubjectAdapter extends ArrayAdapter<Subject> {
         TextView rating = (TextView) convertView.findViewById(R.id.goodJobTv);
         double avg = Double.parseDouble(subject.average);
 
+        rating.setTextColor(getContext().getResources().getColor(R.color.white));
+
         switch (prefs.getInt("GradeType", 0)) {
             case 0:
                 if (avg == 0){
