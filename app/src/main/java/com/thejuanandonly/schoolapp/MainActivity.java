@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Application;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -56,6 +57,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 
@@ -67,6 +69,7 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     DrawerLayout mDrawerLayout;
@@ -186,6 +189,19 @@ public class MainActivity extends AppCompatActivity {
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
+
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.VIBRATE)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(this, "vibrate", Toast.LENGTH_SHORT).show();
+        }
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WAKE_LOCK)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(this, "wake lock", Toast.LENGTH_SHORT).show();
+        }
 
     }
 
@@ -588,7 +604,7 @@ public class MainActivity extends AppCompatActivity {
             types.add(gradeType);
         }
 
-        if ((normal != 0 || percent != 0) && alphab == 0 && tenGrade == 0){
+        if ((normal != 0 || percent != 0) && alphab == 0 && tenGrade == 0) {
             for (int i = 0; i < arrayOfSubjects.length(); i++) {
 
                 String currentSubj = "";
@@ -601,36 +617,35 @@ public class MainActivity extends AppCompatActivity {
                 int gradeType = prefs.getInt("GradeType", 0);
                 double avg = Double.parseDouble(prefs.getString("AvgGrade", "0"));
 
-                if (gradeType == 0){
-                    ovr += avg;
-                    ovrCnt++;
-                }
-                else if (gradeType == 1){
-                    SharedPreferences conv = getSharedPreferences("Global", Context.MODE_PRIVATE);
-                    try{
-                        JSONArray conversionArray = new JSONArray(conv.getString("conversion", null));
+                if (avg != 0) {
 
-                        if (avg >= conversionArray.getInt(0)){
-                            ovr += 1;
-                            ovrCnt++;
-                        }
-                        else if (avg >= conversionArray.getInt(1)){
-                            ovr += 2;
-                            ovrCnt++;
-                        }
-                        else if (avg >= conversionArray.getInt(2)){
-                            ovr += 3;
-                            ovrCnt++;
-                        }
-                        else if (avg >= conversionArray.getInt(3)){
-                            ovr += 4;
-                            ovrCnt++;
-                        }else {
-                            ovr += 5;
-                            ovrCnt++;
+                    if (gradeType == 0) {
+                        ovr += avg;
+                        ovrCnt++;
+                    } else if (gradeType == 1) {
+                        SharedPreferences conv = getSharedPreferences("Global", Context.MODE_PRIVATE);
+                        try {
+                            JSONArray conversionArray = new JSONArray(conv.getString("conversion", null));
+
+                            if (avg >= conversionArray.getInt(0)) {
+                                ovr += 1;
+                                ovrCnt++;
+                            } else if (avg >= conversionArray.getInt(1)) {
+                                ovr += 2;
+                                ovrCnt++;
+                            } else if (avg >= conversionArray.getInt(2)) {
+                                ovr += 3;
+                                ovrCnt++;
+                            } else if (avg >= conversionArray.getInt(3)) {
+                                ovr += 4;
+                                ovrCnt++;
+                            } else {
+                                ovr += 5;
+                                ovrCnt++;
+                            }
+                        } catch (Exception e) {
                         }
                     }
-                    catch (Exception e){}
                 }
             }
 
@@ -650,7 +665,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("debug", e.toString());
             }
 
-        }else {
+        } else {
             for (int i = 0; i < arrayOfSubjects.length(); i++) {
 
                 String currentSubj = "";
@@ -741,7 +756,7 @@ public class MainActivity extends AppCompatActivity {
             vibrationsCheckBox.setVisibility(View.VISIBLE);
         }
 
-        SharedPreferences prefs = getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("settings", Context.MODE_PRIVATE);
         boolean n = !prefs.getBoolean("notifications", true),
                 s = !prefs.getBoolean("sounds", true),
                 v = !prefs.getBoolean("vibrations", true);
@@ -754,21 +769,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void soundsNotificationClick(View view) {
-        SharedPreferences prefs = getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("settings", Context.MODE_PRIVATE);
         boolean s = !prefs.getBoolean("sounds", true);
         prefs.edit().putBoolean("sounds", s).apply();
         prefs.edit().commit();
     }
 
     public void vibrationsNotificationClick(View view) {
-        SharedPreferences prefs = getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("settings", Context.MODE_PRIVATE);
         boolean v = !prefs.getBoolean("vibrations", true);
         prefs.edit().putBoolean("vibrations", v).apply();
         prefs.edit().commit();
     }
 
     public void activeTasksClick(View view) {
-        SharedPreferences prefs = getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("settings", Context.MODE_PRIVATE);
         boolean a = !prefs.getBoolean("active", true);
         prefs.edit().putBoolean("active", a).apply();
         prefs.edit().commit();
@@ -1128,7 +1143,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateNotification() {
-        SharedPreferences prefss = getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
+        SharedPreferences prefss = getSharedPreferences("settings", Context.MODE_PRIVATE);
         SharedPreferences prefsss = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
 
         boolean a = prefss.getBoolean("active", true);
@@ -1169,7 +1184,7 @@ public class MainActivity extends AppCompatActivity {
                 Notification notification = new Notification.Builder(this)
                         .setContentTitle(numberOfTask + nameForAlways)
                         .setContentText(childWithNames.substring(1, childWithNames.length()-1))
-                        .setSmallIcon(R.drawable.ic_mail_white_24dp)
+                        .setSmallIcon(R.drawable.ic_active_tasks)
                         .setContentIntent(contentIntent).build();
 
                 NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);

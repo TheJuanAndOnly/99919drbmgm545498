@@ -141,6 +141,17 @@ public class SubjectDetailActivity extends AppCompatActivity {
         setAvgTv();
     }
 
+    @Override
+    protected void onPause() {
+
+        menuButtonChange = 1;
+
+        Button edit = (Button) findViewById(R.id.gradeEditButtonSingle);
+        edit.setVisibility(View.GONE);
+
+        super.onPause();
+    }
+
     public void setAvgTv(){
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
@@ -955,7 +966,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                         percentage = -1;
                     }
                 }
-                if (percentage != -1) arrayOfGrades.put(String.valueOf(percentage));
+                if (percentage != -1 && chars.length != 0) arrayOfGrades.put(String.valueOf(percentage));
                 break;
             case 2:
                 for (int i = 0; i < chars.length; i++) {
@@ -1729,6 +1740,23 @@ public class SubjectDetailActivity extends AppCompatActivity {
         }
         int gradeType = prefs.getInt("GradeType", 0);
 
+        ListView listView = (ListView) findViewById(R.id.predictionListView);
+
+        if (gradeType == 3){
+            listView.setVisibility(View.GONE);
+
+            LinearLayout coming = (LinearLayout) findViewById(R.id.comingSoonLayout);
+            coming.setVisibility(View.VISIBLE);
+
+            return;
+        }
+        else{
+            listView.setVisibility(View.VISIBLE);
+
+            LinearLayout coming = (LinearLayout) findViewById(R.id.comingSoonLayout);
+            coming.setVisibility(View.GONE);
+        }
+
         ArrayList<Double> avgsAfter = new ArrayList<Double>();
 
         if (!prefs.getBoolean("useCategories", false)){
@@ -2204,7 +2232,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
             Log.e("debug", e.toString());
         }
 
-        ListView listView = (ListView) findViewById(R.id.predictionListView);
         PredictionLvAdapter adapter = new PredictionLvAdapter(this, strings);
         listView.setAdapter(adapter);
 

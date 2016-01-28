@@ -441,7 +441,7 @@ public class TaskAdder extends ActionBarActivity {
     }
 
     public void alwaysOnScreen(Context context, String name) {
-        SharedPreferences prefs = getSharedPreferences("notificationsSave", Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("settings", Context.MODE_PRIVATE);
 
         boolean a = prefs.getBoolean("active", true);
 
@@ -470,7 +470,7 @@ public class TaskAdder extends ActionBarActivity {
             Notification notification = new Notification.Builder(context)
                     .setContentTitle(name + nameForAlways)
                     .setContentText(childWithNames.substring(1, childWithNames.length()-1))
-                    .setSmallIcon(R.drawable.ic_mail_white_24dp)
+                    .setSmallIcon(R.drawable.ic_active_tasks)
                     .setContentIntent(contentIntent).build();
 
             NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
