@@ -83,7 +83,6 @@
                             android:layout_height="wrap_content"
                             android:textSize="18sp"
                             android:id="@+id/notificationsCheckBox"
-                            android:onClick="notificationsClick"
                             android:layout_alignParentTop="true"
                             android:layout_alignParentRight="true"
                             android:layout_alignParentEnd="true" />
@@ -100,7 +99,6 @@
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         android:id="@+id/soundsNotificationCheckBox"
-                        android:onClick="soundsNotificationClick"
                         android:visibility="visible"/>
 
                     <Switch
@@ -111,7 +109,6 @@
                         android:textColor="@color/white"
                         android:textSize="16sp"
                         android:id="@+id/vibrationsNotificationCheckBox"
-                        android:onClick="vibrationsNotificationClick"
                         android:visibility="visible"/>
 
                     <View
@@ -132,7 +129,6 @@
                         android:textColor="@color/white"
                         android:textSize="18sp"
                         android:id="@+id/switch_active"
-                        android:onClick="activeTasksClick"
                         android:layout_below="@+id/separatorZ"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
