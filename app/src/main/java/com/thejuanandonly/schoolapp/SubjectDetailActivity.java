@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
@@ -61,8 +62,11 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Locale;
 
 /**
  * Created by Robo on 10/22/2015.
@@ -528,6 +532,15 @@ public class SubjectDetailActivity extends AppCompatActivity {
             jsonArray = new JSONArray();
         }
 
+        Log.d("debugE", "0");
+
+        try {
+            new JSONArray(prefs.getString("ListOfCategories", null)).getString(0);
+        }catch (Exception e){
+            Log.d("debugE", "1");
+            saveCategory("Grades", "", false);
+        }
+
         grade = grade + "*";
         char[] chars = grade.toCharArray();
         switch (gradeType){
@@ -651,7 +664,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
             average /= semiAverage.size();
 
-            DecimalFormat df = new DecimalFormat("#.####");
+            DecimalFormat df = new DecimalFormat("#.####", new DecimalFormatSymbols(Locale.US));
             try {
                 average = Double.valueOf(df.format(average));
             } catch (NumberFormatException e) {
@@ -688,7 +701,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
             }
             average /= count;
 
-            DecimalFormat df = new DecimalFormat("#.####");
+            DecimalFormat df = new DecimalFormat("#.####", new DecimalFormatSymbols(Locale.US));
             try {
                 average = Double.valueOf(df.format(average));
             } catch (NumberFormatException e) {
@@ -722,7 +735,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 }
             }
 
-            DecimalFormat df = new DecimalFormat("#.####");
+            DecimalFormat df = new DecimalFormat("#.####", new DecimalFormatSymbols(Locale.US));
             try {
                 average = Double.valueOf(df.format(average));
             } catch (NumberFormatException e) {
@@ -1452,21 +1465,28 @@ public class SubjectDetailActivity extends AppCompatActivity {
         switch2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (switch2.isChecked()){
-                    editor.putBoolean("useValues", true).apply();
-                    lvLayout.setVisibility(View.VISIBLE);
 
-                    if (!switch1.isChecked()){
-                        switch1.setChecked(true);
-                        editor.putBoolean("useCategories", true).apply();
+                try {
+                    if (new JSONArray(spinnerPrefs.getString("ListOfCategories", null)).length() != 0) {
+
+                        if (switch2.isChecked()) {
+                            editor.putBoolean("useValues", true).apply();
+                            lvLayout.setVisibility(View.VISIBLE);
+
+                            if (!switch1.isChecked()) {
+                                switch1.setChecked(true);
+                                editor.putBoolean("useCategories", true).apply();
+                            }
+
+                        } else {
+                            editor.putBoolean("useValues", false).apply();
+                            lvLayout.setVisibility(View.GONE);
+                        }
+
+                        balancePercentages(dialog);
                     }
-
-                }else {
-                    editor.putBoolean("useValues", false).apply();
-                    lvLayout.setVisibility(View.GONE);
+                } catch (JSONException e) {
                 }
-
-                balancePercentages(dialog);
             }
         });
 

@@ -26,6 +26,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -70,9 +71,13 @@ import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
+<<<<<<< HEAD
 import java.text.DateFormat;
 import java.text.FieldPosition;
 import java.text.ParsePosition;
+=======
+import java.text.DecimalFormat;
+>>>>>>> origin/master
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -113,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
 
         checkStoragePermission();
         setLevel();
+        levelTimer();
         setQuote();
         setOverall();
 
@@ -266,6 +272,21 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void levelTimer(){
+        new CountDownTimer(300000, 3000) {
+
+            public void onTick(long millisUntilFinished) {
+                if (mDrawerLayout.isDrawerOpen(drawerFull)) {
+                    setLevel();
+                }
+            }
+
+            public void onFinish() {
+                levelTimer();
+            }
+        }.start();
+    }
+
     public void setLevel(){
 
         TextView levelText = (TextView) findViewById(R.id.levelText);
@@ -277,6 +298,8 @@ public class MainActivity extends AppCompatActivity {
 
         int[] array = getResources().getIntArray(R.array.level_ints);
         int[] borders = getResources().getIntArray(R.array.borders);
+
+        TypedArray colors = getResources().obtainTypedArray(R.array.dotColors);
 
         int points = 0;
 
@@ -473,69 +496,20 @@ public class MainActivity extends AppCompatActivity {
 
             xp.setText(String.valueOf(points) + "xp" + " / " + String.valueOf(borders[0]) + "xp");
 
-        } else if (points <= borders[1]) {
-            levelText.setText("Level 2");
-            levelDot.setText("2");
-            levelDot.setBackgroundResource(R.drawable.dot2);
+        } else {
 
-            bar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.dotYellow), PorterDuff.Mode.SRC_IN);
-            bar.setMax(borders[1] - borders[0]);
-            bar.setProgress(points - borders[0]);
-
-            xp.setText(String.valueOf(points) + "xp" + " / " + String.valueOf(borders[1]) + "xp");
-
-        } else if (points <= borders[2]) {
-            levelText.setText("Level 3");
-            levelDot.setText("3");
-            levelDot.setBackgroundResource(R.drawable.dot3);
-
-            bar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.dotGreen), PorterDuff.Mode.SRC_IN);
-            bar.setMax(borders[2] - borders[1]);
-            bar.setProgress(points - borders[1]);
-
-            xp.setText(String.valueOf(points) + "xp" + " / " + String.valueOf(borders[2]) + "xp");
-
-        } else if (points <= borders[3]) {
-            levelText.setText("Level 4");
-            levelDot.setText("4");
-            levelDot.setBackgroundResource(R.drawable.dot4);
-
-            bar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.dotOrange), PorterDuff.Mode.SRC_IN);
-            bar.setMax(borders[3] - borders[2]);
-            bar.setProgress(points - borders[2]);
-
-            xp.setText(String.valueOf(points) + "xp" + " / " + String.valueOf(borders[3]) + "xp");
-
-        } else if (points <= borders[4]) {
-            levelText.setText("Level 5");
-            levelDot.setText("5");
-            levelDot.setBackgroundResource(R.drawable.dot5);
-
-            bar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.dotRed), PorterDuff.Mode.SRC_IN);
-            bar.setMax(borders[4] - borders[3]);
-            bar.setProgress(points - borders[3]);
-
-            xp.setText(String.valueOf(points) + "xp" + " / " + String.valueOf(borders[4]) + "xp");
-
-        } else if (points <= borders[5]) {
-            levelText.setText("Level 6");
-            levelDot.setText("6");
-            levelDot.setBackgroundResource(R.drawable.dot6);
-
-            bar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.dotViolet), PorterDuff.Mode.SRC_IN);
-            bar.setMax(borders[5] - borders[4]);
-            bar.setProgress(points - borders[4]);
-
-            xp.setText(String.valueOf(points) + "xp" + " / " + String.valueOf(borders[5]) + "xp");
-
-        }else if (points >= borders[5]) {
-
-            int finalBorder = borders[5];
-            int level = 6;
+            int finalBorder = borders[0];
+            int level = 1;
             int imglvl = 0;
-            while (points >= finalBorder){
-                finalBorder += borders[5];
+            int max = 0;
+            while (points >= finalBorder) {
+                finalBorder += borders[6] + (0.05 * finalBorder);
+
+                max = (int) (borders[6] + (0.05 * finalBorder));
+
                 level++;
+
+                Log.d("debugL", String.valueOf(finalBorder));
 
                 imglvl++;
                 if (imglvl == 7) imglvl = 0;
@@ -548,13 +522,14 @@ public class MainActivity extends AppCompatActivity {
             final int resID = imgs.getResourceId(imglvl, 0);
             levelDot.setBackgroundResource(resID);
 
-            bar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.dotPink), PorterDuff.Mode.SRC_IN);
-            bar.setMax(borders[5]);
-            bar.setProgress(points - (finalBorder - borders[5]));
+            bar.getProgressDrawable().setColorFilter(colors.getColor(imglvl, 0), PorterDuff.Mode.SRC_IN);
+            bar.setMax(max);
+            bar.setProgress(points - (finalBorder - max));
 
-            xp.setText(String.valueOf(points) + "xp" + " / " + String.valueOf(finalBorder) + "xp");
+            xp.setText(String.valueOf(points - (finalBorder - max)) + "xp" + " / " + String.valueOf(max) + "xp");
         }
 
+        colors.recycle();
     }
 
     public void setOverall(){
