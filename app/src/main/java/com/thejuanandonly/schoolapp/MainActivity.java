@@ -71,15 +71,7 @@ import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
-<<<<<<< HEAD
-import java.text.DateFormat;
-import java.text.FieldPosition;
-import java.text.ParsePosition;
-=======
-import java.text.DecimalFormat;
->>>>>>> origin/master
 import java.util.ArrayList;
-import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
     DrawerLayout mDrawerLayout;
