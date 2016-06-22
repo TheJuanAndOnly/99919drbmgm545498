@@ -79,6 +79,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
     public static int menuButtonChange = 1;
     private Tracker mTracker;
 
+    private static final String TAG = "GradeDay SubjectDetail";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
