@@ -30,7 +30,7 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
         int numberOfTask = prefs.getInt("NumberOfTask", 0);
         int taskPosition = 0;
 
-        intent.getIntExtra("LastTask", taskPosition);
+        taskPosition = intent.getIntExtra("LastTask", taskPosition);
 
         try {
             arrayName = new JSONArray(prefs.getString("TaskName", null));
