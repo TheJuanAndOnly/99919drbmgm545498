@@ -22,16 +22,8 @@ public class Grade {
         this.grades = grades;
     }
 
-    public static ArrayList<Grade> getGrades() {
+    public static ArrayList<Grade> getGrades(JSONArray arrayOfCategories, ArrayList<JSONArray> allGrades) {
         ArrayList<Grade> subject = new ArrayList<Grade>();
-
-        SharedPreferences preferences = getContext().getSharedPreferences("Subject" + SubjectDetailActivity.currentSubject, Context.MODE_PRIVATE);
-        JSONArray arrayOfCategories;
-        try {
-            arrayOfCategories = new JSONArray(preferences.getString("ListOfCategories", null));
-        }catch (Exception e){arrayOfCategories = new JSONArray();}
-
-        int gradeType = preferences.getInt("GradeType", 0);
 
         for (int i = 0; i < arrayOfCategories.length(); i++){
             String category;
@@ -39,12 +31,9 @@ public class Grade {
                 category = arrayOfCategories.getString(i);
             }catch (JSONException e){category = null;}
 
-            JSONArray arrayOfGrades;
-            try {
-                arrayOfGrades = new JSONArray(preferences.getString(category + "Grades" + gradeType, null));
-            }catch (Exception e) {arrayOfGrades = new JSONArray();}
+            JSONArray arrayOfGrades = allGrades.get(i);
 
-            ArrayList<String> listOfGrades = new ArrayList<String>();
+            ArrayList<String> listOfGrades = new ArrayList<>();
             if (arrayOfGrades != null) {
                 for (int  k= 0; k < arrayOfGrades.length(); k++){
                     try {

@@ -79,6 +79,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
     public static int menuButtonChange = 1;
     private Tracker mTracker;
 
+    private SubjectData subjectData;
+
     private static final String TAG = "GradeDay SubjectDetail";
 
     @Override
@@ -90,10 +92,10 @@ public class SubjectDetailActivity extends AppCompatActivity {
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
 
+        subjectData = new SubjectData(getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE));
+
         initialContext = getApplicationContext();
         currentSubject = getIntent().getExtras().getString("subject", null);
-        JSONArray arrayOfCategories;
-        String subject = getIntent().getExtras().getString("subject", null);
 
         Window window = this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -111,38 +113,21 @@ public class SubjectDetailActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         TextView firstLetter = (TextView) findViewById(R.id.firstLetterTv);
-        firstLetter.setText(String.valueOf(subject.charAt(0)));
+        firstLetter.setText(String.valueOf(subjectData.getSubject().charAt(0)));
 
         TextView subjectName = (TextView) findViewById(R.id.subjectTv);
-        subjectName.setText(subject);
-
-        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        try {
-            arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
-        }catch (Exception e) {
-
-            arrayOfCategories = new JSONArray();
-            arrayOfCategories.put("Grades");
-            editor.putString("ListOfCategories", arrayOfCategories.toString()).apply();
-
-            JSONArray arrayOfPercentages = new JSONArray();
-            arrayOfPercentages.put("100");
-            editor.putString("ListOfPercentages", arrayOfPercentages.toString()).apply();
-        }
+        subjectName.setText(subjectData.getSubject());
 
         try {
             ArrayList<String> strings = new ArrayList<String>();
-            for (int i = 0; i < arrayOfCategories.length(); i++){
+            for (int i = 0; i < subjectData.getArrayOfCategories().length(); i++){
                 try {
-                    strings.add(arrayOfCategories.getString(i));
+                    strings.add(subjectData.getArrayOfCategories().getString(i));
                 }catch (JSONException e){}
             }
         }catch (Exception e ){
             Toast.makeText(this, "Add a category", Toast.LENGTH_SHORT).show();
         }
-
-        editor.putBoolean("doSetLv", true).apply();
 
         setAvgTv();
     }
@@ -159,33 +144,30 @@ public class SubjectDetailActivity extends AppCompatActivity {
     }
 
     public void setAvgTv(){
-        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
 
-        editor.putString("AvgGrade", String.valueOf(countAverage())).apply();
+        subjectData.setAverage(String.valueOf(countAverage()));
 
         TextView averageTV = (TextView) findViewById(R.id.averageTextView);
-        int gradeType = prefs.getInt("GradeType" , 0);
-        String average = prefs.getString("AvgGrade", "0");
-        if (average.length() > 6) {
-            average = average.substring(0, 6);
-        }
-        if (gradeType == 2){
-            averageTV.setText("GPA: " + average);
-        }else {
-            averageTV.setText("Average: " + average);
-        }
 
+        if (subjectData.getAverage().length() > 6) {
+            subjectData.setAverage(subjectData.getAverage().substring(0, 6));
+        }
+        if (subjectData.getGradeType() == 2){
+            averageTV.setText("GPA: " + subjectData.getAverage());
+        }else {
+            averageTV.setText("Average: " + subjectData.getAverage());
+        }
 
         TextView textView = (TextView) findViewById(R.id.testsToWriteEditText);
-        textView.setText(String.valueOf(prefs.getInt("testsToWrite", 1)));
+
+        textView.setText(String.valueOf(subjectData.getTestsToWrite()));
 
         LinearLayout ttwLayout = (LinearLayout) findViewById(R.id.ttwLayout);
-        if (prefs.getInt("GradeType", 0) == 0 && !prefs.getBoolean("useCategories", false)){
+        if (subjectData.getGradeType() == 0 && !subjectData.isUseCategories()){
             ttwLayout.setVisibility(View.VISIBLE);
         }else {
             ttwLayout.setVisibility(View.GONE);
-            editor.putInt("testsToWrite", 1).apply();
+            subjectData.setTestsToWrite(1);
         }
     }
 
@@ -201,7 +183,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences("Subject" + subjectData.getSubject(), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
         if (id == R.id.action_edit) {
@@ -212,7 +194,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
                 menu.getItem(0).setIcon(R.drawable.ic_done_white_24dp);
 
-                if (!prefs.getBoolean("useCategories", false)){
+                if (!subjectData.isUseCategories()){
                     Button edit = (Button) findViewById(R.id.gradeEditButtonSingle);
                     edit.setVisibility(View.VISIBLE);
 
@@ -234,14 +216,13 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
                 bottomPlus.setVisibility(View.GONE);
 
-                if (!prefs.getBoolean("useCategories", false)){
+                if (!subjectData.isUseCategories()){
                     Button edit = (Button) findViewById(R.id.gradeEditButtonSingle);
                     edit.setVisibility(View.GONE);
                 }
 
             }
 
-            editor.putBoolean("doSetLv", true).apply();
             setListView();
             return true;
         } else if (id == R.id.action_settings) {
@@ -254,52 +235,25 @@ public class SubjectDetailActivity extends AppCompatActivity {
     }
 //////////////////////////////////////////////////////////////////////////
     public void setListView() {
-
-        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-
         setAvgTv();
-
-        if (!prefs.getBoolean("doSetLv", true)) return;
-
-        editor.putBoolean("doSetLv", false).apply();
-
-        editor.putString("AvgGrade", String.valueOf(countAverage())).apply();
-
-        JSONArray arrayOfPercentages = new JSONArray();
-        try {
-            arrayOfPercentages = new JSONArray(prefs.getString("ListOfPercentages", null));
-        } catch (Exception e) {
-            Log.e("debug", e.toString());
-        }
-        JSONArray arrayOfCategories = new JSONArray();
-        try {
-            arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
-        } catch (Exception e) {
-            Log.e("debug", e.toString());
-        }
-
-        int gradeType = prefs.getInt("GradeType", 0);
 
         ListView listView = (ListView) findViewById(R.id.categoryListView);
         TextView gradeTv = (TextView) findViewById(R.id.gradeTextViewNoCat);
 
-        if (!prefs.getBoolean("useCategories", false)){
+        if (!subjectData.isUseCategories()){
 
             listView.setVisibility(View.GONE);
             gradeTv.setVisibility(View.VISIBLE);
             gradeTv.setText("");
 
             try {
-                for (int i = 0; i < arrayOfCategories.length(); i++) {
-                    JSONArray arrayOfGrades = new JSONArray(prefs.getString(arrayOfCategories.getString(i) + "Grades" + gradeType, null));
-
-                    for (int j = 0; j <arrayOfGrades.length(); j++){
+                for (int i = 0; i < subjectData.getArrayOfCategories().length(); i++) {
+                    for (int j = 0; j < subjectData.getAllGrades().get(i).length(); j++){
 
                         if (gradeTv.length() == 0){
-                            gradeTv.append(arrayOfGrades.getString(j));
+                            gradeTv.append(subjectData.getAllGrades().get(i).getString(j));
                         }else {
-                            gradeTv.append(", " + arrayOfGrades.getString(j));
+                            gradeTv.append(", " + subjectData.getAllGrades().get(i).getString(j));
                         }
                     }
                 }
@@ -312,24 +266,11 @@ public class SubjectDetailActivity extends AppCompatActivity {
             gradeTv.setVisibility(View.GONE);
             listView.setVisibility(View.VISIBLE);
 
-            ArrayList<Grade> arrayListOfGrades = Grade.getGrades();
+            ArrayList<Grade> arrayListOfGrades = Grade.getGrades(subjectData.getArrayOfCategories(), subjectData.getAllGrades());
 
             CustomGradeAdapter adapter = new CustomGradeAdapter(this, arrayListOfGrades);
 
             listView.setAdapter(adapter);
-
-            /*ViewGroup.LayoutParams params = listView.getLayoutParams();
-
-            DisplayMetrics displayMetrics = new DisplayMetrics();
-            WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-            wm.getDefaultDisplay().getMetrics(displayMetrics);
-            int screenHeight = displayMetrics.heightPixels;
-
-            params.height = adapter.getCount() * (screenHeight / (screenHeight / 113));
-            listView.setLayoutParams(params);
-            listView.requestLayout();*/
-
-            //setTotalHeightOfListView(listView);
 
             try {
 
@@ -337,28 +278,20 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 boolean isNonZeroCategory = false,
                         isIgnoredCategory = false;
 
-                for (int i = 0; i < arrayOfPercentages.length(); i++) {
+                for (int i = 0; i < subjectData.getArrayOfPercentages().length(); i++) {
                     try {
-                        count += arrayOfPercentages.getInt(i);
+                        count += subjectData.getArrayOfPercentages().getInt(i);
                     } catch (JSONException ex) {
                         count += 0;
                     }
 
                 }
 
-                for (int i = 0; i < arrayOfCategories.length(); i++) {
+                for (int i = 0; i < subjectData.getArrayOfCategories().length(); i++) {
 
-                    JSONArray arrayOfGrades = new JSONArray();
-                    try {
-                        arrayOfGrades = new JSONArray(prefs.getString(arrayOfCategories.getString(i) + "Grades" + gradeType, null));
-                    } catch (NullPointerException ex) {
-                    }
+                    JSONArray arrayOfGrades = subjectData.getAllGrades().get(i);
 
-                    int percentage = 0;
-                    try {
-                        percentage = arrayOfPercentages.getInt(i);
-                    } catch (JSONException e) {
-                    }
+                    int percentage = subjectData.getArrayOfPercentages().getInt(i);
 
                     if (arrayOfGrades.length() == 0 && percentage != 0) {
                         isNonZeroCategory = true;
@@ -367,7 +300,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                     }
                 }
 
-                if (prefs.getBoolean("usePercentages", false) && count != 100 && count != 0) {
+                if (subjectData.isUsePercentages() && count != 100 && count != 0) {
 
                     final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "The total must equal 100!", Snackbar.LENGTH_INDEFINITE);
                     snackbar.show();
@@ -381,7 +314,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                         }
                     });
 
-                } else if (prefs.getBoolean("useValues", false) && isNonZeroCategory) {
+                } else if (subjectData.isUseValues() && isNonZeroCategory) {
 
                     final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "In order for all empty categories to be ignored, set their values to 0", Snackbar.LENGTH_INDEFINITE);
                     snackbar.show();
@@ -420,18 +353,13 @@ public class SubjectDetailActivity extends AppCompatActivity {
     }
 //////////////////////////////////////////////////////////////////////////
     public void addGrade(View view) {
-        JSONArray arrayOfCategories;
-        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
-        final SharedPreferences.Editor editor = prefs.edit();
-
-        try {
-            arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
-        }catch (Exception e) {arrayOfCategories = new JSONArray();}
+        SharedPreferences prefs = getSharedPreferences("Subject" + subjectData.getSubject(), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
 
         ArrayList<String> listOfCategories = new ArrayList<String>();
-        for (int i = 0; i < arrayOfCategories.length(); i++){
+        for (int i = 0; i < subjectData.getArrayOfCategories().length(); i++){
             try {
-                listOfCategories.add(arrayOfCategories.getString(i));
+                listOfCategories.add(subjectData.getArrayOfCategories().getString(i));
             }catch (JSONException e){}
         }
 
@@ -492,7 +420,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
                     }
 
                     saveGrade(grade, category, pos);
-                    editor.putBoolean("doSetLv", true).apply();
                     setListView();
                     dialog.dismiss();
                 }
@@ -523,13 +450,9 @@ public class SubjectDetailActivity extends AppCompatActivity {
         }
     }
     public void saveGrade(String grade, String category, int pos){
-
-        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        int gradeType = prefs.getInt("GradeType", 0);
         JSONArray jsonArray;
         try {
-            jsonArray = new JSONArray(prefs.getString(category + "Grades" + gradeType, null));
+            jsonArray = new JSONArray(subjectData.getAllGrades().get(pos));
         }catch (Exception e) {
             jsonArray = new JSONArray();
         }
@@ -537,7 +460,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         Log.d("debugE", "0");
 
         try {
-            new JSONArray(prefs.getString("ListOfCategories", null)).getString(0);
+            new JSONArray(subjectData.getArrayOfCategories()).getString(0);
         }catch (Exception e){
             Log.d("debugE", "1");
             saveCategory("Grades", "", false);
@@ -545,7 +468,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
         grade = grade + "*";
         char[] chars = grade.toCharArray();
-        switch (gradeType){
+        switch (subjectData.getGradeType()){
             case 1:
                 int percentage = 0;
                 for (int i = 0; i < chars.length; i++){
@@ -1028,7 +951,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         editor.putString(name + "Grades" + gradeType, arrayOfGrades.toString());
         editor.apply();
 
-        editor.putBoolean("doSetLv", true).apply();
+        doSetLv = true;
         setListView();
     }
     public void saveCategory(String gradesString){
@@ -1131,7 +1054,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
         editor.apply();
 
-        editor.putBoolean("doSetLv", true).apply();
+        doSetLv = true;
         setListView();
     }
 //////////////////////////////////////////////////////////////////////////
@@ -1178,7 +1101,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         editor.putString("ListOfPercentages", arrayToSendP.toString());
         editor.apply();
 
-        editor.putBoolean("doSetLv", true).apply();
+        doSetLv = true;
         setListView();
     }
 //////////////////////////////////////////////////////////////////////////
@@ -1390,7 +1313,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         editor.putString("ListOfPercentages", arrayToSendP.toString());
         editor.apply();
 
-        editor.putBoolean("doSetLv", true).apply();
+        doSetLv = true;
         setListView();
     }
 //////////////////////////////////////////////////////////////////////////
@@ -1522,7 +1445,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
                 spinnerPrefsEditor.apply();
 
-                editor.putBoolean("doSetLv", true).apply();
+                doSetLv = true;
                 setListView();
                 dialog.dismiss();
 
@@ -1534,7 +1457,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dialog.dismiss();
 
-                editor.putBoolean("doSetLv", true).apply();
+                doSetLv = true;
                 setListView();
             }
         });
@@ -1729,7 +1652,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
                     setPredictionListView();
                 }else {
-                    editor.putBoolean("doSetLv", true).apply();
+                    doSetLv = true;
                 }
             }
         }
@@ -1744,7 +1667,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
                     setPredictionListView();
                 }else {
-                    editor.putBoolean("doSetLv", true).apply();
+                    doSetLv = true;
                 }
             }
         }
