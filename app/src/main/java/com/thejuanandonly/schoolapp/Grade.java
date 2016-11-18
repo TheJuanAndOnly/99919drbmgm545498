@@ -22,7 +22,7 @@ public class Grade {
         this.grades = grades;
     }
 
-    public static ArrayList<Grade> getGrades(JSONArray arrayOfCategories, ArrayList<JSONArray> allGrades) {
+    /*public static ArrayList<Grade> getGrades(JSONArray arrayOfCategories, ArrayList<JSONArray> allGrades) {
         ArrayList<Grade> subject = new ArrayList<Grade>();
 
         for (int i = 0; i < arrayOfCategories.length(); i++){
@@ -49,6 +49,6 @@ public class Grade {
 
     public static Context getContext(){
         return SubjectDetailActivity.initialContext;
-    }
+    }*/
 
 }

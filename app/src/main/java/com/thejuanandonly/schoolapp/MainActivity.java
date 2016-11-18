@@ -2,6 +2,7 @@ package com.thejuanandonly.schoolapp;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.Application;
@@ -17,6 +18,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -38,6 +40,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -64,6 +67,9 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.facebook.FacebookSdk;
+import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.analytics.Tracker;
 
 import org.json.JSONArray;
@@ -71,7 +77,13 @@ import org.json.JSONException;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
+import static com.thejuanandonly.schoolapp.R.id.imageView;
+import static com.thejuanandonly.schoolapp.R.id.picture_group_gridView;
 
 public class MainActivity extends AppCompatActivity {
     DrawerLayout mDrawerLayout;
@@ -92,14 +104,29 @@ public class MainActivity extends AppCompatActivity {
     private Tracker mTracker;
     public String userNickname;
 
+
+    //Notes stuff
+    private static int RESULT_LOAD_IMAGE = 1;
+    public String picture;
+    public ArrayList<String> savedUriArrayList;
+    public ArrayList<ArrayList<String>> arraylistOfArraylist;
+    public int position;
+    public int count;
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
+
         // Obtain the shared Tracker instance.
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
+
 
         api = android.os.Build.VERSION.SDK_INT;
 
@@ -107,6 +134,7 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         userPhotoimgview = (ImageView) findViewById(R.id.usersPhoto);
         userNicktxtview = (TextView) findViewById(R.id.usersNickname);
+
 
         checkStoragePermission();
         setLevel();
@@ -258,11 +286,105 @@ public class MainActivity extends AppCompatActivity {
         } else if (id == R.id.action_new_task) {
             Intent TaskAdderActivity = new Intent(MainActivity.this, TaskAdder.class);
             startActivity(TaskAdderActivity);
-        } else if (id == R.id.action_new_note_subject) {
-            notesDialog();
+        } else if (id == R.id.action_new_note_group) {
+
+
+            FragmentManager fm = getSupportFragmentManager();
+            NotesFragment fragment = (NotesFragment) fm.findFragmentByTag("NotesFragment");
+            fragment.openDialog();
         }
         return super.onOptionsItemSelected(item);
     }
+
+    public void addingImages(int position, int count) {
+
+        Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(i, RESULT_LOAD_IMAGE);
+
+        this.position = position;
+        this.count = count;
+
+
+    }
+
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
+            Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
+
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+
+            picture = cursor.getString(columnIndex);
+            cursor.close();
+
+
+            SaveSharedPreferences saved = new SaveSharedPreferences();
+
+            savedUriArrayList = new ArrayList<>();
+            arraylistOfArraylist = new ArrayList<>();
+
+            String arrayOfArraysString = saved.getStringSP(MainActivity.this, "NOTES ARRAY", "arrayofarrays");
+
+            String temp = "";
+            ArrayList<String> tempArray = new ArrayList<>();
+            try {
+                char[] charArray = arrayOfArraysString.toCharArray();
+                for (int i = 0; i < charArray.length; i++) {
+                    if (charArray[i] == '`') {
+                        tempArray.add(temp);
+                        temp = "";
+                    } else if (charArray[i] == '~') {
+                        arraylistOfArraylist.add(tempArray);
+                        tempArray = new ArrayList<>();
+                    } else {
+                        temp += charArray[i];
+                    }
+                }
+            } catch (NullPointerException e) {
+
+            }
+
+
+            try {
+                savedUriArrayList = arraylistOfArraylist.get(position);
+            } catch (IndexOutOfBoundsException e) {
+                savedUriArrayList = new ArrayList<>();
+            }
+
+            savedUriArrayList.add(picture);
+            try {
+                arraylistOfArraylist.remove(position);
+            } catch (IndexOutOfBoundsException e) {}
+            arraylistOfArraylist.add(position, savedUriArrayList);
+
+            String save = "";
+            for (int i = 0; i < arraylistOfArraylist.size(); i++){
+                for (int j = 0; j < arraylistOfArraylist.get(i).size(); j++){
+                    save += arraylistOfArraylist.get(i).get(j) + "`";
+                }
+                save += "~";
+            }
+
+            saved.saveToSharedPreferences(MainActivity.this, "NOTES ARRAY", "arrayofarrays", save);
+
+
+            FragmentManager fm = getSupportFragmentManager();
+            NotesFragment fragment = (NotesFragment) fm.findFragmentByTag("NotesFragment");
+            fragment.notifyAdapter();
+
+
+        }
+    }
+
+
+
 
     public void levelTimer(){
         new CountDownTimer(300000, 3000) {
@@ -917,66 +1039,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         OverviewFragment.reset(this);
-    }
-
-    public void notesDialog() {
-        AlertDialog.Builder builder_notes = new AlertDialog.Builder(this);
-        builder_notes.setTitle("Add a subject");
-
-        final EditText input_notes = new EditText(this);
-        input_notes.setHint("Subject name");
-        input_notes.setPadding(50, 50, 50, 30);
-        input_notes.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-        builder_notes.setView(input_notes);
-
-        builder_notes.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String subjectInputNotes = input_notes.getText().toString();
-
-                saveSubjectNotes(subjectInputNotes);
-                NotesFragment.reset(MainActivity.this);
-            }
-        });
-        builder_notes.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder_notes.show();
-
-    }
-
-    private void saveSubjectNotes(String subjectNotes) {
-        SharedPreferences prefs_notes = getSharedPreferences("ListOfSubjectsNotes", Context.MODE_PRIVATE);
-        ArrayList<String> m_listItems_notes = new ArrayList<>();
-        JSONArray set_notes = new JSONArray();
-
-        try {
-            set_notes = new JSONArray(prefs_notes.getString("ListNotes", null));
-        } catch (Exception e) {
-        }
-
-        if (subjectNotes != null && subjectNotes.length() > 0) {
-            set_notes.put(subjectNotes);
-        } else {
-            Toast.makeText(this, "Don't leave the space blank!", Toast.LENGTH_LONG).show();
-            notesDialog();
-        }
-
-        //SP pre kazdy predmet
-        SharedPreferences preferences_notes = getSharedPreferences("SubjectNotes" + subjectNotes, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor_notes = preferences_notes.edit();
-        editor_notes.putString("subjectNotes", subjectNotes).apply();
-
-        //Zoznam predmetov
-        SharedPreferences arrayPrefs_notes = getSharedPreferences("ListOfSubjectsNotes", Context.MODE_PRIVATE);
-        SharedPreferences.Editor arrayPrefsEditor_notes = arrayPrefs_notes.edit();
-        arrayPrefsEditor_notes.putString("ListNotes", set_notes.toString()).apply();
-
-        NotesFragment.reset(this);
     }
 
     public void updateListTasks() {

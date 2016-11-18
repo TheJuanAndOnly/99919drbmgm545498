@@ -17,7 +17,7 @@
     <color name="grey">#607D8B</color>
     <color name="grey800">#37474F</color>
 
-    <color name="schedule_fade">#b5000000</color>
+    <color name="schedule_fade">#e9000000</color>
     <color name="schedule_button_fade">#64000000</color>
 
     <color name="darkbluebackground">#282e30</color>
