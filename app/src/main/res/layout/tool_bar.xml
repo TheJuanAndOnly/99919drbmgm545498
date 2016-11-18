@@ -8,4 +8,5 @@
         android:background="@android:color/transparent"
         app:theme="@style/ToolBarStyle"
         app:title="Toolbar">
+
     </android.support.v7.widget.Toolbar>

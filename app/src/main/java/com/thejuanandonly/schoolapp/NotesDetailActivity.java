@@ -1,50 +1,29 @@
 package com.thejuanandonly.schoolapp;
 
-import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.os.Build;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.provider.ContactsContract;
-import android.support.v4.app.Fragment;
+import android.os.Handler;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.internal.view.menu.ListMenuItemView;
-import android.text.InputType;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.support.v7.widget.LinearLayoutCompat;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.NumberPicker;
-import android.widget.Spinner;
-import android.widget.TextView;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
-import android.support.v7.widget.Toolbar;
 
-
-import com.google.android.gms.analytics.Tracker;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+
+import uk.co.senab.photoview.PhotoView;
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
  * Created by Daniel on 10/31/2015.
@@ -54,15 +33,28 @@ public class NotesDetailActivity extends AppCompatActivity {
     public static Context initialContext;
     public static String currentNote;
     android.support.v7.widget.Toolbar toolbar;
-    private Menu menu;
-    ListView listView;
-    JSONArray arrayOfCategories, jsonArray;
-    ArrayAdapter<String> arrayAdapter;
-    public static ArrayList<String> arrayList;
-    public static String subjectName, newSubCategoryName;
-    String subCategoryName, update = "";
-    String subCategory = "";
-    private Tracker mTracker;
+
+    CustomViewPager mViewPager;
+    ViewPagerAdapter mAdapter;
+
+    //Zooming image + span
+    PhotoViewAttacher mAttacher;
+
+    //HorizontalScrooview with images
+    HorizontalScrollView horizontalScrollView;
+    public LinearLayout images, linearWithPicture;
+
+    public Animation downUp;
+
+    Intent intent;
+    int positionFromIntent;
+    String uriFromIntent;
+
+    ArrayList<ArrayList<String>> arrayOfArrays;
+    ArrayList<String> arrayOfPictures;
+
+    //CustomSharedPreferences
+    SaveSharedPreferences customSharedPrefs = new SaveSharedPreferences();
 
 
     @Override
@@ -70,264 +62,198 @@ public class NotesDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.notes_detail_layout);
 
-        // Obtain the shared Tracker instance.
-        AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        mTracker = application.getDefaultTracker();
+        mViewPager = (CustomViewPager) findViewById(R.id.viewPager);
+        horizontalScrollView = (HorizontalScrollView) findViewById(R.id.scrollViewActivity);
+        images = (LinearLayout) findViewById(R.id.scrollviewLinearActivity);
+
+        downUp = AnimationUtils.loadAnimation(this, R.anim.down_up);
+        downUp.setDuration(1000);
+
+        linearWithPicture = (LinearLayout) findViewById(R.id.LinearWithPictures);
+        linearWithPicture.setVisibility(View.GONE);
+
+        intent = getIntent();
+        positionFromIntent = intent.getIntExtra("position", 0);
+        uriFromIntent = intent.getStringExtra("uri");
 
         initialContext = getApplicationContext();
         currentNote = getIntent().getExtras().getString("subjectNotes", null);
 
-        theme();
-        String note = getIntent().getExtras().getString("note", "SchoolApp");
-        toolbar.setTitle(note);
+        arrayOfArrays = getArrayOfArrays();
+        arrayOfPictures = new ArrayList<>();
+        arrayOfPictures = arrayOfArrays.get(positionFromIntent);
 
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mAdapter = new ViewPagerAdapter(this.getApplicationContext(), arrayOfPictures);
+        mViewPager.setAdapter(mAdapter);
 
-        SharedPreferences prefs = getSharedPreferences("SubjectGroupName" + getIntent().getExtras().getString("note", null), Context.MODE_PRIVATE);
-        try {
-            arrayOfCategories = new JSONArray(prefs.getString("ListOfSubjectsNotes", null));
-        } catch (Exception e) {
-            arrayOfCategories = new JSONArray();
-        }
-
-        try {
-            ArrayList<String> strings = new ArrayList<String>();
-            for (int i = 0; i < arrayOfCategories.length(); i++) {
-                try {
-                    strings.add(arrayOfCategories.getString(i));
-                } catch (JSONException e) {
-                }
-            }
-        } catch (Exception e) {
-            Toast.makeText(this, "Add a category", Toast.LENGTH_SHORT).show();
-        }
-
-        setListView();
-
-        final String s = getIntent().getStringExtra("note");
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        new Handler().post(new Runnable() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                SharedPreferences prefs = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getStringExtra("note"), Context.MODE_PRIVATE);
-                JSONArray jsonArray = new JSONArray();
-
-                try {
-                    jsonArray = new JSONArray(prefs.getString("ListGroupName", null));
-                    subCategory = jsonArray.getString(position);
-                } catch (Exception e) {
-                }
-
-                SharedPreferences preferences = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getExtras().getString("note", null), Context.MODE_PRIVATE);
-                jsonArray = new JSONArray();
-                String subCat = "";
-                try {
-                    jsonArray = new JSONArray(preferences.getString("ListGroupName", null));
-                    subCat = jsonArray.getString(position);
-                } catch (Exception e) {
-                }
-
-                Intent intent = new Intent(getApplicationContext(), PictureGroupActivity.class);
-                intent.putExtra("subNote", subCat);
-                intent.putExtra("position", position);
-                try {
-                    intent.putExtra("subjectDetailNotes", jsonArray.getString(position));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                intent.putExtra("positionNotesDetail", position);
-                intent.putExtra("selected", s);
-
-                startActivity(intent);
+            public void run() {
+                mViewPager.setCurrentItem(positionFromIntent,true);
             }
         });
 
-        registerForContextMenu(listView);
+
+
+
+
+        for (int i = 0; i < arrayOfPictures.size(); i++) {
+
+            final ImageView imageView = new ImageView(this.getApplicationContext());
+
+            LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            imageView.setLayoutParams(params);
+
+//            imageView.setImageBitmap(BitmapScaled(arrayOfPictures.get(i), 100, 100));
+//            imageView.setTag(i);
+            imageView.setTag(arrayOfPictures.get(i));
+
+            loadBitmap(arrayOfPictures.get(i), imageView, true);
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    int position = Integer.parseInt(imageView.getTag().toString());
+                    mViewPager.setCurrentItem(position);
+                    mAdapter.notifyDataSetChanged();
+
+                }
+            });
+            images.addView(imageView);
+
+        }
+
+    }
+
+    public void animate() {
+
+
+        Animation downUp = AnimationUtils.loadAnimation(initialContext, R.anim.down_up);
+        downUp.setDuration(1000);
+        linearWithPicture.startAnimation(downUp);
+        linearWithPicture.setVisibility(View.VISIBLE);
+
+
     }
 
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.context_menu, menu);
+    public void loadBitmap(String uri, ImageView imageView, Boolean resize) {
+        ImageLoader task = new ImageLoader(imageView, uri, resize, this);
+        task.execute(uri);
     }
 
+    private ArrayList<ArrayList<String>> getArrayOfArrays() {
 
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        final AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        final int id = info.position;
-        final TextView textView = (TextView) findViewById(android.R.id.text1);
-        final ArrayList<String> arrayList = new ArrayList<>();
-        final ArrayList<String> arrayListRename = new ArrayList<>();
-        final SharedPreferences preferences = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getExtras().getString("note", null), Context.MODE_PRIVATE);
-        final SharedPreferences.Editor editor = preferences.edit();
-        JSONArray array = new JSONArray();
+        String arrayOfArraysString = customSharedPrefs.getStringSP(NotesDetailActivity.this, "NOTES ARRAY", "arrayofarrays");
+        ArrayList<ArrayList<String>> array = new ArrayList<>();
 
         try {
-            textView.getText();
-        } catch (NullPointerException e) {}
-
-        SharedPreferences GroupNamePrefs = getSharedPreferences("SubjectGroupName" + subjectName, Context.MODE_PRIVATE);
-        final SharedPreferences.Editor editorName = GroupNamePrefs.edit();
-
-        switch (item.getItemId()) {
-
-            case R.id.delete:
-
-                try {
-                    array = new JSONArray(preferences.getString("ListGroupName", null));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            String temp = "";
+            ArrayList<String> tempArray = new ArrayList<>();
+            char[] charArray = arrayOfArraysString.toCharArray();
+            for (int i = 0; i < charArray.length; i++) {
+                if (charArray[i] == '`') {
+                    tempArray.add(temp);
+                    temp = "";
+                } else if (charArray[i] == '~') {
+                    array.add(tempArray);
+                    tempArray = new ArrayList<>();
+                } else {
+                    temp += charArray[i];
                 }
+            }
+        } catch (NullPointerException e) {
 
-                for (int i = 0; i < array.length(); i++) {
-                    try {
-                        arrayList.add(array.get(i).toString());
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                arrayList.remove(id);
-                arrayAdapter.notifyDataSetChanged();
-
-                editor.putString("ListGroupName", arrayList.toString()).apply();
-
-                setListView();
-
-                return true;
-
-            case R.id.cancel:
-                return true;
-
-            default:
-                return super.onContextItemSelected(item);
         }
+
+        return array;
+
     }
 
-            @Override
-            public boolean onCreateOptionsMenu(Menu menu) {
-                getMenuInflater().inflate(R.menu.menu_notes_detail, menu);
-                this.menu = menu;
-                return true;
-            }
+    private Bitmap BitmapScaled(String picturePath, int width, int height) {
+        BitmapFactory.Options sizeOptions = new BitmapFactory.Options();
+        sizeOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(picturePath, sizeOptions);
 
-                    @Override
-            public boolean onOptionsItemSelected(MenuItem item) {
-                int id = item.getItemId();
+        int inSampleSize = calculateInSampleSize(sizeOptions, width, height);
 
-                if (id == R.id.addPictureFolder) {
-                    pictureGroupNameDialog();
-                } else if (id == android.R.id.home) {
-                    onBackPressed();
-                }
-                return super.onOptionsItemSelected(item);
-            }
+        sizeOptions.inJustDecodeBounds = false;
+        sizeOptions.inSampleSize = inSampleSize;
 
-
-        public void setListView() {
-
-            listView = (ListView) findViewById(R.id.PictureGroupListView);
-
-            SharedPreferences prefs = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getExtras().getString("note", null), Context.MODE_PRIVATE);
-            jsonArray = new JSONArray();
-            try {
-                jsonArray = new JSONArray(prefs.getString("ListGroupName", null));
-            } catch (Exception e) {
-            }
-
-            arrayList = new ArrayList<String>();
-
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    try {
-                        arrayList.add(jsonArray.getString(i));
-                        } catch (Exception e) {
-                    }
-                }
-
-                arrayAdapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.notesdetail_listview_item, R.id.textView1, arrayList);
-
-                listView.setAdapter(arrayAdapter);
-            }
-
-            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-            public void theme() {
-                SharedPreferences prefs = getSharedPreferences("themeSave", Context.MODE_PRIVATE);
-                int theme = prefs.getInt("theme", 0);
-
-                Window window = this.getWindow();
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-                toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.notesDetailToolbar);
-
-                switch (theme) {
-                    default:
-
-                        toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
-
-                        if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-                        window.setStatusBarColor(getResources().getColor(R.color.mainblue800));
-                }
-            }
-
-
-        public void pictureGroupNameDialog() {
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Add a Picture Group");
-
-            final EditText input = new EditText(this);
-            input.setHint("Subject name");
-            input.setPadding(50, 50, 50, 30);
-            input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-            builder.setView(input);
-
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    String subjectInput = input.getText().toString();
-
-                    savePictureGroupName(subjectInput);
-
-                }
-            });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
-
-            builder.show();
-        }
-
-        public void savePictureGroupName(String subject) {
-
-            SharedPreferences prefs = getSharedPreferences("ListOfSubjectsGroupName" + getIntent().getStringExtra("note"), Context.MODE_PRIVATE);
-            JSONArray jsonArray = new JSONArray();
-            try {
-                jsonArray = new JSONArray(prefs.getString("ListGroupName", null));
-            } catch (Exception e) {
-            }
-
-
-            if (subject != null && subject.length() > 0) {
-                jsonArray.put(subject);
-            } else {
-                Toast.makeText(this, "Don't leave the space blank!", Toast.LENGTH_LONG).show();
-                pictureGroupNameDialog();
-            }
-
-            prefs.edit().putString("ListGroupName", jsonArray.toString()).apply();
-            prefs.edit().commit();
-
-            subjectName = subject;
-
-            setListView();
-        }
+        return BitmapFactory.decodeFile(picturePath, sizeOptions);
     }
+
+    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int SizeSample = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int heightRatio = Math.round((float) height / (float) reqHeight);
+            final int widthRatio = Math.round((float) width / (float) reqWidth);
+
+            SizeSample = heightRatio < widthRatio ? heightRatio : widthRatio;
+        }
+
+        return SizeSample;
+    }
+
+}
+
+
+class ViewPagerAdapter extends PagerAdapter {
+
+    ArrayList<String> images = new ArrayList<>();
+    Context mContext;
+    PhotoViewAttacher mAttacher;
+    Animation downUp;
+
+
+
+    public ViewPagerAdapter(Context cotext, ArrayList<String> images) {
+
+        this.images = images;
+        mContext = cotext;
+
+
+    }
+
+
+
+    @Override
+    public Object instantiateItem(final ViewGroup collection, int position) {
+
+        final PhotoView imageView = new PhotoView(mContext);
+//        imageView.setImageURI(Uri.parse(images.get(position)));
+        collection.addView(imageView);
+        imageView.setTag(images.get(position));
+        loadBitmap(images.get(position), imageView, false);
+
+//        mAttacher = new PhotoViewAttacher(imageView);
+        return imageView;
+
+    }
+
+
+    @Override
+    public void destroyItem(ViewGroup container, int position, Object object) {
+        ((ViewPager) container).removeView((View) object);
+    }
+
+
+    @Override
+    public int getCount() {
+        return this.images.size();
+    }
+
+    @Override
+    public boolean isViewFromObject(View view, Object object) {
+        return view == object;
+    }
+
+    public void loadBitmap(String uri, ImageView imageView, boolean resize) {
+        ImageLoader task = new ImageLoader(imageView, uri, resize, mContext);
+        task.execute(uri);
+    }
+}

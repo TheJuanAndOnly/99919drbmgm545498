@@ -3,15 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
 
-    <item android:id="@+id/action_schedule"
-        android:title="@string/action_schedule"
-        android:icon="@drawable/ic_event_white_24dp"
-        android:orderInCategory="200"
-        app:showAsAction="always" />
 
-    <item android:id="@+id/action_new_note_subject"
-        android:icon="@drawable/ic_add_plus"
+
+    <item android:id="@+id/action_new_note_group"
+        android:icon="@drawable/add_notes_icon_padding"
         android:orderInCategory="100"
-        app:showAsAction="always" />
+        app:showAsAction="always">
+    </item>
 
 </menu>
