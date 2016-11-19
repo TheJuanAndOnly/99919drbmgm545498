@@ -79,15 +79,12 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
-<<<<<<< HEAD
 import java.util.Locale;
-=======
 import java.util.Arrays;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.thejuanandonly.schoolapp.R.id.imageView;
 import static com.thejuanandonly.schoolapp.R.id.picture_group_gridView;
->>>>>>> origin/master
 
 public class MainActivity extends AppCompatActivity {
     DrawerLayout mDrawerLayout;

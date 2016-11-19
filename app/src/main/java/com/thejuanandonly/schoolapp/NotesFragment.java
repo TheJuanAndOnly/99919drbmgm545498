@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -576,9 +577,12 @@ class ListViewAdapter extends BaseAdapter {
             vi = inflater.inflate(R.layout.recylcerview_notes_item, null);
         }
 
+        Typeface robotoRegular = Typeface.createFromAsset(context.getAssets(), "fonts/roboto_regular.ttf");
 
         groupName = (TextView) vi.findViewById(R.id.itemName);
+        groupName.setTypeface(robotoRegular);
         about = (TextView) vi.findViewById(R.id.itemAbout);
+        about.setTypeface(robotoRegular);
         scrollView = (HorizontalScrollView) vi.findViewById(R.id.viewPager);
         linearInSV = (LinearLayout) vi.findViewById(R.id.linearScrollView);
         coloredBar = (LinearLayout) vi.findViewById(R.id.colorBar);
@@ -593,11 +597,12 @@ class ListViewAdapter extends BaseAdapter {
         try {
             for (int i = 0; i < arrayOfArrays.get(position).size(); i++) {
 
-                ViewGroup.LayoutParams params = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+                params.setMargins(0,0,2,0);
                 final ImageView imageView = new ImageView(context);
                 imageView.setTag(arrayOfArrays.get(position).get(i) + "`" + position);
                 imageView.setLayoutParams(params);
-                imageView.setScaleType(ImageView.ScaleType.MATRIX);
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 loadBitmap(arrayOfArrays.get(position).get(i), imageView, true);
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
