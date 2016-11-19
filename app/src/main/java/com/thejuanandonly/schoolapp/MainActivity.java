@@ -286,9 +286,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(startScheduleActivity);
         } else if (id == R.id.action_new_subject) {
             subjectDialog();
-        } else if (id == R.id.action_new_task) {
-            Intent TaskAdderActivity = new Intent(MainActivity.this, TaskAdder.class);
-            startActivity(TaskAdderActivity);
         } else if (id == R.id.action_new_note_group) {
 
 
