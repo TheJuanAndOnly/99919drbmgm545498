@@ -64,9 +64,17 @@ class ImageLoader extends AsyncTask<String, Void, Bitmap> {
 
 
                 if (bitmapWidth > bitmapHeight) {
-                    imageView.setImageBitmap(rotateImage(bitmap, 90f));
+                    try {
+                        imageView.setImageBitmap(rotateImage(bitmap, 90f));
+                    } catch (NullPointerException e) {
+
+                    }
                 } else {
-                    imageView.setImageBitmap(bitmap);
+                    try {
+                        imageView.setImageBitmap(bitmap);
+                    } catch (NullPointerException e) {
+
+                    }
                 }
             }
         }
