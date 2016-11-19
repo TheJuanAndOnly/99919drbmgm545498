@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -19,6 +20,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.ListPopupWindow;
 import android.text.Layout;
+import android.view.Display;
+import android.view.WindowManager;
 import android.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
@@ -457,6 +460,9 @@ class ListViewAdapter extends BaseAdapter {
     public LinearLayout coloredBar;
     public LinearLayout linearInSV, linearWithPicture;
 
+    //size of images in the scrollView
+    int imageWidth = 0;
+
     SaveSharedPreferences saveToSP = new SaveSharedPreferences();
 
     public ArrayList<ArrayList<String>> arrayOfArrays;
@@ -466,6 +472,11 @@ class ListViewAdapter extends BaseAdapter {
     private static LayoutInflater inflater = null;
 
     public ListViewAdapter(Context context, String[] namesArray, String[] aboutArray, Integer[] colorsArray, int code) {
+
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        int width = display.getWidth();
+        imageWidth = width / 4;
 
         this.context = context;
         final int REQUEST_CODE_SHARE_TO_MESSENGER = 9;
@@ -592,12 +603,12 @@ class ListViewAdapter extends BaseAdapter {
         groupName.setText(String.valueOf(namesArray[position]));
         about.setText(String.valueOf(aboutArray[position]));
         coloredBar.setBackgroundColor(colorsArray[position]);
-
-
+        
         try {
             for (int i = 0; i < arrayOfArrays.get(position).size(); i++) {
 
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(imageWidth, LinearLayout.LayoutParams.MATCH_PARENT);
                 params.setMargins(0,0,2,0);
                 final ImageView imageView = new ImageView(context);
                 imageView.setTag(arrayOfArrays.get(position).get(i) + "`" + position);
