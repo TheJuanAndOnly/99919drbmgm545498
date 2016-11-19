@@ -85,7 +85,7 @@ android:fitsSystemWindows="true">
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
 
-                android:id="@+id/firstLayout"
+                android:id="@+id/grades_small_layout"
                 android:onClick="titleClick">
 
                 <TextView
@@ -121,7 +121,7 @@ android:fitsSystemWindows="true">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/secondLayout"
+                android:id="@+id/grades_big_layout"
                 android:background="@color/darkbluebackground"
 
                 android:paddingLeft="16dp"
@@ -215,7 +215,7 @@ android:fitsSystemWindows="true">
                 android:paddingLeft="16dp"
                 android:paddingBottom="8dp"
                 android:paddingTop="8dp"
-                android:id="@+id/thirdLayout"
+                android:id="@+id/prediction_small_layout"
                 android:background="@color/darkbluebackground"
                 android:onClick="titleClick">
 
@@ -314,9 +314,17 @@ android:fitsSystemWindows="true">
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:paddingBottom="16dp"
-                android:id="@+id/fourthLayout"
+                android:id="@+id/prediction_big_layout"
                 android:background="@color/darkbluebackground"
                 android:visibility="gone">
+
+                <ProgressBar
+                    android:id="@+id/prediction_loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -352,7 +360,7 @@ android:fitsSystemWindows="true">
                     android:id="@+id/predictionListView"
                     android:divider="@android:color/transparent"
                     android:dividerHeight="4dp"
-                    android:layout_below="@id/comingSoonLayout">
+                    android:layout_below="@id/prediction_loading">
                 </ListView>
 
             </RelativeLayout>

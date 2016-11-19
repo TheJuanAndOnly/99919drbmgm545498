@@ -38,7 +38,7 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.prediction_listview, parent, false);
         }
 
-        TextView t1 = (TextView) convertView.findViewById(R.id.grade_text_view);
+        /*TextView t1 = (TextView) convertView.findViewById(R.id.grade_text_view);
         TextView t2 = (TextView) convertView.findViewById(R.id.dash_text_view);
 
         SharedPreferences prefs = getContext().getSharedPreferences("Subject" + SubjectDetailActivity.currentSubject, Context.MODE_PRIVATE);
@@ -779,7 +779,7 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
             t5.setText("");
             t6.setText("");
 
-            String text;
+            String text;*/
 
             /*if ((position + 1) == currentGrade){                  Keby chcem napisat ze ktoru znamku teraz mas
                 text = "You are Here";
@@ -790,7 +790,7 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
 
             }
             else{*/
-
+/*
                 text = "Not Possible";
 
                 t3.setText(text);
@@ -798,7 +798,7 @@ public class PredictionLvAdapter extends ArrayAdapter<String> {
                 t3.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT));
 
             //}
-        }
+        }*/
 
         return convertView;
     }

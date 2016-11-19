@@ -14,18 +14,20 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Robo on 10/29/2015.
  */
-public class CustomGradeAdapter extends ArrayAdapter<Grade> {
-    public CustomGradeAdapter(Context context, ArrayList<Grade> users) {
+public class CustomGradeAdapter extends ArrayAdapter<Grade>{
+
+    public CustomGradeAdapter(Context context, List<Grade> users) {
         super(context, 0, users);
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        Grade grade = getItem(position);
+        final Grade grade = getItem(position);
 
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.grade_list_view, parent, false);
@@ -46,19 +48,20 @@ public class CustomGradeAdapter extends ArrayAdapter<Grade> {
             deleteBtn.setVisibility(View.GONE);
         }
 
+        categoryTV.setText(grade.category);
 
-            categoryTV.setText(grade.category);
+        final List<String> list = grade.grades;
+        final String[] grades = {""};
 
-            ArrayList<String> list = grade.grades;
-            String grades = "";
-            for (int i = 0; i < list.size(); i++) {
-                if (i == 0) {
-                    grades = grades + list.get(i);
-                } else {
-                    grades = grades + ", " + list.get(i);
-                }
+        for (int i = 0; i < list.size(); i++) {
+            if (i == 0) {
+                grades[0] += list.get(i);
+            } else {
+                grades[0] += ", " + list.get(i);
             }
-            gradesTV.setText(grades);
+        }
+
+        gradesTV.setText(grades[0]);
 
         return convertView;
     }

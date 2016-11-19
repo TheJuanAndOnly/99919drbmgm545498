@@ -1,85 +1,57 @@
 package com.thejuanandonly.schoolapp;
 
-import android.annotation.TargetApi;
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Application;
 import android.app.Dialog;
-import android.content.ClipData;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.res.TypedArray;
-import android.database.DataSetObserver;
-import android.graphics.Color;
-import android.graphics.LinearGradient;
-import android.graphics.PorterDuff;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.NumberPicker;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.google.android.gms.analytics.Tracker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Locale;
+import java.util.List;
 
 /**
  * Created by Robo on 10/22/2015.
  */
 public class SubjectDetailActivity extends AppCompatActivity {
-    public static Context initialContext;
-    public static String currentSubject;
+
+    public static final int NUMERIC = 0;
+    public static final int PERCENTAGE = 1;
+    public static final int ALPHABETIC = 2;
+    public static final int TEN_GRADE = 3;
+
     android.support.v7.widget.Toolbar toolbar;
     private Menu menu;
     public static int menuButtonChange = 1;
     private Tracker mTracker;
 
     private SubjectData subjectData;
+    Thread predictionThread = new Thread();
 
     private static final String TAG = "GradeDay SubjectDetail";
 
@@ -92,10 +64,10 @@ public class SubjectDetailActivity extends AppCompatActivity {
         AnalyticsApplication application = (AnalyticsApplication) getApplication();
         mTracker = application.getDefaultTracker();
 
-        subjectData = new SubjectData(getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE));
+        subjectData = new SubjectData(this, getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE));
+        subjectData.setSubject(getIntent().getExtras().getString("subject", ""));
 
-        initialContext = getApplicationContext();
-        currentSubject = getIntent().getExtras().getString("subject", null);
+        Log.d(TAG, subjectData.toString());
 
         Window window = this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -104,30 +76,17 @@ public class SubjectDetailActivity extends AppCompatActivity {
             window.setStatusBarColor(getResources().getColor(android.R.color.black));
         }
 
-        String[] quotes = getResources().getStringArray(R.array.quotes);
-        Log.d("debugD", quotes[0]);
-
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.subjectDetailToolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         TextView firstLetter = (TextView) findViewById(R.id.firstLetterTv);
         firstLetter.setText(String.valueOf(subjectData.getSubject().charAt(0)));
 
         TextView subjectName = (TextView) findViewById(R.id.subjectTv);
         subjectName.setText(subjectData.getSubject());
-
-        try {
-            ArrayList<String> strings = new ArrayList<String>();
-            for (int i = 0; i < subjectData.getArrayOfCategories().length(); i++){
-                try {
-                    strings.add(subjectData.getArrayOfCategories().getString(i));
-                }catch (JSONException e){}
-            }
-        }catch (Exception e ){
-            Toast.makeText(this, "Add a category", Toast.LENGTH_SHORT).show();
-        }
 
         setAvgTv();
     }
@@ -143,19 +102,27 @@ public class SubjectDetailActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        subjectData.save(getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE));
+    }
+
     public void setAvgTv(){
 
         subjectData.setAverage(String.valueOf(countAverage()));
 
         TextView averageTV = (TextView) findViewById(R.id.averageTextView);
+        String avg = subjectData.getAverage();
 
-        if (subjectData.getAverage().length() > 6) {
-            subjectData.setAverage(subjectData.getAverage().substring(0, 6));
+        if (avg.length() > 6) {
+            avg = avg.substring(0, 6);
         }
         if (subjectData.getGradeType() == 2){
-            averageTV.setText("GPA: " + subjectData.getAverage());
+            averageTV.setText("GPA: " + avg);
         }else {
-            averageTV.setText("Average: " + subjectData.getAverage());
+            averageTV.setText("Average: " + avg);
         }
 
         TextView textView = (TextView) findViewById(R.id.testsToWriteEditText);
@@ -183,9 +150,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        SharedPreferences prefs = getSharedPreferences("Subject" + subjectData.getSubject(), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-
         if (id == R.id.action_edit) {
             Button bottomPlus = (Button) findViewById(R.id.addCategory);
 
@@ -202,7 +166,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                     bottomPlus.setVisibility(View.VISIBLE);
                 }
 
-                RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.secondLayout);
+                RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.grades_big_layout);
                 Button rollDownButton = (Button) findViewById(R.id.rollDownButton);
 
                 int visibility = relativeLayout.getVisibility();
@@ -246,19 +210,17 @@ public class SubjectDetailActivity extends AppCompatActivity {
             gradeTv.setVisibility(View.VISIBLE);
             gradeTv.setText("");
 
-            try {
-                for (int i = 0; i < subjectData.getArrayOfCategories().length(); i++) {
-                    for (int j = 0; j < subjectData.getAllGrades().get(i).length(); j++){
+            Log.d(TAG, subjectData.getAllGrades().toString() + subjectData.getGradeType());
 
-                        if (gradeTv.length() == 0){
-                            gradeTv.append(subjectData.getAllGrades().get(i).getString(j));
-                        }else {
-                            gradeTv.append(", " + subjectData.getAllGrades().get(i).getString(j));
-                        }
+            for (String category : subjectData.getArrayOfCategories()) {
+                for (String grade : subjectData.getGrades(category)){
+
+                    if (gradeTv.length() == 0){
+                        gradeTv.append(grade);
+                    }else {
+                        gradeTv.append(", " + grade);
                     }
                 }
-            }catch (Exception e){
-                Log.e("debug", e.toString());
             }
         }
         else {
@@ -266,7 +228,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
             gradeTv.setVisibility(View.GONE);
             listView.setVisibility(View.VISIBLE);
 
-            ArrayList<Grade> arrayListOfGrades = Grade.getGrades(subjectData.getArrayOfCategories(), subjectData.getAllGrades());
+            List<Grade> arrayListOfGrades = Grade.getGrades(subjectData.getArrayOfCategories(), subjectData.getGrades());
 
             CustomGradeAdapter adapter = new CustomGradeAdapter(this, arrayListOfGrades);
 
@@ -278,24 +240,21 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 boolean isNonZeroCategory = false,
                         isIgnoredCategory = false;
 
-                for (int i = 0; i < subjectData.getArrayOfPercentages().length(); i++) {
-                    try {
-                        count += subjectData.getArrayOfPercentages().getInt(i);
-                    } catch (JSONException ex) {
-                        count += 0;
-                    }
-
+                for (int percentage : subjectData.getArrayOfPercentages()) {
+                    count += percentage;
                 }
 
-                for (int i = 0; i < subjectData.getArrayOfCategories().length(); i++) {
+                List<String> arrayOfCategories = subjectData.getArrayOfCategories();
+                for (int i = 0; i < arrayOfCategories.size(); i++) {
+                    String category = arrayOfCategories.get(i);
 
-                    JSONArray arrayOfGrades = subjectData.getAllGrades().get(i);
+                    List<String> arrayOfGrades = subjectData.getGrades(category);
 
-                    int percentage = subjectData.getArrayOfPercentages().getInt(i);
+                    int percentage = subjectData.getArrayOfPercentages().get(i);
 
-                    if (arrayOfGrades.length() == 0 && percentage != 0) {
+                    if (arrayOfGrades.size() == 0 && percentage != 0) {
                         isNonZeroCategory = true;
-                    } else if (arrayOfGrades.length() != 0 && percentage == 0) {
+                    } else if (arrayOfGrades.size() != 0 && percentage == 0) {
                         isIgnoredCategory = true;
                     }
                 }
@@ -314,7 +273,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                         }
                     });
 
-                } else if (subjectData.isUseValues() && isNonZeroCategory) {
+                } else if (subjectData.isUsePercentages() && isNonZeroCategory) {
 
                     final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "In order for all empty categories to be ignored, set their values to 0", Snackbar.LENGTH_INDEFINITE);
                     snackbar.show();
@@ -349,21 +308,16 @@ public class SubjectDetailActivity extends AppCompatActivity {
             }
         }
 
-        setPredictionListView();
+        if (findViewById(R.id.prediction_big_layout).getVisibility() == View.VISIBLE) {
+            setPredictionListView();
+        }
     }
 //////////////////////////////////////////////////////////////////////////
     public void addGrade(View view) {
-        SharedPreferences prefs = getSharedPreferences("Subject" + subjectData.getSubject(), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
 
-        ArrayList<String> listOfCategories = new ArrayList<String>();
-        for (int i = 0; i < subjectData.getArrayOfCategories().length(); i++){
-            try {
-                listOfCategories.add(subjectData.getArrayOfCategories().getString(i));
-            }catch (JSONException e){}
-        }
+        final ArrayList<String> arrayOfCategories = new ArrayList<>(subjectData.getArrayOfCategories());
 
-        if(!listOfCategories.isEmpty() || !prefs.getBoolean("useCategories", false)) {
+        if(!arrayOfCategories.isEmpty() || !subjectData.isUseCategories()) {
 
             final Dialog dialog = new Dialog(this);
             dialog.setContentView(R.layout.grade_adder_dialog);
@@ -371,9 +325,9 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
             final Spinner spinner = (Spinner) dialog.findViewById(R.id.dialogSpinner);
 
-            if (prefs.getBoolean("useCategories", false)) {
+            if (subjectData.isUseCategories()) {
 
-                ArrayAdapter spinnerAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, listOfCategories);
+                ArrayAdapter spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, arrayOfCategories);
                 spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinner.setAdapter(spinnerAdapter);
             }
@@ -382,7 +336,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
             }
 
             final EditText editText = (EditText) dialog.findViewById(R.id.addGradeEditText);
-            int gradeType = prefs.getInt("GradeType", 0);
+            int gradeType = subjectData.getGradeType();
             switch (gradeType) {
                 case 0:
                     editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_CLASS_PHONE);
@@ -416,7 +370,12 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
                     } catch (NullPointerException e) {
                         category = "Grades";
-                        pos = 0;
+                        if (arrayOfCategories.contains(category)){
+                            pos = arrayOfCategories.indexOf(category);
+                        }else {
+                            pos = arrayOfCategories.size();
+                        }
+
                     }
 
                     saveGrade(grade, category, pos);
@@ -439,7 +398,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
             Button bottomPlus = (Button) findViewById(R.id.addCategory);
             bottomPlus.setVisibility(View.VISIBLE);
 
-            RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.secondLayout);
+            RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.grades_big_layout);
             Button rollDownButton = (Button) findViewById(R.id.rollDownButton);
 
             int visibility = relativeLayout.getVisibility();
@@ -450,21 +409,13 @@ public class SubjectDetailActivity extends AppCompatActivity {
         }
     }
     public void saveGrade(String grade, String category, int pos){
-        JSONArray jsonArray;
-        try {
-            jsonArray = new JSONArray(subjectData.getAllGrades().get(pos));
-        }catch (Exception e) {
-            jsonArray = new JSONArray();
+        List<String> arrayOfCategories = new ArrayList<>(subjectData.getArrayOfCategories());
+
+        if (pos == arrayOfCategories.size()){
+            saveCategory(category, "");
         }
 
-        Log.d("debugE", "0");
-
-        try {
-            new JSONArray(subjectData.getArrayOfCategories()).getString(0);
-        }catch (Exception e){
-            Log.d("debugE", "1");
-            saveCategory("Grades", "", false);
-        }
+        List<String> arrayOfGrades = new ArrayList<>(subjectData.getGrades(category));
 
         grade = grade + "*";
         char[] chars = grade.toCharArray();
@@ -480,11 +431,11 @@ public class SubjectDetailActivity extends AppCompatActivity {
                         percentage = (percentage * 10) + num;
 
                     }else if (percentage != -1 || i+1 == chars.length){
-                        jsonArray.put(String.valueOf(percentage));
+                        arrayOfGrades.add(String.valueOf(percentage));
                         percentage = -1;
                     }
                 }
-                editor.putString(category + "Grades" + gradeType, jsonArray.toString()).apply();
+                subjectData.setGrades(subjectData.getGradeType(), category, arrayOfGrades);
                 break;
             case 2:
                 for (int i = 0; i < chars.length; i++) {
@@ -499,10 +450,10 @@ public class SubjectDetailActivity extends AppCompatActivity {
                             }
                         }catch (IndexOutOfBoundsException e){}
 
-                        jsonArray.put(string);
+                        arrayOfGrades.add(string);
                     }
                 }
-                editor.putString(category + "Grades" + gradeType, jsonArray.toString()).apply();
+                subjectData.setGrades(subjectData.getGradeType(), category, arrayOfGrades);
                 break;
             case 3:
                 for (int i = 0; i < chars.length; i++) {
@@ -515,209 +466,85 @@ public class SubjectDetailActivity extends AppCompatActivity {
                                 string += chars[i + 1];
                                 i++;
                             }
-                        }catch (ArrayIndexOutOfBoundsException e){}
+                        }catch (ArrayIndexOutOfBoundsException ignored){}
 
-                        jsonArray.put(string);
+                        arrayOfGrades.add(string);
                     }
                 }
-                editor.putString(category + "Grades" + gradeType, jsonArray.toString()).apply();
+                subjectData.setGrades(subjectData.getGradeType(), category, arrayOfGrades);
                 break;
             default:
                 for (int i = 0; i < chars.length; i++) {
                     if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5') {
                         String string = String.valueOf(chars[i]);
-                        jsonArray.put(string);
+                        arrayOfGrades.add(string);
                     }
                 }
-                editor.putString(category + "Grades" + gradeType, jsonArray.toString()).apply();
+
+                Log.d(TAG, arrayOfGrades.toString());
+
+                subjectData.setGrades(subjectData.getGradeType(), category, arrayOfGrades);
+
+                Log.d(TAG, subjectData.toString());
+
                 break;
         }
     }
 //////////////////////////////////////////////////////////////////////////
+
     public double countAverage(){
-        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
-        JSONArray arrayOfCategories, arrayOfPercentages;
-        try {
-            arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
-            arrayOfPercentages = new JSONArray(prefs.getString("ListOfPercentages", null));
-        }catch (Exception e) {
-            arrayOfCategories = new JSONArray();
-            arrayOfPercentages = new JSONArray();
-        }
-        int gradeType = prefs.getInt("GradeType", 0);
+        List<List<String>> gradesInCategories = new ArrayList<>(subjectData.getGrades());
 
-        ArrayList<Double> semiAverage = new ArrayList<Double>();
+        List<Double> averages = new ArrayList<>(gradesInCategories.size());
 
-        if (!prefs.getBoolean("useCategories", false)){
+        for (int i = 0; i < gradesInCategories.size(); i++) {
+            List<String> grades = gradesInCategories.get(i);
 
-            for (int i = 0; i < arrayOfCategories.length(); i++){
+            if (grades.isEmpty()) averages.add(0.0);
 
-                JSONArray arrayOfGrades = new JSONArray();
-                try {
-                    arrayOfGrades = new JSONArray(prefs.getString(arrayOfCategories.getString(i) + "Grades" + gradeType, null));
-                } catch (Exception e) {
-                    Log.e("debug", e.toString());
-                }
+            for (String grade : grades) {
+                if (subjectData.getGradeType() == SubjectDetailActivity.ALPHABETIC) {
 
-                for (int j = 0; j < arrayOfGrades.length(); j++){
-
-                    if (gradeType == 2){
-
-                        try {
-                            semiAverage.add(letterToNumber(arrayOfGrades.getString(j)));
-                        } catch (JSONException e) {
-                            Log.e("debug", e.toString());
-                        }
-
+                    try {
+                        averages.set(i, averages.get(i) + SubjectDetailActivity.letterToNumber(grade));
+                    }catch (IndexOutOfBoundsException e){
+                        averages.add(SubjectDetailActivity.letterToNumber(grade));
                     }
-                    else {
-
+                }
+                else {
+                    try {
+                        averages.set(i, averages.get(i) + Double.parseDouble(grade));
+                    } catch (IndexOutOfBoundsException e) {
                         try {
-                            semiAverage.add(Double.parseDouble(arrayOfGrades.getString(j)));
-                        } catch (JSONException e) {
-                            Log.e("debug", e.toString());
+                            averages.add(Double.parseDouble(grade));
+                        } catch (NumberFormatException ignored) {
                         }
+                    } catch (NumberFormatException ignored) {
                     }
                 }
             }
-
-            double average = 0;
-            for (int i = 0; i < semiAverage.size(); i++) {
-
-                average += semiAverage.get(i);
-            }
-
-            average /= semiAverage.size();
-
-            DecimalFormat df = new DecimalFormat("#.####", new DecimalFormatSymbols(Locale.US));
-            try {
-                average = Double.valueOf(df.format(average));
-            } catch (NumberFormatException e) {
-            }
+            averages.set(i, averages.get(i) / (double) grades.size());
 
 
-
-            if (String.valueOf(average).equals("NaN")) {
-                return 0;
-            } else {
-                return average;
-            }
-
-        }
-        else if (!prefs.getBoolean("useValues", false)) {
-
-            for (int i = 0; i < arrayOfCategories.length(); i++){
-                String s = "";
-                try {
-                    s = arrayOfCategories.getString(i);
-                }catch (JSONException e) {}
-                semiAverage.add(countSemiAverage(s));
-            }
-
-            double average = 0;
-            int count = 0;
-            for(int i = 0; i < semiAverage.size(); i++) {
-
-                if (semiAverage.get(i) != -1){
-
-                    average += semiAverage.get(i);
-                    count++;
-                }
-            }
-            average /= count;
-
-            DecimalFormat df = new DecimalFormat("#.####", new DecimalFormatSymbols(Locale.US));
-            try {
-                average = Double.valueOf(df.format(average));
-            } catch (NumberFormatException e) {
-            }
-
-            if (String.valueOf(average).equals("NaN")){
-                return 0;
-            }
-            else {
-                return average;
-            }
-
-        }
-        else {
-
-            for (int i = 0; i < arrayOfCategories.length(); i++){
-                String s = "";
-                try {
-                    s = arrayOfCategories.getString(i);
-                }catch (JSONException e) {}
-                semiAverage.add(countSemiAverage(s));
-            }
-
-            double average = 0;
-            for(int i = 0; i < semiAverage.size(); i++) {
-
-                try {
-                    average += semiAverage.get(i) / (100 / arrayOfPercentages.getDouble(i));
-                }catch (JSONException e){
-                    Log.e("debug", e.toString());
-                }
-            }
-
-            DecimalFormat df = new DecimalFormat("#.####", new DecimalFormatSymbols(Locale.US));
-            try {
-                average = Double.valueOf(df.format(average));
-            } catch (NumberFormatException e) {
-            }
-
-            if (String.valueOf(average).equals("NaN")){
-                return 0;
-            }
-            else {
-                return average;
+            if (subjectData.isUsePercentages()) {
+                double temp = averages.get(i);
+                temp = temp * (double) subjectData.getArrayOfPercentages().get(i) / 100.0;
+                averages.set(i, temp);
             }
         }
+
+        double temp = 0;
+        for (double grade : averages){
+            temp += grade;
+        }
+        if (!subjectData.isUsePercentages()) {
+            temp /= (double) averages.size();
+        }
+
+        return temp;
     }
 
-    public double countSemiAverage(String category){
-        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
-        JSONArray jsonArray = new JSONArray();
-        int gradeType = prefs.getInt("GradeType", 0);
-        try {
-            jsonArray = new JSONArray(prefs.getString(category + "Grades" + gradeType, null));
-        }catch (Exception e) {}
-
-        if (prefs.getBoolean("useCategories", false) && !prefs.getBoolean("useValues", false) && jsonArray.length() == 0) return -1;
-
-        double average;
-        if (gradeType != 2) {
-            average = 0;
-            for (int i = 0; i < jsonArray.length(); i++) {
-                try {
-                    average += jsonArray.getInt(i);
-                } catch (JSONException e) {
-                }
-            }
-            if (average != 0) {
-                average /= jsonArray.length();
-            }
-
-        }else {
-            average = 0;
-            for (int i = 0; i < jsonArray.length(); i++) {
-                String string = "";
-                try {
-                    string = jsonArray.getString(i);
-                } catch (JSONException e) {}
-
-                average += letterToNumber(string);
-
-            }
-            if (average != 0) {
-                average /= jsonArray.length();
-            }
-        }
-
-        return average;
-    }
-
-    public double letterToNumber(String letter){
+    public static double letterToNumber(String letter){
         switch (letter){
             case "A+":
                 return 4.33;
@@ -762,32 +589,32 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 return 0;
         }
     }
-    public String numberToLetter(double letter){
-        if (letter == 4.33) {
+    public static String numberToLetter(double number){
+        if (number == 4.33) {
             return "A+";
-        } else if (letter == 4) {
+        } else if (number == 4) {
             return "A";
-        } else if (letter == 3.67) {
+        } else if (number == 3.67) {
             return "A-";
-        } else if (letter == 3.33) {
+        } else if (number == 3.33) {
             return "B+";
-        } else if (letter == 3) {
+        } else if (number == 3) {
             return "B";
-        } else if (letter == 2.67) {
+        } else if (number == 2.67) {
             return "B-";
-        } else if (letter == 2.33) {
+        } else if (number == 2.33) {
             return "C+";
-        } else if (letter == 2) {
+        } else if (number == 2) {
             return "C";
-        } else if (letter == 1.67) {
+        } else if (number == 1.67) {
             return "C-";
-        } else if (letter == 1.33) {
+        } else if (number == 1.33) {
             return "D+";
-        } else if (letter == 1) {
+        } else if (number == 1) {
             return "D";
-        } else if (letter == 0.67) {
+        } else if (number == 0.67) {
             return "D-";
-        } else if (letter == 0) {
+        } else if (number == 0) {
             return "F";
         } else {
             return "";
@@ -832,7 +659,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 String newCategory = nameEditText.getText().toString();
                 String grades = gradeEditText.getText().toString();
 
-                saveCategory(newCategory, grades, false);
+                saveCategory(newCategory, grades);
 
                 dialog.dismiss();
             }
@@ -846,67 +673,44 @@ public class SubjectDetailActivity extends AppCompatActivity {
         });
         dialog.show();
     }
-    public void saveCategory(String name, String gradesString, boolean edited){
-        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
 
-        JSONArray arrayOfCategories, arrayOfPercentages;
-        try {
-            arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
-            arrayOfPercentages = new JSONArray(prefs.getString("ListOfPercentages", null));
-        }catch (Exception e) {
-            arrayOfCategories = new JSONArray();
-            arrayOfPercentages = new JSONArray();
+    public void saveCategory(String name, String gradesString){
+
+        List<String> arrayOfCategories = new ArrayList<>(subjectData.getArrayOfCategories());
+        List<Integer> arrayOfPercentages = new ArrayList<>(subjectData.getArrayOfPercentages());
+
+        if (!arrayOfCategories.contains(name)){
+            arrayOfCategories.add(name);
+            arrayOfPercentages.add(100 / (arrayOfPercentages.size() + 1));
+
+            subjectData.setArrayOfCategories(arrayOfCategories);
+            subjectData.setArrayOfPercentages(arrayOfPercentages);
         }
-
-        int different = 0;
-        for (int i = 0; i < arrayOfCategories.length(); i++) {
-            try {
-                if (!arrayOfCategories.getString(i).equals(name)) {
-                    different++;
-                }
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        if (different == arrayOfCategories.length()){
-
-            try {
-                arrayOfCategories.put(name);
-                editor.putString("ListOfCategories", arrayOfCategories.toString());
-
-                arrayOfPercentages.put(String.valueOf(100 / (arrayOfPercentages.length() + 1)));
-                editor.putString("ListOfPercentages", arrayOfPercentages.toString());
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
 
         char[] chars = gradesString.toCharArray();
-        JSONArray arrayOfGrades = new JSONArray();
+        List<String> arrayOfGrades = new ArrayList<>();
 
-        int gradeType = prefs.getInt("GradeType", 0);
+        int gradeType = subjectData.getGradeType();
         switch (gradeType){
-            case 1:
+            case PERCENTAGE:
                 int percentage = 0;
-                for (int i = 0; i < chars.length; i++){
-                    if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5' ||
-                            chars[i] == '6' || chars[i] == '7' || chars[i] == '8' || chars[i] == '9' || chars[i] == '0'){
+                for (char aChar : chars) {
+                    if (aChar == '1' || aChar == '2' || aChar == '3' || aChar == '4' || aChar == '5' ||
+                            aChar == '6' || aChar == '7' || aChar == '8' || aChar == '9' || aChar == '0') {
 
-                        int num = Character.getNumericValue(chars[i]);
+                        int num = Character.getNumericValue(aChar);
                         if (percentage == -1) percentage = 0;
                         percentage = (percentage * 10) + num;
 
-                    }else if (percentage != -1){
-                        arrayOfGrades.put(String.valueOf(percentage));
+                    } else if (percentage != -1) {
+                        arrayOfGrades.add(String.valueOf(percentage));
                         percentage = -1;
                     }
                 }
-                if (percentage != -1 && chars.length != 0) arrayOfGrades.put(String.valueOf(percentage));
+                if (percentage != -1 && chars.length != 0) arrayOfGrades.add(String.valueOf(percentage));
                 break;
-            case 2:
+
+            case ALPHABETIC:
                 for (int i = 0; i < chars.length; i++) {
                     if (chars[i] == 'A' || chars[i] == 'B' || chars[i] == 'C' || chars[i] == 'D' || chars[i] == 'F') {
                         String string = String.valueOf(chars[i]);
@@ -919,11 +723,12 @@ public class SubjectDetailActivity extends AppCompatActivity {
                             }
                         }catch (ArrayIndexOutOfBoundsException e){}
 
-                        arrayOfGrades.put(string);
+                        arrayOfGrades.add(string);
                     }
                 }
                 break;
-            case 3:
+
+            case TEN_GRADE:
                 for (int i = 0; i < chars.length; i++) {
                     if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5' ||
                             chars[i] == '6' || chars[i] == '7' || chars[i] == '8' || chars[i] == '9' || chars[i] == '0') {
@@ -934,43 +739,35 @@ public class SubjectDetailActivity extends AppCompatActivity {
                             i++;
                         }
 
-                        arrayOfGrades.put(string);
+                        arrayOfGrades.add(string);
                     }
                 }
                 break;
+
             default:
-                for (int i = 0; i < chars.length; i++) {
-                    if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5') {
-                        String string = String.valueOf(chars[i]);
-                        arrayOfGrades.put(string);
+                for (char aChar : chars) {
+                    if (aChar == '1' || aChar == '2' || aChar == '3' || aChar == '4' || aChar == '5') {
+                        arrayOfGrades.add(String.valueOf(aChar));
                     }
                 }
                 break;
         }
 
-        editor.putString(name + "Grades" + gradeType, arrayOfGrades.toString());
-        editor.apply();
+        subjectData.setGrades(gradeType, name, arrayOfGrades);
 
-        doSetLv = true;
         setListView();
     }
-    public void saveCategory(String gradesString){
-        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
 
-        JSONArray arrayOfCategories;
-        try {
-            arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
-        }catch (Exception e) {
-            arrayOfCategories = new JSONArray();
-        }
+    public void saveCategory(String gradesString){
+
+        List<String> arrayOfCategories = new ArrayList<>(subjectData.getArrayOfCategories());
 
         char[] chars = gradesString.toCharArray();
-        JSONArray arrayOfGrades = new JSONArray();
+        List<String> arrayOfGrades = new ArrayList<>();
 
-        int gradeType = prefs.getInt("GradeType", 0);
+        int gradeType = subjectData.getGradeType();
         switch (gradeType){
-            case 1:
+            case PERCENTAGE:
 
                 int percentage = 0;
                 for (int i = 0; i < chars.length; i++){
@@ -982,13 +779,13 @@ public class SubjectDetailActivity extends AppCompatActivity {
                         percentage = (percentage * 10) + num;
 
                     }else if (percentage != -1){
-                        arrayOfGrades.put(String.valueOf(percentage));
+                        arrayOfGrades.add(String.valueOf(percentage));
                         percentage = -1;
                     }
                 }
-                if (percentage != -1) arrayOfGrades.put(String.valueOf(percentage));
+                if (percentage != -1) arrayOfGrades.add(String.valueOf(percentage));
                 break;
-            case 2:
+            case ALPHABETIC:
                 for (int i = 0; i < chars.length; i++) {
                     if (chars[i] == 'A' || chars[i] == 'B' || chars[i] == 'C' || chars[i] == 'D' || chars[i] == 'F') {
                         String string = String.valueOf(chars[i]);
@@ -1001,11 +798,11 @@ public class SubjectDetailActivity extends AppCompatActivity {
                             }
                         }catch (ArrayIndexOutOfBoundsException e){}
 
-                        arrayOfGrades.put(string);
+                        arrayOfGrades.add(string);
                     }
                 }
                 break;
-            case 3:
+            case TEN_GRADE:
                 for (int i = 0; i < chars.length; i++) {
                     if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5' ||
                             chars[i] == '6' || chars[i] == '7' || chars[i] == '8' || chars[i] == '9' || chars[i] == '0') {
@@ -1018,7 +815,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                             }
                         }catch (ArrayIndexOutOfBoundsException e){}
 
-                        arrayOfGrades.put(string);
+                        arrayOfGrades.add(string);
                     }
                 }
                 break;
@@ -1026,35 +823,26 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 for (int i = 0; i < chars.length; i++) {
                     if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5') {
                         String string = String.valueOf(chars[i]);
-                        arrayOfGrades.put(string);
+                        arrayOfGrades.add(string);
                     }
                 }
                 break;
         }
 
-        for (int i = 0; i < arrayOfCategories.length(); i++){
+        for (int i = 0; i < arrayOfCategories.size(); i++){
 
-            int length = arrayOfGrades.length() / arrayOfCategories.length();
+            int length = arrayOfGrades.size() / arrayOfCategories.size();
 
-            JSONArray arrayOfGrades2 = new JSONArray();
+            List<String> arrayOfGrades2 = new ArrayList<>();
 
             for (int j = 0; j < length; j++){
 
-                try {
-                    arrayOfGrades2.put(arrayOfGrades.get((i * length) + j));
-                } catch (JSONException e) {}
-
+                arrayOfGrades2.add(arrayOfGrades.get((i * length) + j));
             }
 
-            try {
-                editor.putString(arrayOfCategories.get(i) + "Grades" + gradeType, arrayOfGrades2.toString());
-            } catch (JSONException e) {}
-
+            subjectData.setGrades(gradeType, arrayOfCategories.get(i), arrayOfGrades2);
         }
 
-        editor.apply();
-
-        doSetLv = true;
         setListView();
     }
 //////////////////////////////////////////////////////////////////////////
@@ -1063,76 +851,38 @@ public class SubjectDetailActivity extends AppCompatActivity {
         ListView listView = (ListView) parentRow.getParent();
         final int position = listView.getPositionForView(parentRow);
 
-        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        JSONArray arrayOfCategories, arrayOfPercentages;
-        try {
-            arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
-            arrayOfPercentages = new JSONArray(prefs.getString("ListOfPercentages", null));
-        }catch (JSONException e) {
-            arrayOfCategories = new JSONArray();
-            arrayOfPercentages = new JSONArray();
-        }
+        List<String> arrayOfCategories = new ArrayList<>(subjectData.getArrayOfCategories());
+        List<Integer> arrayOfPercentages = new ArrayList<>(subjectData.getArrayOfPercentages());
 
-        ArrayList<String> listC = new ArrayList<String>();
-        ArrayList<String> listP = new ArrayList<String>();
+        Log.d(TAG, arrayOfCategories.toString());
+        Log.d(TAG, arrayOfPercentages.toString());
 
-        for (int i = 0; i < arrayOfCategories.length(); i++){
-            try {
-                listC.add(arrayOfCategories.getString(i));
-            }catch (JSONException e){}
-        }
+        arrayOfCategories.remove(position);
+        arrayOfPercentages.remove(position);
 
-        for (int i = 0; i < arrayOfPercentages.length(); i++){
-            try {
-                listP.add(arrayOfPercentages.getString(i));
-            }catch (JSONException e){}
-        }
+        Log.d(TAG, arrayOfCategories.toString());
+        Log.d(TAG, arrayOfPercentages.toString());
 
-        editor.remove(listC.get(position) + "Grades");
+        subjectData.setArrayOfCategories(arrayOfCategories);
+        subjectData.setArrayOfPercentages(arrayOfPercentages);
 
-        listC.remove(position);
-        listP.remove(position);
-
-        JSONArray arrayToSendC = new JSONArray(listC);
-        JSONArray arrayToSendP = new JSONArray(listP);
-
-        editor.putString("ListOfCategories", arrayToSendC.toString());
-        editor.putString("ListOfPercentages", arrayToSendP.toString());
-        editor.apply();
-
-        doSetLv = true;
         setListView();
     }
 //////////////////////////////////////////////////////////////////////////
     public void editCategory(final View view) {
-
-        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        final int gradeType = prefs.getInt("GradeType", 0);
+        final int gradeType = subjectData.getGradeType();
 
         if (view == findViewById(R.id.gradeEditButtonSingle)){
 
             String grades = "";
-            JSONArray arrayOfCategories;
-            try {
-                arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
-            } catch (JSONException e) {
-                arrayOfCategories = new JSONArray();
-            }
+            List<String> arrayOfCategories = new ArrayList<>(subjectData.getArrayOfCategories());
 
-            for (int i = 0; i < arrayOfCategories.length(); i++){
+            for (int i = 0; i < arrayOfCategories.size(); i++){
 
-                JSONArray arrayOfGrades = new JSONArray();
-                try {
-                    arrayOfGrades = new JSONArray(prefs.getString(arrayOfCategories.get(i) + "Grades" + gradeType, null));
-                } catch (Exception e) {
-                }
-                for (int j = 0; j < arrayOfGrades.length(); j++) {
-                    try {
-                        grades = grades + arrayOfGrades.getString(j) + ", ";
-                    } catch (JSONException e) {
-                    }
+                List<String> arrayOfGrades = new ArrayList<>(subjectData.getGrades(arrayOfCategories.get(i)));
+
+                for (int j = 0; j < arrayOfGrades.size(); j++) {
+                    grades = grades + arrayOfGrades.get(j) + ", ";
                 }
 
             }
@@ -1166,8 +916,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
             gradeEditText.setSingleLine(false);
             gradeEditText.setText(grades);
 
-            final String finalGrades = grades;
-
             Button dialogOkButton = (Button) dialog.findViewById(R.id.categoryDialogOkButton);
             dialogOkButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -1195,27 +943,15 @@ public class SubjectDetailActivity extends AppCompatActivity {
             ListView listView = (ListView) parentRow.getParent();
             final int position = listView.getPositionForView(parentRow);
 
-            String category = "", grades = "";
-            JSONArray arrayOfCategories;
-            try {
-                arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
-                category = arrayOfCategories.getString(position);
-            } catch (JSONException e) {
-                arrayOfCategories = new JSONArray();
-            }
+            String grades = "";
+            List<String> arrayOfCategories = new ArrayList<>(subjectData.getArrayOfCategories());
+            String category = arrayOfCategories.get(position);
 
-            JSONArray arrayOfGrades = new JSONArray();
-            try {
-                arrayOfGrades = new JSONArray(prefs.getString(category + "Grades" + gradeType, null));
-            } catch (Exception e) {
-            }
-            for (int i = 0; i < arrayOfGrades.length(); i++) {
-                try {
-                    grades = grades + arrayOfGrades.getString(i) + ", ";
-                } catch (JSONException e) {
-                }
-            }
+            List<String> arrayOfGrades = new ArrayList<>(subjectData.getGrades(category));
 
+            for (int i = 0; i < arrayOfGrades.size(); i++) {
+                grades = grades + arrayOfGrades.get(i) + ", ";
+            }
 
             final Dialog dialog = new Dialog(this);
             dialog.setContentView(R.layout.category_adder_dialog);
@@ -1246,7 +982,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
             }
             gradeEditText.setSingleLine(false);
             gradeEditText.setText(grades);
-            final String finalCategory = category;
 
             Button dialogOkButton = (Button) dialog.findViewById(R.id.categoryDialogOkButton);
             dialogOkButton.setOnClickListener(new View.OnClickListener() {
@@ -1255,11 +990,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                     String newCategory = nameEditText.getText().toString();
                     String grades = gradeEditText.getText().toString();
 
-                    if (!finalCategory.equals(newCategory)) {
-                        deleteOldCategory(finalCategory, position);
-                    }
-
-                    saveCategory(newCategory, grades, true);
+                    saveCategory(newCategory, grades);
 
                     dialog.dismiss();
                 }
@@ -1274,7 +1005,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
             dialog.show();
         }
     }
-    public void deleteOldCategory(String category, int pos){
+    /*public void deleteOldCategory(String category, int pos){
         SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
         JSONArray arrayOfCategories, arrayOfPercentages;
@@ -1315,7 +1046,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
         doSetLv = true;
         setListView();
-    }
+    }*/
 //////////////////////////////////////////////////////////////////////////
     public void settingsDialog(){
 
@@ -1329,26 +1060,19 @@ public class SubjectDetailActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-        final SharedPreferences spinnerPrefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
-        final SharedPreferences.Editor editor = spinnerPrefs.edit();
-        int pos = spinnerPrefs.getInt("GradeType", 0);
+        int pos = subjectData.getGradeType();
         spinner.setSelection(pos);
 
-        JSONArray arrayOfCategories;
-        try {
-            arrayOfCategories = new JSONArray(spinnerPrefs.getString("ListOfCategories", null));
-        } catch (Exception e) {
-            arrayOfCategories = new JSONArray();
-        }
-
+        List<String> arrayOfCategories = new ArrayList<>(subjectData.getArrayOfCategories());
 
         final ListView listView = (ListView) dialog.findViewById(R.id.SettingsDialogListView);
-        ArrayList<Grade> arrayOfGrades = Grade.getGrades();
-        CustomDialogLvAdapter arrayAdapter = new CustomDialogLvAdapter(getApplicationContext(), arrayOfGrades);
+        List<Grade> arrayOfGrades = Grade.getGrades(arrayOfCategories, subjectData.getGrades());
+
+        CustomDialogLvAdapter arrayAdapter = new CustomDialogLvAdapter(getApplicationContext(), arrayOfGrades, subjectData);
         listView.setAdapter(arrayAdapter);
 
         ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = arrayOfCategories.length() * (125);
+        params.height = arrayOfCategories.size() * (125);
         listView.setLayoutParams(params);
         listView.requestLayout();
 
@@ -1357,12 +1081,12 @@ public class SubjectDetailActivity extends AppCompatActivity {
         final Switch switch1 = (Switch) dialog.findViewById(R.id.detailSettingsCheckbox);
         final Switch switch2 = (Switch) dialog.findViewById(R.id.detailSettingsCheckbox2);
 
-        if (spinnerPrefs.getBoolean("useCategories", false)){
+        if (subjectData.isUseCategories()){
             switch1.setChecked(true);
         }else {
             switch1.setChecked(false);
         }
-        if (spinnerPrefs.getBoolean("useValues", false)){
+        if (subjectData.isUsePercentages()){
             switch2.setChecked(true);
             lvLayout.setVisibility(View.VISIBLE);
         }else {
@@ -1373,44 +1097,31 @@ public class SubjectDetailActivity extends AppCompatActivity {
         switch1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (switch1.isChecked()){
-                    editor.putBoolean("useCategories", true).apply();
-                }else {
-                    editor.putBoolean("useCategories", false).apply();
-
+                if (!switch1.isChecked()){
                     if (switch2.isChecked()){
                         switch2.setChecked(false);
-                        editor.putBoolean("useValues", false).apply();
                         lvLayout.setVisibility(View.GONE);
                     }
-
                 }
             }
         });
         switch2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (subjectData.getArrayOfCategories().size() != 0) {
 
-                try {
-                    if (new JSONArray(spinnerPrefs.getString("ListOfCategories", null)).length() != 0) {
+                    if (switch2.isChecked()) {
+                        lvLayout.setVisibility(View.VISIBLE);
 
-                        if (switch2.isChecked()) {
-                            editor.putBoolean("useValues", true).apply();
-                            lvLayout.setVisibility(View.VISIBLE);
-
-                            if (!switch1.isChecked()) {
-                                switch1.setChecked(true);
-                                editor.putBoolean("useCategories", true).apply();
-                            }
-
-                        } else {
-                            editor.putBoolean("useValues", false).apply();
-                            lvLayout.setVisibility(View.GONE);
+                        if (!switch1.isChecked()) {
+                            switch1.setChecked(true);
                         }
 
-                        balancePercentages(dialog);
+                    } else {
+                        lvLayout.setVisibility(View.GONE);
                     }
-                } catch (JSONException e) {
+
+                    balancePercentages(dialog);
                 }
             }
         });
@@ -1421,31 +1132,23 @@ public class SubjectDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 int spinnerPos = spinner.getSelectedItemPosition();
 
-                SharedPreferences spinnerPrefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
-                SharedPreferences.Editor spinnerPrefsEditor = spinnerPrefs.edit();
-                spinnerPrefsEditor.putInt("GradeType", spinnerPos);
+                subjectData.setGradeType(spinnerPos);
 
-                JSONArray arrayOfPercentages;
-                try {
-                    arrayOfPercentages = new JSONArray(spinnerPrefs.getString("ListOfPercentages", null));
-                } catch (Exception e) {
-                    arrayOfPercentages = new JSONArray();
-                }
+                subjectData.setUseCategories(switch1.isChecked());
+                subjectData.setUsePercentages(switch2.isChecked());
 
-                for (int i = 0; i < listView.getCount(); i++) {
-                    View view = getViewByPos(i, listView);
-                    EditText editText = (EditText) view.findViewById(R.id.settingsLVEditText);
-                    try {
-                        arrayOfPercentages.put(i, editText.getText().toString());
-                    } catch (JSONException e) {
+                if (subjectData.isUsePercentages()) {
+                    List<Integer> arrayOfPercentages = new ArrayList<>(subjectData.getArrayOfPercentages());
+
+                    for (int i = 0; i < listView.getCount(); i++) {
+                        View view = getViewByPos(i, listView);
+                        EditText editText = (EditText) view.findViewById(R.id.settingsLVEditText);
+                        arrayOfPercentages.set(i, Integer.parseInt(editText.getText().toString()));
                     }
+
+                    subjectData.setArrayOfPercentages(arrayOfPercentages);
                 }
 
-                spinnerPrefsEditor.putString("ListOfPercentages", arrayOfPercentages.toString());
-
-                spinnerPrefsEditor.apply();
-
-                doSetLv = true;
                 setListView();
                 dialog.dismiss();
 
@@ -1457,7 +1160,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
             public void onClick(View v) {
                 dialog.dismiss();
 
-                doSetLv = true;
                 setListView();
             }
         });
@@ -1491,23 +1193,15 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
     public void balancePercentages(Dialog dialog){
 
-        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
+        List<Integer> arrayOfPercentages = subjectData.getArrayOfPercentages();
 
-        JSONArray arrayOfPercentages;
-        try {
-            arrayOfPercentages = new JSONArray(prefs.getString("ListOfPercentages", null));
-        } catch (Exception e) {
-            arrayOfPercentages = new JSONArray();
-        }
-
-        JSONArray array = new JSONArray();
+        List<Integer> array = new ArrayList<>(arrayOfPercentages.size());
         int over = 0, abc = 0;
-        for (int i = 0; i < arrayOfPercentages.length(); i++){
+        for (int i = 0; i < arrayOfPercentages.size(); i++){
 
-            int toBePut = (int) Math.round(100 / arrayOfPercentages.length());
+            int toBePut = Math.round(100 / arrayOfPercentages.size());
 
-            array.put(String.valueOf(toBePut));
+            array.add(toBePut);
             abc += toBePut;
         }
         over = 100 - abc;
@@ -1516,48 +1210,35 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
             int i = 0;
             while (over > 0){
-
-                try {
-                    array.put(i, String.valueOf(Integer.parseInt(array.getString(i)) + 1));
-                } catch (JSONException e) {
-                    Log.e("debug", e.toString());
-                }
+                array.add(i, array.get(i) + 1);
 
                 over--;
 
                 i++;
-                if (i == array.length()) {
+                if (i == array.size()) {
                     i = 0;
                 }
             }
         }
 
-        editor.putString("ListOfPercentages", array.toString()).apply();
+        subjectData.setArrayOfPercentages(array);
 
         final ListView listView = (ListView) dialog.findViewById(R.id.SettingsDialogListView);
-        ArrayList<Grade> arrayOfGrades = Grade.getGrades();
-        CustomDialogLvAdapter arrayAdapter = new CustomDialogLvAdapter(getApplicationContext(), arrayOfGrades);
+        List<Grade> arrayOfGrades = Grade.getGrades(subjectData.getArrayOfCategories(), subjectData.getGrades());
+        CustomDialogLvAdapter arrayAdapter = new CustomDialogLvAdapter(getApplicationContext(), arrayOfGrades, subjectData);
         listView.setAdapter(arrayAdapter);
     }
     public void balancePercentages(){
 
-        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
+        List<Integer> arrayOfPercentages = subjectData.getArrayOfPercentages();
 
-        JSONArray arrayOfPercentages;
-        try {
-            arrayOfPercentages = new JSONArray(prefs.getString("ListOfPercentages", null));
-        } catch (Exception e) {
-            arrayOfPercentages = new JSONArray();
-        }
-
-        JSONArray array = new JSONArray();
+        List<Integer> array = new ArrayList<>(arrayOfPercentages.size());
         int over = 0, abc = 0;
-        for (int i = 0; i < arrayOfPercentages.length(); i++){
+        for (int i = 0; i < arrayOfPercentages.size(); i++){
 
-            int toBePut = (int) Math.round(100 / arrayOfPercentages.length());
+            int toBePut = Math.round(100 / arrayOfPercentages.size());
 
-            array.put(String.valueOf(toBePut));
+            array.add(toBePut);
             abc += toBePut;
         }
         over = 100 - abc;
@@ -1566,45 +1247,40 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
             int i = 0;
             while (over > 0){
-
-                try {
-                    array.put(i, String.valueOf(Integer.parseInt(array.getString(i)) + 1));
-                } catch (JSONException e) {
-                    Log.e("debug", e.toString());
-                }
+                array.add(i, array.get(i) + 1);
 
                 over--;
 
                 i++;
-                if (i == array.length()) {
+                if (i == array.size()) {
                     i = 0;
                 }
             }
         }
 
-        editor.putString("ListOfPercentages", array.toString()).apply();
+        subjectData.setArrayOfPercentages(array);
     }
 
     public void deleteSubject(){
+
+        subjectData.delete(getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE));
 
         try {
             SharedPreferences prefs = getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
             JSONArray array = new JSONArray(prefs.getString("List", null));
 
-            ArrayList<String> arrayList = new ArrayList<String>();
+            ArrayList<String> arrayList = new ArrayList<>();
             for (int i = 0; i < array.length(); i++) {
                 try {
                     arrayList.add(array.getString(i));
-                } catch (JSONException e) {}
+                } catch (JSONException ignored) {}
             }
             arrayList.remove(getIntent().getExtras().getString("subject", null));
-            SharedPreferences preferences = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor2 = preferences.edit();
-            editor2.clear().apply();
+
             array = new JSONArray(arrayList);
             editor.putString("List", array.toString()).apply();
-        } catch (Exception e) {}
+        } catch (Exception ignored) {}
 
         finish();
     }
@@ -1614,17 +1290,16 @@ public class SubjectDetailActivity extends AppCompatActivity {
         RelativeLayout relativeLayout;
         Button rollDownButton;
 
-        if (view == findViewById(R.id.rollDownButton) || view == findViewById(R.id.firstLayout)) {
-            relativeLayout = (RelativeLayout) findViewById(R.id.secondLayout);
+        if (view == findViewById(R.id.rollDownButton) || view == findViewById(R.id.grades_small_layout)) {
+            relativeLayout = (RelativeLayout) findViewById(R.id.grades_big_layout);
             rollDownButton = (Button) findViewById(R.id.rollDownButton);
         }
         else {
-            relativeLayout = (RelativeLayout) findViewById(R.id.fourthLayout);
+            relativeLayout = (RelativeLayout) findViewById(R.id.prediction_big_layout);
             rollDownButton = (Button) findViewById(R.id.rollDownButton2);
         }
 
-        int visibility = relativeLayout.getVisibility();
-        if (visibility == 8) {
+        if (relativeLayout.getVisibility() == View.GONE) {
             relativeLayout.setVisibility(View.VISIBLE);
             rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_white_24dp);
         } else {
@@ -1638,21 +1313,16 @@ public class SubjectDetailActivity extends AppCompatActivity {
     public void testsToWriteBtn(View view) {
         TextView textView = (TextView) findViewById(R.id.testsToWriteEditText);
 
-        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject"), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-
         if (view == findViewById(R.id.ttwAddBtn) || view == findViewById(R.id.ttwAddLayout)){
             if (Integer.parseInt(textView.getText().toString()) < 3) {
                 int ttw = Integer.parseInt(textView.getText().toString()) + 1;
                 textView.setText(String.valueOf(ttw));
 
-                editor.putInt("testsToWrite", Integer.parseInt(textView.getText().toString())).apply();
+                subjectData.setTestsToWrite(Integer.parseInt(textView.getText().toString()));
 
-                if (findViewById(R.id.fourthLayout).getVisibility() == View.VISIBLE) {
+                if (findViewById(R.id.prediction_big_layout).getVisibility() == View.VISIBLE) {
 
                     setPredictionListView();
-                }else {
-                    doSetLv = true;
                 }
             }
         }
@@ -1661,550 +1331,37 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 int ttw = Integer.parseInt(textView.getText().toString()) - 1;
                 textView.setText(String.valueOf(ttw));
 
-                editor.putInt("testsToWrite", Integer.parseInt(textView.getText().toString())).apply();
+                subjectData.setTestsToWrite(Integer.parseInt(textView.getText().toString()));
 
-                if (findViewById(R.id.fourthLayout).getVisibility() == View.VISIBLE) {
+                if (findViewById(R.id.prediction_big_layout).getVisibility() == View.VISIBLE) {
 
                     setPredictionListView();
-                }else {
-                    doSetLv = true;
                 }
             }
         }
     }
 
     public void setPredictionListView(){
-        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject"), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
 
-        JSONArray arrayOfCategories = new JSONArray();
-        try {
-            arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
-        } catch (Exception e) {
-            Log.e("debug0", e.toString());
-        }
-        int gradeType = prefs.getInt("GradeType", 0);
+        final ListView listView = (ListView) findViewById(R.id.predictionListView);
 
-        ListView listView = (ListView) findViewById(R.id.predictionListView);
-
-        if (gradeType == 3){
+        if (subjectData.getGradeType() == TEN_GRADE){
             listView.setVisibility(View.GONE);
 
-            LinearLayout coming = (LinearLayout) findViewById(R.id.comingSoonLayout);
-            coming.setVisibility(View.VISIBLE);
+            findViewById(R.id.comingSoonLayout).setVisibility(View.VISIBLE);
 
             return;
         }
         else{
             listView.setVisibility(View.VISIBLE);
 
-            LinearLayout coming = (LinearLayout) findViewById(R.id.comingSoonLayout);
-            coming.setVisibility(View.GONE);
+            findViewById(R.id.comingSoonLayout).setVisibility(View.GONE);
         }
 
-        ArrayList<Double> avgsAfter = new ArrayList<Double>();
-
-        if (!prefs.getBoolean("useCategories", false)){
-
-            JSONArray arrayOfGrades = new JSONArray();
-            try {
-                arrayOfGrades = new JSONArray(prefs.getString(arrayOfCategories.getString(0) + "Grades" + gradeType, ""));
-            } catch (Exception e) {
-                Log.e("debug1", e.toString());
-            }
-
-            TextView textView = (TextView) findViewById(R.id.testsToWriteEditText);
-
-            int pocetZnamok = 1;
-            switch (gradeType){
-                case 0:
-                    pocetZnamok = 5;
-                    break;
-                case 1:
-                    pocetZnamok = 101;
-                    break;
-                case 2:
-                    pocetZnamok = 13;
-                    break;
-                case 3:
-                    pocetZnamok = 10;
-                    break;
-            }
-
-            String cat1;
-            try {
-                cat1 = arrayOfCategories.getString(0);
-            } catch (JSONException e) {
-                cat1 = "Grades";
-                Log.e("debug2", e.toString());
-            }
-
-            switch (gradeType) {
-                case 0:
-
-                    for (int c = 1; c <= 5; c++) {
-
-                        if (Integer.parseInt(textView.getText().toString()) >= 3){
-                            arrayOfGrades.put(String.valueOf(c));
-                        }
-
-                        ArrayList<String> arrayList = new ArrayList<>();
-
-                        for (int d = c; d <= 5; d++) {
-
-                            if (Integer.parseInt(textView.getText().toString()) >= 2){
-                                arrayOfGrades.put(String.valueOf(d));
-                            }
-
-                            for (int e = d; e <= 5; e++) {
-
-                                arrayOfGrades.put(String.valueOf(e));
-
-                                editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                                avgsAfter.add(countAverage());
-
-                                arrayList = new ArrayList<>();
-                                for (int k = 0; k < arrayOfGrades.length(); k++){
-                                    try {
-                                        arrayList.add(arrayOfGrades.getString(k));
-                                    } catch (JSONException ex) {
-                                        Log.e("debug3", ex.toString());
-                                    }
-                                }
-                                arrayList.remove(arrayList.size() - 1);
-
-                                arrayOfGrades = new JSONArray(arrayList);
-
-                                editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                            }
-                            if (Integer.parseInt(textView.getText().toString()) == 1){
-                                break;
-                            }
-
-                            arrayList.remove(arrayList.size() - 1);
-                            arrayOfGrades = new JSONArray(arrayList);
-                            editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                        }
-                        if (Integer.parseInt(textView.getText().toString()) <= 2){
-                            break;
-                        }
-
-                        arrayList.remove(arrayList.size() - 1);
-                        arrayOfGrades = new JSONArray(arrayList);
-                        editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                    }
-
-                    break;
-
-                case 1:
-
-                    for (int c = 0; c <= 100; c++) {
-
-                        ArrayList<String> arrayOfGrades2 = new ArrayList<String>();
-
-                        if (Integer.parseInt(textView.getText().toString()) >= 3){
-                            arrayOfGrades.put(String.valueOf(c));
-                        }
-
-                        for (int d = c; d <= 100; d++) {
-
-                            if (Integer.parseInt(textView.getText().toString()) >= 2){
-                                arrayOfGrades.put(String.valueOf(d));
-                            }
-
-                            for (int e = d; e <= 100; e++) {
-
-                                arrayOfGrades.put(String.valueOf(e));
-
-                                editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                                avgsAfter.add(countAverage());
-
-                                arrayOfGrades2 = new ArrayList<String>();
-
-                                for (int k = 0; k < arrayOfGrades.length(); k++) {
-                                    try {
-                                        arrayOfGrades2.add(arrayOfGrades.getString(k));
-                                    } catch (JSONException ex) {
-                                        Log.e("debug3", ex.toString());
-                                    }
-                                }
-                                arrayOfGrades2.remove(arrayOfGrades.length() - 1);
-
-                                arrayOfGrades = new JSONArray(arrayOfGrades2);
-
-                                editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                            }
-                            if (Integer.parseInt(textView.getText().toString()) == 1){
-                                break;
-                            }
-
-                            arrayOfGrades2.remove(arrayOfGrades2.size() - 1);
-                            arrayOfGrades = new JSONArray(arrayOfGrades2);
-                            editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                        }
-                        if (Integer.parseInt(textView.getText().toString()) <= 2){
-                            break;
-                        }
-
-                        arrayOfGrades2.remove(arrayOfGrades2.size() - 1);
-                        arrayOfGrades = new JSONArray(arrayOfGrades2);
-                        editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                    }
-
-                    break;
-
-                case 2:
-
-                    for (int c = 433; c >= 0;) {
-
-                        ArrayList<String> arrayOfGrades2 = new ArrayList<String>();
-
-                        if (Integer.parseInt(textView.getText().toString()) >= 3){
-                            double j = c;
-                            j /= 100;
-                            arrayOfGrades.put(numberToLetter(j));
-                        }
-
-                        ArrayList<String> arrayList = new ArrayList<>();
-
-                        for (int d = c; d >= 0;) {
-
-                            if (Integer.parseInt(textView.getText().toString()) >= 2){
-                                double j = d;
-                                j /= 100;
-                                arrayOfGrades.put(numberToLetter(j));
-                            }
-
-                            for (int e = d; e >= 0;) {
-
-                                double j = e;
-                                j /= 100;
-                                arrayOfGrades.put(numberToLetter(j));
-
-                                editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                                avgsAfter.add(countAverage());
-
-                                arrayOfGrades2 = new ArrayList<String>();
-
-                                for (int k = 0; k < arrayOfGrades.length(); k++) {
-                                    try {
-                                        arrayOfGrades2.add(arrayOfGrades.getString(k));
-                                    } catch (JSONException ex) {
-                                        Log.e("debug3", ex.toString());
-                                    }
-                                }
-                                arrayOfGrades2.remove(arrayOfGrades.length() - 1);
-
-                                arrayOfGrades = new JSONArray(arrayOfGrades2);
-
-                                editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                                if (e == 67) {
-                                    e = 0;
-                                } else if (String.valueOf(e).endsWith("67")) {
-                                    e -= 34;
-                                } else {
-                                    e -= 33;
-                                }
-                            }
-                            if (Integer.parseInt(textView.getText().toString()) == 1){
-                                break;
-                            }
-
-                            arrayOfGrades2.remove(arrayOfGrades2.size() - 1);
-                            arrayOfGrades = new JSONArray(arrayOfGrades2);
-                            editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                            if (d == 67) {
-                                d = 0;
-                            } else if (String.valueOf(d).endsWith("67")) {
-                                d -= 34;
-                            } else {
-                                d -= 33;
-                            }
-                        }
-                        if (Integer.parseInt(textView.getText().toString()) <= 2){
-                            break;
-                        }
-
-                        arrayOfGrades2.remove(arrayOfGrades2.size() - 1);
-                        arrayOfGrades = new JSONArray(arrayOfGrades2);
-                        editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                        if (c == 67) {
-                            c = 0;
-                        } else if (String.valueOf(c).endsWith("67")) {
-                            c -= 34;
-                        } else {
-                            c -= 33;
-                        }
-                    }
-
-                    break;
-                case 3:
-
-                    for (int c = 1; c <= 10; c++) {
-
-                        if (Integer.parseInt(textView.getText().toString()) >= 3){
-                            arrayOfGrades.put(String.valueOf(c));
-                        }
-
-                        ArrayList<String> arrayList = new ArrayList<>();
-
-                        for (int d = c; d <= 10; d++) {
-
-                            if (Integer.parseInt(textView.getText().toString()) >= 2){
-                                arrayOfGrades.put(String.valueOf(d));
-                            }
-
-                            for (int e = d; e <= 10; e++) {
-
-                                arrayOfGrades.put(String.valueOf(e));
-
-                                editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                                avgsAfter.add(countAverage());
-
-                                arrayList = new ArrayList<>();
-                                for (int k = 0; k < arrayOfGrades.length(); k++){
-                                    try {
-                                        arrayList.add(arrayOfGrades.getString(k));
-                                    } catch (JSONException ex) {
-                                        Log.e("debug3", ex.toString());
-                                    }
-                                }
-                                arrayList.remove(arrayList.size() - 1);
-
-                                arrayOfGrades = new JSONArray(arrayList);
-
-                                editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                            }
-                            if (Integer.parseInt(textView.getText().toString()) == 1){
-                                break;
-                            }
-
-                            arrayList.remove(arrayList.size() - 1);
-                            arrayOfGrades = new JSONArray(arrayList);
-                            editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                        }
-                        if (Integer.parseInt(textView.getText().toString()) <= 2){
-                            break;
-                        }
-
-                        arrayList.remove(arrayList.size() - 1);
-                        arrayOfGrades = new JSONArray(arrayList);
-                        editor.putString(cat1 + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-
-                    }
-
-                    break;
-            }
-
+        if (predictionThread != null && predictionThread.isAlive()) {
+            predictionThread.interrupt();
         }
-        else {
-
-            for (int i = 0; i < arrayOfCategories.length(); i++) {
-
-                JSONArray arrayOfGrades = new JSONArray();
-                try {
-                    arrayOfGrades = new JSONArray(prefs.getString(arrayOfCategories.getString(i) + "Grades" + gradeType, ""));
-                } catch (Exception e) {
-                    Log.e("debug1", e.toString());
-                }
-
-                switch (gradeType) {
-                    case 0:
-
-                        for (int j = 1; j <= 5; j++) {
-                            arrayOfGrades.put(String.valueOf(j));
-
-                            try {
-                                editor.putString(arrayOfCategories.getString(i) + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-                            } catch (JSONException e) {
-                                Log.e("debug2", e.toString());
-                            }
-
-                            avgsAfter.add(countAverage());
-
-                            ArrayList<String> arrayOfGrades2 = new ArrayList<String>();
-
-                            for (int k = 0; k < arrayOfGrades.length(); k++) {
-                                try {
-                                    arrayOfGrades2.add(arrayOfGrades.getString(k));
-                                } catch (JSONException e) {
-                                    Log.e("debug3", e.toString());
-                                }
-                            }
-                            arrayOfGrades2.remove(arrayOfGrades.length() - 1);
-
-                            arrayOfGrades = new JSONArray(arrayOfGrades2);
-
-                            try {
-                                editor.putString(arrayOfCategories.getString(i) + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-                            } catch (JSONException e) {
-                                Log.e("debug4", e.toString());
-                            }
-                        }
-
-                        break;
-
-                    case 1:
-
-                        for (int j = 0; j <= 100; j++) {
-                            arrayOfGrades.put(String.valueOf(j));
-
-                            try {
-                                editor.putString(arrayOfCategories.getString(i) + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-                            } catch (JSONException e) {
-                                Log.e("debug2", e.toString());
-                            }
-
-                            avgsAfter.add(countAverage());
-
-                            ArrayList<String> arrayOfGrades2 = new ArrayList<String>();
-
-                            for (int k = 0; k < arrayOfGrades.length(); k++) {
-                                try {
-                                    arrayOfGrades2.add(arrayOfGrades.getString(k));
-                                } catch (JSONException e) {
-                                    Log.e("debug3", e.toString());
-                                }
-                            }
-                            arrayOfGrades2.remove(arrayOfGrades.length() - 1);
-
-                            arrayOfGrades = new JSONArray(arrayOfGrades2);
-
-                            try {
-                                editor.putString(arrayOfCategories.getString(i) + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-                            } catch (JSONException e) {
-                                Log.e("debug4", e.toString());
-                            }
-                        }
-
-                        break;
-
-                    case 2:
-
-                        for (int j = 433; j >= 0; ) {
-
-                            double d = j;
-                            d /= 100;
-                            arrayOfGrades.put(numberToLetter(d));
-
-                            try {
-                                editor.putString(arrayOfCategories.getString(i) + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-                            } catch (JSONException e) {
-                                Log.e("debug2", e.toString());
-                            }
-
-                            avgsAfter.add(countAverage());
-
-                            ArrayList<String> arrayOfGrades2 = new ArrayList<String>();
-
-                            for (int k = 0; k < arrayOfGrades.length(); k++) {
-                                try {
-                                    arrayOfGrades2.add(arrayOfGrades.getString(k));
-                                } catch (JSONException e) {
-                                    Log.e("debug3", e.toString());
-                                }
-                            }
-                            arrayOfGrades2.remove(arrayOfGrades.length() - 1);
-
-                            arrayOfGrades = new JSONArray(arrayOfGrades2);
-
-                            try {
-                                editor.putString(arrayOfCategories.getString(i) + "Grades" + gradeType, arrayOfGrades.toString()).apply();
-                            } catch (JSONException e) {
-                                Log.e("debug4", e.toString());
-                            }
-
-                            if (j == 67) {
-                                j = 0;
-                            } else if (String.valueOf(j).endsWith("67")) {
-                                j -= 34;
-                            } else {
-                                j -= 33;
-                            }
-                        }
-
-                        break;
-                    case 3:
-
-                        break;
-                }
-            }
-        }
-
-        int currentGrade = (int) Math.round(Double.parseDouble(prefs.getString("AvgGrade", "1")));
-
-        Log.d("debugA", String.valueOf(avgsAfter.size()));
-        Log.d("debugA", String.valueOf(avgsAfter));
-
-        String[] strings = new String[]{};
-        switch (gradeType){
-            case 0:
-                strings = new String[]{"1", "2", "3", "4", "5"};
-                break;
-            case 1:
-                strings = new String[]{"90+", "75+", "50+", "30+", "0+"};
-                break;
-            case 2:
-                strings = new String[]{"4", "3", "2", "1", "0"};
-                break;
-            case 3:
-                strings = new String[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
-        }
-
-
-        editor.putInt("currentGrade", currentGrade);
-        editor.putString("avgsAfter", new JSONArray(avgsAfter).toString());
-        editor.apply();
-
-        try {
-            strings[currentGrade - 1] = String.valueOf(currentGrade) + " - You are here";
-        }catch (IndexOutOfBoundsException e){
-            Log.e("debug", e.toString());
-        }
-
-        PredictionLvAdapter adapter = new PredictionLvAdapter(this, strings);
-        listView.setAdapter(adapter);
-
-        setTotalHeightOfListView(listView);
-    }
-
-
-    public void setTotalHeightOfListView(ListView listView) {
-
-        ListAdapter mAdapter = listView.getAdapter();
-
-        int totalHeight = 0;
-
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            View mView = mAdapter.getView(i, null, listView);
-
-            mView.measure(
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-
-                    View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-
-            totalHeight += mView.getMeasuredHeight();
-        }
-
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalHeight
-                + (listView.getDividerHeight() * (mAdapter.getCount() - 1));
-        listView.setLayoutParams(params);
-        listView.requestLayout();
+        predictionThread = new Thread(new PredictionListViewImplementor(this, subjectData, listView));
+        predictionThread.start();
     }
 }

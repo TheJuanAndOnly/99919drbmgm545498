@@ -11,6 +11,11 @@
     <string name="rating4">You can do better than that!</string>
     <string name="rating5">You\'re not even trying…</string>
     <string name="New">New!</string>
+    <string name="get">Get</string>
+    <string name="from">from</string>
+    <string name="or">or</string>
+    <string name="no_way">There\'s no way homie</string>
+    <string name="you_are_here">You are here</string>
 
     <string-array name="quotes">
 

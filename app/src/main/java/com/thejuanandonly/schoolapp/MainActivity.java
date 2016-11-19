@@ -72,6 +72,7 @@ import org.json.JSONException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     DrawerLayout mDrawerLayout;
@@ -113,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
         levelTimer();
         setQuote();
         setOverall();
+
+        Locale.setDefault(Locale.US);
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
 
