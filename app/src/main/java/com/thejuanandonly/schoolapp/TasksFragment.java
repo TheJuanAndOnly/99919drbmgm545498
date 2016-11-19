@@ -35,7 +35,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 
 public class TasksFragment extends Fragment {
@@ -209,6 +211,15 @@ public class TasksFragment extends Fragment {
             arrayTime = new JSONArray();
         }
 
+        ArrayList<Date> dates = new ArrayList<>();
+        for (int a = 0; a < arrayTime.length(); a++) {
+            try {
+                dates.add(new Date(arrayTime.getLong(a)));
+            } catch (Exception e) {
+            }
+        }
+
+        long previousTime = 0;
         for (int a = 0; a < arrayName.length(); a++) {
             String item = null;
             try {
@@ -216,15 +227,21 @@ public class TasksFragment extends Fragment {
             } catch (Exception e) {
             }
 
-            listViewItems.add(item);
-        }
-
-        ArrayList<Date> dates = new ArrayList<>();
-        for (int a = 0; a < arrayTime.length(); a++) {
+            Date loadedDate;
             try {
-                dates.add(new Date(arrayTime.getLong(a)));
+                loadedDate = new Date(arrayTime.getLong(a));
             } catch (Exception e) {
+                loadedDate = new Date();
             }
+            Date date = new Date(loadedDate.getYear(), loadedDate.getMonth(), loadedDate.getDay());
+
+            if (date.getTime() != previousTime) {
+                previousTime = date.getTime();
+
+                item = item+"@new";
+            }
+
+            listViewItems.add(item);
         }
 
         for (int a = 0; a < listViewItems.size(); a++) {
@@ -244,6 +261,8 @@ public class TasksFragment extends Fragment {
 
             dates.remove(earliest);
         }
+
+
 
         String[] forAdapter = new String[listViewItems.size()];
         for (int a = 0; a < listViewItems.size(); a++) {

@@ -47,7 +47,6 @@ public class TasksListviewAdapter extends BaseAdapter {
         return position;
     }
 
-    long previousTime = 0;
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         View view = convertView;
@@ -73,26 +72,25 @@ public class TasksListviewAdapter extends BaseAdapter {
         String row = data[position];
         final String name = row.substring(0, row.indexOf("|name|"));
         final String body = row.substring(row.indexOf("|name|") + 6, row.indexOf("|body|"));
+        final Date loadedDate;
 
-        final Date loadedDate = new Date(Long.parseLong(row.substring(row.indexOf("|body|") + 6, row.length())));
-        Date date = new Date(loadedDate.getYear(), loadedDate.getMonth(), loadedDate.getDay());
-        final Calendar calendar = new GregorianCalendar();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-
-        String dayOfTheWeek = (String) android.text.format.DateFormat.format("EEEE", loadedDate);//Thursday
-        String stringMonth = (String) android.text.format.DateFormat.format("MMM", loadedDate); //Jun
-        String intMonth = (String) android.text.format.DateFormat.format("MM", loadedDate); //06
-        String year = (String) android.text.format.DateFormat.format("yyyy", loadedDate); //2013
-        String day = (String) android.text.format.DateFormat.format("dd", loadedDate); //20
-
-        if (date.getTime() != previousTime) {
-            previousTime = date.getTime();
+        if (row.contains("@new")) {
+            loadedDate = new Date(Long.parseLong(row.substring(row.indexOf("|body|") + 6, row.length()-4)));
 
             rlTime.setVisibility(View.VISIBLE);
+
+            Calendar calendar = new GregorianCalendar();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            calendar.set(Calendar.HOUR, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+
+            String dayOfTheWeek = (String) android.text.format.DateFormat.format("EEEE", loadedDate);//Thursday
+            String stringMonth = (String) android.text.format.DateFormat.format("MMM", loadedDate); //Jun
+            String intMonth = (String) android.text.format.DateFormat.format("MM", loadedDate); //06
+            String year = (String) android.text.format.DateFormat.format("yyyy", loadedDate); //2013
+            String day = (String) android.text.format.DateFormat.format("dd", loadedDate); //20
 
             if (Integer.parseInt(day) == (int) calendar.get(Calendar.DAY_OF_MONTH)) {
                 tvTime.setText("Today");
@@ -104,6 +102,8 @@ public class TasksListviewAdapter extends BaseAdapter {
                 tvTime.setText(dayOfTheWeek + " " + day + "." + intMonth + "." + year);
             }
         } else {
+            loadedDate = new Date(Long.parseLong(row.substring(row.indexOf("|body|") + 6, row.length())));
+
             rlTime.setVisibility(View.GONE);
         }
 

@@ -6,12 +6,6 @@
     <item android:id="@+id/action_schedule"
         android:title="@string/action_schedule"
         android:icon="@drawable/ic_event_white_24dp"
-        android:orderInCategory="200"
-        app:showAsAction="always" />
-
-    <item android:id="@+id/action_new_task"
-        android:title="@string/action_new_task"
-        android:icon="@drawable/ic_add_plus"
         android:orderInCategory="100"
         app:showAsAction="always" />
 
