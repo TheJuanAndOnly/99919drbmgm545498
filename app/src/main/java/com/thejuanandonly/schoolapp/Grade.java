@@ -15,9 +15,14 @@ public class Grade {
         this.grades = grades;
     }
 
+<<<<<<< HEAD
     public static List<Grade> getGrades(final List<String> arrayOfCategories, final List<List<String>> allGrades) {
 
         final List<Grade> subject = new ArrayList<>();
+=======
+    /*public static ArrayList<Grade> getGrades(JSONArray arrayOfCategories, ArrayList<JSONArray> allGrades) {
+        ArrayList<Grade> subject = new ArrayList<Grade>();
+>>>>>>> origin/master
 
         /*new Thread(new Runnable() {
             @Override
@@ -33,4 +38,12 @@ public class Grade {
 
         return subject;
     }
+<<<<<<< HEAD
+=======
+
+    public static Context getContext(){
+        return SubjectDetailActivity.initialContext;
+    }*/
+
+>>>>>>> origin/master
 }
