@@ -1,5 +1,7 @@
 package com.thejuanandonly.schoolapp;
 
+import android.animation.Animator;
+import android.animation.TimeInterpolator;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.Notification;
@@ -8,6 +10,8 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.renderscript.Element;
 import android.support.annotation.Nullable;
@@ -15,16 +19,23 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
+import com.transitionseverywhere.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
@@ -49,7 +60,13 @@ public class TasksFragment extends Fragment {
     private TasksListviewAdapter tasksListviewAdapter;
 
     private EditText etName, etBody;
-    private Button btnTime, btnDate, btnSave;
+    private Button btnTime, btnDate, btnSave, btnClose;
+    private Switch switchCurrent;
+
+    private ViewGroup head, main;
+
+    private LinearLayout llTime;
+    private RelativeLayout rlSwitch;
 
     public TimePicker timePicker;
     public DatePicker datePicker;
@@ -61,7 +78,6 @@ public class TasksFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-//        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         View rootView =  inflater.inflate(R.layout.tasks_layout, null);
 
         ImageView img = (ImageView) getActivity().findViewById(R.id.overviewImg);
@@ -77,7 +93,10 @@ public class TasksFragment extends Fragment {
         prefs = getActivity().getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
 
         toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
+
         listView = (ListView) rootView.findViewById(R.id.lw_tasks);
+
+        head = (ViewGroup) rootView.findViewById(R.id.head);
 
         etName = (EditText) rootView.findViewById(R.id.et_name);
         etBody = (EditText) rootView.findViewById(R.id.et_body);
@@ -85,41 +104,135 @@ public class TasksFragment extends Fragment {
         btnTime = (Button) rootView.findViewById(R.id.btnTime);
         btnDate = (Button) rootView.findViewById(R.id.btnDate);
         btnSave = (Button) rootView.findViewById(R.id.btn_save);
+        btnClose = (Button) rootView.findViewById(R.id.btn_close);
+
+        switchCurrent = (Switch) rootView.findViewById(R.id.switch_current);
+
+        llTime = (LinearLayout) head.findViewById(R.id.ll_time);
+
+        rlSwitch = (RelativeLayout) head.findViewById(R.id.rl_switch);
+        main = (ViewGroup) rootView.findViewById(R.id.main);
 
         time = new Date();
-
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addTask();
-            }
-        });
-
-        btnTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (time.getTime() == 0) {
-                    time.setTime(System.currentTimeMillis());
-                }
-                setTime(time.getHours(), time.getMinutes());
-            }
-        });
-
-        btnDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int yearplus = 0;
-                if (time.getYear() < 1900) {
-                    yearplus = 1900;
-                }
-                setDate(time.getDate(), time.getMonth(), time.getYear() + yearplus);
-            }
-        });
 
         toolbar.setTitle("Tasks");
         toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
 
+        initializeHeader(false);
+
+        updateTasks(true);
+
         return rootView;
+    }
+
+    public void initializeHeader(boolean adding) {
+        if (adding) {
+            btnSave.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    addTask();
+                    etName.setText("");
+                    etBody.setText("");
+                    btnTime.setText("Set time");
+                    btnDate.setText("Set date");
+                    time = new Date();
+
+                    initializeHeader(false);
+                }
+            });
+
+            btnClose.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Rect r = new Rect();
+                    getView().getWindowVisibleDisplayFrame(r);
+                    int screenHeight = getView().getRootView().getHeight();
+                    int keypadHeight = screenHeight - r.bottom;
+
+                    if (keypadHeight > screenHeight * 0.15) {
+                        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                    }
+
+                    initializeHeader(false);
+                }
+            });
+
+            btnTime.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (time.getTime() == 0) {
+                        time.setTime(System.currentTimeMillis());
+                    }
+                    setTime(time.getHours(), time.getMinutes());
+                }
+            });
+
+            btnDate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int yearplus = 0;
+                    if (time.getYear() < 1900) {
+                        yearplus = 1900;
+                    }
+                    setDate(time.getDate(), time.getMonth(), time.getYear() + yearplus);
+                }
+            });
+
+            etName.setCursorVisible(true);
+            etName.getBackground().mutate().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+            etBody.getBackground().mutate().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+
+            TransitionManager.beginDelayedTransition(main);
+            etName.setTextSize(14);
+            rlSwitch.setVisibility(View.GONE);
+
+            TransitionManager.beginDelayedTransition(main);
+            etName.setHint("Name your task");
+
+            TransitionManager.beginDelayedTransition(main);
+            etBody.setVisibility(View.VISIBLE);
+            llTime.setVisibility(View.VISIBLE);
+            btnSave.setVisibility(View.VISIBLE);
+            btnClose.setVisibility(View.VISIBLE);
+
+        } else {
+            etName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    initializeHeader(true);
+                }
+            });
+
+            switchCurrent.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    updateTasks(!isChecked);
+                }
+            });
+
+            etName.setCursorVisible(false);
+            etName.getBackground().mutate().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+
+            TransitionManager.beginDelayedTransition(main);
+            etBody.setVisibility(View.INVISIBLE);
+            llTime.setVisibility(View.INVISIBLE);
+            btnSave.setVisibility(View.INVISIBLE);
+            btnClose.setVisibility(View.INVISIBLE);
+
+            TransitionManager.beginDelayedTransition(main);
+            etBody.setVisibility(View.GONE);
+            llTime.setVisibility(View.GONE);
+            btnSave.setVisibility(View.GONE);
+            btnClose.setVisibility(View.GONE);
+
+            etName.setHint("Add new task");
+
+            TransitionManager.beginDelayedTransition(main);
+            etName.setTextSize(16);
+            rlSwitch.setVisibility(View.VISIBLE);
+
+        }
     }
 
     private void setTime(int hour, int minute) {
@@ -190,26 +303,32 @@ public class TasksFragment extends Fragment {
         dialog.show();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        updateTasks();
-    }
-
-    public void updateTasks() {
+    public void updateTasks(boolean todo) {
         ArrayList<String> listViewItems = new ArrayList<>();
 
         JSONArray arrayName, arrayWhat, arrayTime;
-        try {
-            arrayName = new JSONArray(prefs.getString("TaskName", null));
-            arrayWhat = new JSONArray(prefs.getString("TaskWhat", null));
-            arrayTime = new JSONArray(prefs.getString("TaskTime", null));
-        } catch (Exception e) {
-            arrayName = new JSONArray();
-            arrayWhat = new JSONArray();
-            arrayTime = new JSONArray();
+        if (todo) {
+            try {
+                arrayName = new JSONArray(prefs.getString("TaskName", null));
+                arrayWhat = new JSONArray(prefs.getString("TaskWhat", null));
+                arrayTime = new JSONArray(prefs.getString("TaskTime", null));
+            } catch (Exception e) {
+                arrayName = new JSONArray();
+                arrayWhat = new JSONArray();
+                arrayTime = new JSONArray();
+            }
+        } else {
+            try {
+                arrayName = new JSONArray(prefs.getString("DoneTaskName", null));
+                arrayWhat = new JSONArray(prefs.getString("DoneTaskWhat", null));
+                arrayTime = new JSONArray(prefs.getString("DoneTaskTime", null));
+            } catch (Exception e) {
+                arrayName = new JSONArray();
+                arrayWhat = new JSONArray();
+                arrayTime = new JSONArray();
+            }
         }
+
 
         ArrayList<Date> dates = new ArrayList<>();
         for (int a = 0; a < arrayTime.length(); a++) {
@@ -317,7 +436,7 @@ public class TasksFragment extends Fragment {
 
         editor.commit();
 
-        updateTasks();
+        updateTasks(true);
 
     }
 

@@ -66,7 +66,6 @@ public class TasksListviewAdapter extends BaseAdapter {
         View viewColor = (View) view.findViewById(R.id.view_color);
 
         ImageButton ibEdit = (ImageButton) view.findViewById(R.id.ib_edit);
-        ImageButton ibRemove = (ImageButton) view.findViewById(R.id.ib_remove);
         ImageButton ibDone = (ImageButton) view.findViewById(R.id.ib_done);
 
         String row = data[position];
@@ -149,14 +148,6 @@ public class TasksListviewAdapter extends BaseAdapter {
             public void onClick(View v) {
                 swipeLayout.close();
                 Toast.makeText(context, position+" edit", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        ibRemove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                swipeLayout.close();
-                Toast.makeText(context, position+" remove", Toast.LENGTH_SHORT).show();
             }
         });
 

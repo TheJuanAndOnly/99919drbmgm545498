@@ -2,12 +2,13 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/main">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/rl_add_task"
+        android:id="@+id/head"
         android:background="@color/mainblue">
 
         <EditText
@@ -18,8 +19,44 @@
             android:layout_marginRight="24dp"
             android:textColor="@color/white"
             android:textSize="14sp"
+            android:inputType="textCapSentences"
             android:singleLine="true"
-            android:hint="Name your task"/>
+            android:hint="Add new task"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/et_name"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="18dp"
+            android:id="@+id/rl_switch">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="To do"
+                android:layout_toLeftOf="@+id/switch_current"
+                android:layout_centerVertical="true"
+                android:textColor="@color/white"/>
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/switch_current"
+                android:layout_marginLeft="28dp"
+                android:layout_marginRight="28dp"
+                android:layout_centerHorizontal="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Done"
+                android:layout_toRightOf="@+id/switch_current"
+                android:layout_centerVertical="true"
+                android:textColor="@color/white"
+                android:gravity="center"/>
+
+        </RelativeLayout>
 
         <EditText
             android:layout_width="match_parent"
@@ -29,9 +66,10 @@
             android:textSize="14sp"
             android:singleLine="true"
             android:layout_marginBottom="12dp"
+            android:inputType="textCapSentences"
             android:layout_below="@+id/et_name"
             android:layout_alignLeft="@+id/et_name"
-            android:layout_alignRight="@id/et_name"
+            android:layout_alignRight="@+id/et_name"
             android:hint="What is your task"/>
 
         <LinearLayout
@@ -40,7 +78,7 @@
             android:orientation="horizontal"
             android:weightSum="2"
             android:id="@+id/ll_time"
-            android:layout_below="@id/et_body"
+            android:layout_below="@+id/et_body"
             android:background="@color/mainblue">
 
             <Button
@@ -64,7 +102,7 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Set day"
+                android:text="Set date"
                 android:textColor="@color/white"
                 android:id="@+id/btnDate"
                 android:layout_alignParentBottom="true"
@@ -85,6 +123,17 @@
             android:layout_alignParentRight="true"
             android:layout_below="@+id/ll_time"/>
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_close"
+            android:layout_margin="8dp"
+            android:text="CLOSE"
+            android:background="@null"
+            android:textColor="@color/white"
+            android:layout_toLeftOf="@+id/btn_save"
+            android:layout_below="@+id/ll_time"/>
+
     </RelativeLayout>
 
     <ListView
@@ -92,7 +141,7 @@
         android:layout_height="match_parent"
         android:id="@+id/lw_tasks"
         android:animateLayoutChanges="true"
-        android:layout_below="@+id/rl_add_task"
+        android:layout_below="@+id/head"
         android:background="@color/lightbluebackground"
         android:dividerHeight="0dp"
         android:divider="@null"/>
