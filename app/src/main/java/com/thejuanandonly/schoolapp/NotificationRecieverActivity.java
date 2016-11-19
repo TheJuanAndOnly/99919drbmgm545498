@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Icon;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.provider.Settings;
@@ -55,7 +56,7 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
         }
 
         for (int timePosition = 0; timePosition < numberOfTask; timePosition++) {
-            if (timess.get(timePosition).getTime() < System.currentTimeMillis() && timess.get(timePosition).getTime() > System.currentTimeMillis() - 10000) {
+            if (timess.get(timePosition).getTime() < System.currentTimeMillis() && timess.get(timePosition).getTime() > System.currentTimeMillis() - 60000) {
                 try {
                     notifyUser(context, arrayName.getString(timePosition), arrayWhat.getString(timePosition));
                     taskPosition = timePosition;
@@ -64,9 +65,9 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
             }
         }
 
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         PendingIntent mAlarmSender = PendingIntent.getBroadcast(context, 0, intent.putExtra("LastTask", taskPosition), PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 10000, mAlarmSender);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, mAlarmSender);
     }
 
     public void notifyUser(Context context, String name, String what) {

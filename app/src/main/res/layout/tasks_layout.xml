@@ -1,27 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:orientation="vertical"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tabs"
-        app:tabGravity="fill"
-        app:tabMode="fixed"
-        android:background="@color/mainblue"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp">
-    </android.support.design.widget.TabLayout>
+        android:layout_height="wrap_content"
+        android:id="@+id/rl_add_task"
+        android:background="@color/mainblue">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/viewpager"
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/et_name"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:singleLine="true"
+            android:hint="Name your task"/>
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/et_body"
+            android:textColor="@color/white"
+            android:textSize="14sp"
+            android:singleLine="true"
+            android:layout_marginBottom="12dp"
+            android:layout_below="@+id/et_name"
+            android:layout_alignLeft="@+id/et_name"
+            android:layout_alignRight="@id/et_name"
+            android:hint="What is your task"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            android:id="@+id/ll_time"
+            android:layout_below="@id/et_body"
+            android:background="@color/mainblue">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Set time"
+                android:textColor="@color/white"
+                android:id="@+id/btnTime"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"/>
+
+            <ImageView
+                android:layout_width="1dp"
+                android:layout_height="fill_parent"
+                android:background="@color/white"
+                android:layout_margin="10dp"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Set day"
+                android:textColor="@color/white"
+                android:id="@+id/btnDate"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"/>
+        </LinearLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_save"
+            android:layout_margin="8dp"
+            android:text="SAVE"
+            android:background="@null"
+            android:textColor="@color/white"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/ll_time"/>
+
+    </RelativeLayout>
+
+    <ListView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/lw_tasks"
+        android:animateLayoutChanges="true"
+        android:layout_below="@+id/rl_add_task"
+        android:background="@color/lightbluebackground"
+        android:dividerHeight="0dp"
+        android:divider="@null"/>
 
-    </android.support.v4.view.ViewPager>
-
-
-
-</LinearLayout>
+</RelativeLayout>
