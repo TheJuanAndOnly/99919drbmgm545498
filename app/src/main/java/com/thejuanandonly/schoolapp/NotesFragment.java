@@ -613,8 +613,8 @@ class ListViewAdapter extends BaseAdapter {
                 final ImageView imageView = new ImageView(context);
                 imageView.setTag(arrayOfArrays.get(position).get(i) + "`" + position);
                 imageView.setLayoutParams(params);
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 loadBitmap(arrayOfArrays.get(position).get(i), imageView, true);
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
