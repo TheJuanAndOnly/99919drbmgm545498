@@ -1,36 +1,30 @@
 package com.thejuanandonly.schoolapp;
 
-import android.animation.Animator;
-import android.animation.TimeInterpolator;
-import android.app.AlarmManager;
 import android.app.Dialog;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.renderscript.Element;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.util.Pair;
 import com.transitionseverywhere.TransitionManager;
+
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
 import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -38,21 +32,19 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
-import com.daimajia.swipe.SwipeLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 
 public class TasksFragment extends Fragment {
 
-    android.support.v7.widget.Toolbar toolbar;
+    android.support.v7.widget.Toolbar toolbarMain, toolbar;
 
     private ListView listView;
     private TasksListviewAdapter tasksListviewAdapter;
@@ -61,7 +53,7 @@ public class TasksFragment extends Fragment {
     private Button btnTime, btnDate, btnSave, btnClose;
     private Switch switchCurrent;
 
-    private ViewGroup head, main;
+    private ViewGroup head, main, list;
 
     private LinearLayout llTime;
     private RelativeLayout rlSwitch;
@@ -88,9 +80,23 @@ public class TasksFragment extends Fragment {
 
         prefs = getActivity().getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
 
-        toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbarMain = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbarMain.setVisibility(View.GONE);
+
+
+        toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_head);
+
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.setSupportActionBar(toolbar);
+        toolbar.setTitle(null);
+
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(getActivity(), ((MainActivity) getActivity()).mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
+        ((MainActivity) getActivity()).mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
 
         listView = (ListView) rootView.findViewById(R.id.lw_tasks);
+
+        list = (ViewGroup) rootView.findViewById(R.id.lw_tasks);
 
         head = (ViewGroup) rootView.findViewById(R.id.head);
 
@@ -111,14 +117,24 @@ public class TasksFragment extends Fragment {
 
         time = new Date();
 
-        toolbar.setTitle("Tasks");
-        toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
-
         initializeHeader(false);
 
         updateTasks(true);
 
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        toolbarMain.setVisibility(View.VISIBLE);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.setSupportActionBar(toolbarMain);
+
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(getActivity(), ((MainActivity) getActivity()).mDrawerLayout, toolbarMain, R.string.app_name, R.string.app_name);
+        ((MainActivity) getActivity()).mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
     }
 
     public void initializeHeader(boolean adding) {
@@ -133,7 +149,7 @@ public class TasksFragment extends Fragment {
                     btnDate.setText("Set date");
                     time = new Date();
 
-                    initializeHeader(false);
+                    btnClose.performClick();
                 }
             });
 
@@ -180,11 +196,15 @@ public class TasksFragment extends Fragment {
             etBody.getBackground().mutate().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
 
             TransitionManager.beginDelayedTransition(main);
-            etName.setTextSize(14);
             rlSwitch.setVisibility(View.GONE);
 
             TransitionManager.beginDelayedTransition(main);
             etName.setHint("Name your task");
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.setMargins(0, 16, 48, 0);
+            etName.setLayoutParams(params);
+
+            toolbar.getMenu().clear();
 
             TransitionManager.beginDelayedTransition(main);
             etBody.setVisibility(View.VISIBLE);
@@ -222,10 +242,16 @@ public class TasksFragment extends Fragment {
             btnSave.setVisibility(View.GONE);
             btnClose.setVisibility(View.GONE);
 
-            etName.setHint("Add new task");
+            MenuItem edit_item = toolbar.getMenu().add(0, R.id.action_schedule, 100, "Schedule");
+            edit_item.setIcon(R.drawable.ic_event_white_24dp);
+            edit_item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.setMargins(0, 16, 0, 0);
+            etName.setLayoutParams(params);
 
             TransitionManager.beginDelayedTransition(main);
-            etName.setTextSize(16);
+            etName.setHint("Add new task");
             rlSwitch.setVisibility(View.VISIBLE);
 
         }
@@ -334,7 +360,6 @@ public class TasksFragment extends Fragment {
             }
         }
 
-        long previousTime = 0;
         for (int a = 0; a < arrayName.length(); a++) {
             String item = null;
             try {
@@ -342,23 +367,10 @@ public class TasksFragment extends Fragment {
             } catch (Exception e) {
             }
 
-            Date loadedDate;
-            try {
-                loadedDate = new Date(arrayTime.getLong(a));
-            } catch (Exception e) {
-                loadedDate = new Date();
-            }
-            Date date = new Date(loadedDate.getYear(), loadedDate.getMonth(), loadedDate.getDay());
-
-            if (date.getTime() != previousTime) {
-                previousTime = date.getTime();
-
-                item = item+"@new";
-            }
-
             listViewItems.add(item);
         }
 
+        ArrayList<Date> datez = new ArrayList<>();
         for (int a = 0; a < listViewItems.size(); a++) {
             int earliest = 0;
             for (int b = 0; b < dates.size(); b++) {
@@ -367,6 +379,7 @@ public class TasksFragment extends Fragment {
                 }
             }
             listViewItems.add(a, listViewItems.get(earliest+a));
+            datez.add(dates.get(earliest));
 
             if (a <= earliest) {
                 listViewItems.remove(earliest+1+a);
@@ -377,14 +390,26 @@ public class TasksFragment extends Fragment {
             dates.remove(earliest);
         }
 
+        long previousTime = 0;
+        for (int a = 0; a < arrayName.length(); a++) {
+            Date loadedDate = datez.get(a);
 
+            Date previous = new Date(previousTime);
+            if (loadedDate.getDate() == previous.getDate() && loadedDate.getMonth() == previous.getMonth()) {
+
+            } else {
+                previousTime = loadedDate.getTime();
+
+                listViewItems.set(a, listViewItems.get(a)+"@new");
+            }
+        }
 
         String[] forAdapter = new String[listViewItems.size()];
         for (int a = 0; a < listViewItems.size(); a++) {
             forAdapter[a] = listViewItems.get(a);
         }
 
-        tasksListviewAdapter = new TasksListviewAdapter(getContext(), forAdapter);
+        tasksListviewAdapter = new TasksListviewAdapter(getContext(), forAdapter, todo);
         listView.setAdapter(tasksListviewAdapter);
     }
 
@@ -433,8 +458,90 @@ public class TasksFragment extends Fragment {
         editor.commit();
 
         updateTasks(true);
-
     }
+
+    public void doneTask(int position) {
+        SharedPreferences prefs = getActivity().getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        String name, what;
+        long time;
+        JSONArray arrayName, arrayWhat, arrayTime;
+
+        try {
+            arrayName = new JSONArray(prefs.getString("TaskName", null));
+            arrayWhat = new JSONArray(prefs.getString("TaskWhat", null));
+            arrayTime = new JSONArray(prefs.getString("TaskTime", null));
+        } catch (Exception e) {
+            arrayName = new JSONArray();
+            arrayWhat = new JSONArray();
+            arrayTime = new JSONArray();
+        }
+
+        ArrayList<String> arrayListNames = new ArrayList<>();
+        ArrayList<String> arrayListWhats = new ArrayList<>();
+        long[] times = new long[arrayTime.length()];
+
+        for (int a = 0; a < arrayName.length(); a++) {
+            try {
+                arrayListNames.add(a, arrayName.getString(a));
+                arrayListWhats.add(a, arrayWhat.getString(a));
+                times[a] = arrayTime.getLong(a);
+            } catch (Exception e) {
+            }
+        }
+
+        try {
+            name = arrayName.getString(position);
+            what = arrayWhat.getString(position);
+            time = arrayTime.getLong(position);
+        } catch (Exception e) {
+            name = "";
+            what = "";
+            time = 0;
+        }
+
+        arrayName = new JSONArray();
+        arrayWhat = new JSONArray();
+        arrayTime = new JSONArray();
+
+        for (int a = 0; a < arrayListNames.size(); a++) {
+            if (a != position) {
+                arrayName.put(arrayListNames.get(a));
+                arrayWhat.put(arrayListWhats.get(a));
+                arrayTime.put(times[a]);
+            }
+        }
+
+        editor.putString("TaskName", arrayName.toString());
+        editor.putString("TaskWhat", arrayWhat.toString());
+        editor.putString("TaskTime", arrayTime.toString());
+        editor.apply();
+
+        try {
+            arrayName = new JSONArray(prefs.getString("DoneTaskName", null));
+            arrayWhat = new JSONArray(prefs.getString("DoneTaskWhat", null));
+            arrayTime = new JSONArray(prefs.getString("DoneTaskTime", null));
+        } catch (Exception e) {
+            arrayName = new JSONArray();
+            arrayWhat = new JSONArray();
+            arrayTime = new JSONArray();
+        }
+
+        arrayName.put(name);
+        arrayWhat.put(what);
+        arrayTime.put(time);
+
+        editor.putString("DoneTaskName", arrayName.toString()).apply();
+        editor.putString("DoneTaskWhat", arrayWhat.toString()).apply();
+        editor.putString("DoneTaskTime", arrayTime.toString()).apply();
+
+        editor.apply();
+
+        updateTasks(true);
+    }
+
+
 
 //    public void editTask() {
 //        if (nameTask.getText().toString() != null && nameTask.getText().toString().length() > 0 && whatTask.getText().toString() != null && whatTask.getText().toString().length() > 0 && time.getTime() > System.currentTimeMillis()) {

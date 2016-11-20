@@ -1,5 +1,6 @@
 <LinearLayout android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
@@ -12,7 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/rl_time"
-            android:background="@color/darkbluebackground">
+            android:background="@color/darker">
 
             <ImageView
                 android:layout_width="18dp"
@@ -40,6 +41,7 @@
         <com.daimajia.swipe.SwipeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:drag_edge="right"
             android:id="@+id/swipe_layout">
 
             <LinearLayout
@@ -52,14 +54,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/ib_edit"
-                    android:background="@color/dotOrange"
+                    android:src="@drawable/ic_mode_edit_white_24dp"
+                    android:background="#64ff00aa"
                     android:layout_weight="1"/>
 
                 <ImageButton
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:id="@+id/ib_done"
-                    android:background="@color/dotGreen"
+                    android:src="@drawable/ic_done_white_24dp"
+                    android:background="#6463ff40"
                     android:layout_weight="1"/>
 
             </LinearLayout>
@@ -68,7 +72,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/rl_item"
-                android:background="@color/lightbluebackground">
+                android:background="@color/dark">
 
                 <View
                     android:layout_width="4dp"
