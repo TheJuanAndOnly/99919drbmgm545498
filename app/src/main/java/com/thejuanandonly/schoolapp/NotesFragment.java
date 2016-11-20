@@ -49,7 +49,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.messenger.MessengerUtils;
 import com.facebook.messenger.ShareToMessengerParams;
-import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.ads.MobileAds;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -108,6 +108,8 @@ public class NotesFragment extends Fragment {
         v = rootView;
 
         loadArrFromSP();
+
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-4648715887566496~3996876969");
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this.getActivity());
@@ -712,15 +714,6 @@ class ListViewAdapter extends BaseAdapter {
         }
 
 
-//        addPictures.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                ((MainActivity) context).addingImages(position, getCount());
-//
-//            }
-//        });
-
         final PopupMenu popup = new PopupMenu(context, settings);
         popup.getMenuInflater().inflate(R.menu.notes_menu, popup.getMenu());
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -757,7 +750,7 @@ class ListViewAdapter extends BaseAdapter {
                         try {
                             arrayOfArrays.remove(position);
                         } catch (IndexOutOfBoundsException e) {
-                            Toast.makeText(context, "size is " + arrayOfArrays.size(), Toast.LENGTH_SHORT).show();
+
                         }
 
                         String save = "";
@@ -778,8 +771,10 @@ class ListViewAdapter extends BaseAdapter {
                     case "Share":
 
 
-                        Toast.makeText(context, "Comming soon", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context, "Comming soon", Toast.LENGTH_SHORT).show();
 
+                        AdDialog dialog = new AdDialog();
+                        dialog.dialog(((Activity) context));
 
 
 

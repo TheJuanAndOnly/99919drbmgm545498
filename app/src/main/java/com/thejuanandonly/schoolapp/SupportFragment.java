@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.android.gms.analytics.Tracker;
 
 
 /**
@@ -28,14 +27,11 @@ public class SupportFragment extends android.support.v4.app.Fragment {
     Button bugReport, feedback;
     ImageView bug;
     TextView longText;
-    private Tracker mTracker;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        AnalyticsApplication application = (AnalyticsApplication) getActivity().getApplication();
-        mTracker = application.getDefaultTracker();
 
         toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("Support");

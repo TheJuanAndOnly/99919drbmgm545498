@@ -40,7 +40,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.daimajia.swipe.SwipeLayout;
-import com.google.android.gms.analytics.Tracker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,7 +53,6 @@ import java.util.GregorianCalendar;
 public class TasksFragment extends Fragment {
 
     android.support.v7.widget.Toolbar toolbar;
-    private Tracker mTracker;
 
     private ListView listView;
     private TasksListviewAdapter tasksListviewAdapter;
@@ -87,8 +85,6 @@ public class TasksFragment extends Fragment {
         TextView author = (TextView) getActivity().findViewById(R.id.author);
         author.setVisibility(View.GONE);
 
-        AnalyticsApplication application = (AnalyticsApplication) getActivity().getApplication();
-        mTracker = application.getDefaultTracker();
 
         prefs = getActivity().getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
 

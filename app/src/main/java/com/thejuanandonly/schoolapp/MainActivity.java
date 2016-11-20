@@ -70,7 +70,7 @@ import android.widget.Toast;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
-import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.ads.MobileAds;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -102,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
     public static boolean taskAdded = false;
     android.support.v7.widget.Toolbar toolbar;
     String reset;
-    private Tracker mTracker;
     public String userNickname;
 
 
@@ -124,10 +123,7 @@ public class MainActivity extends AppCompatActivity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
 
-        // Obtain the shared Tracker instance.
-        AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        mTracker = application.getDefaultTracker();
-
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-4648715887566496~3996876969");
 
         api = android.os.Build.VERSION.SDK_INT;
 

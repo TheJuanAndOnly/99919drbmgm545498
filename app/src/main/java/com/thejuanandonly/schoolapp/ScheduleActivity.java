@@ -29,7 +29,6 @@ import android.widget.Toast;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
-import com.google.android.gms.analytics.Tracker;
 
 public class ScheduleActivity extends AppCompatActivity {
 
@@ -39,7 +38,6 @@ public class ScheduleActivity extends AppCompatActivity {
     Snackbar snackbar;
     boolean changeImageViewd;
     boolean spCheck;
-    private Tracker mTracker;
 
 
     @Override
@@ -48,8 +46,6 @@ public class ScheduleActivity extends AppCompatActivity {
         setContentView(R.layout.schedule_activity_layout);
 
         // Obtain the shared Tracker instance.
-        AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        mTracker = application.getDefaultTracker();
 
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE)

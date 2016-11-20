@@ -33,7 +33,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.Tracker;
 import com.thejuanandonly.schoolapp.R;
 
 import org.json.JSONArray;
@@ -54,7 +53,6 @@ public class SettingsFragment extends Fragment {
     EditText changeName;
     TextView userNicktxtview;
     Button set;
-    private Tracker mTracker;
 
     @Nullable
     @Override
@@ -65,8 +63,6 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onStart() {
 
-        AnalyticsApplication application = (AnalyticsApplication) getActivity().getApplication();
-        mTracker = application.getDefaultTracker();
 
         percentageListener();
         theme();

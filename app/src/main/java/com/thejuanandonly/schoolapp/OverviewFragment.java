@@ -24,7 +24,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.google.android.gms.analytics.Tracker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,7 +41,6 @@ public class OverviewFragment extends Fragment {
     public static Context overviewFragmentContext;
     String username;
     String imageUri;
-    private Tracker mTracker;
 
     @Nullable
     @Override
@@ -51,8 +49,6 @@ public class OverviewFragment extends Fragment {
         v = rootView;
         overviewFragmentContext = getContext();
 
-        AnalyticsApplication application = (AnalyticsApplication) getActivity().getApplication();
-        mTracker = application.getDefaultTracker();
 
         toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("Overview");
