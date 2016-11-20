@@ -2,6 +2,8 @@ package com.thejuanandonly.schoolapp;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,9 @@ import android.widget.Toast;
 
 import com.daimajia.swipe.SwipeLayout;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -23,11 +28,13 @@ public class TasksListviewAdapter extends BaseAdapter {
 
     Context context;
     String[] data;
+    private boolean todo;
     private static LayoutInflater inflater = null;
 
-    public TasksListviewAdapter(Context context, String[] data) {
+    public TasksListviewAdapter(Context context, String[] data, boolean todo) {
         this.context = context;
         this.data = data;
+        this.todo = todo;
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -57,18 +64,21 @@ public class TasksListviewAdapter extends BaseAdapter {
         RelativeLayout rlTime = (RelativeLayout) view.findViewById(R.id.rl_time);
         RelativeLayout rlItem = (RelativeLayout) view.findViewById(R.id.rl_item);
         final SwipeLayout swipeLayout = (SwipeLayout) view.findViewById(R.id.swipe_layout);
+        if (!todo) {
+            swipeLayout.setSwipeEnabled(false);
+        }
 
         TextView tvTime = (TextView) view.findViewById(R.id.tv_time);
 
-        TextView tvName = (TextView) view.findViewById(R.id.tv_name);
-        TextView tvBody = (TextView) view.findViewById(R.id.tv_body);
+        final TextView tvName = (TextView) view.findViewById(R.id.tv_name);
+        final TextView tvBody = (TextView) view.findViewById(R.id.tv_body);
         ImageButton ibInfo = (ImageButton) view.findViewById(R.id.ib_info);
         View viewColor = (View) view.findViewById(R.id.view_color);
 
         ImageButton ibEdit = (ImageButton) view.findViewById(R.id.ib_edit);
         ImageButton ibDone = (ImageButton) view.findViewById(R.id.ib_done);
 
-        String row = data[position];
+        final String row = data[position];
         final String name = row.substring(0, row.indexOf("|name|"));
         final String body = row.substring(row.indexOf("|name|") + 6, row.indexOf("|body|"));
         final Date loadedDate;
@@ -109,39 +119,41 @@ public class TasksListviewAdapter extends BaseAdapter {
         tvName.setText(name);
         tvBody.setText(body);
 
-        ibInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Dialog dialog = new Dialog(context);
-                dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                dialog.setContentView(R.layout.dialog_task_details);
+        if (todo) {
+            ibInfo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final Dialog dialog = new Dialog(context);
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    dialog.setContentView(R.layout.dialog_task_details);
 
-                TextView tvName = (TextView) dialog.findViewById(R.id.tv_name);
-                TextView tvBody = (TextView) dialog.findViewById(R.id.tv_body);
-                TextView tvTimeDate = (TextView) dialog.findViewById(R.id.tv_time_date);
+                    TextView tvName = (TextView) dialog.findViewById(R.id.tv_name);
+                    TextView tvBody = (TextView) dialog.findViewById(R.id.tv_body);
+                    TextView tvTimeDate = (TextView) dialog.findViewById(R.id.tv_time_date);
 
-                String timeDate = (String) android.text.format.DateFormat.format("hh:mm EEEE, dd.MM.yyyy", loadedDate);
+                    String timeDate = (String) android.text.format.DateFormat.format("HH:mm EEEE, dd.MM.yyyy", loadedDate);
 
-                tvName.setText(name);
-                tvBody.setText(body);
-                tvTimeDate.setText(timeDate);
+                    tvName.setText(name);
+                    tvBody.setText(body);
+                    tvTimeDate.setText(timeDate);
 
-                dialog.show();
-            }
-        });
-
-        rlItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (swipeLayout.getOpenStatus() == SwipeLayout.Status.Open) {
-                    swipeLayout.close();
-                } else {
-                    swipeLayout.open();
+                    dialog.show();
                 }
-            }
-        });
+            });
+        } else {
+            ibInfo.setBackgroundResource(R.drawable.ic_done_white_24dp);
+        }
 
-
+//        rlItem.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (swipeLayout.getOpenStatus() == SwipeLayout.Status.Open) {
+//                    swipeLayout.close();
+//                } else {
+//                    swipeLayout.open();
+//                }
+//            }
+//        });
 
         ibEdit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -155,7 +167,42 @@ public class TasksListviewAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 swipeLayout.close();
-                Toast.makeText(context, position+" done", Toast.LENGTH_SHORT).show();
+
+                SharedPreferences prefs = context.getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+                JSONArray arrayName, arrayWhat, arrayTime;
+                String name, what;
+                long time;
+                try {
+                    arrayName = new JSONArray(prefs.getString("TaskName", null));
+                    arrayWhat = new JSONArray(prefs.getString("TaskWhat", null));
+                    arrayTime = new JSONArray(prefs.getString("TaskTime", null));
+                } catch (Exception e) {
+                    arrayName = new JSONArray();
+                    arrayWhat = new JSONArray();
+                    arrayTime = new JSONArray();
+                }
+
+                name = row.substring(0, row.indexOf("|name|"));
+                what = row.substring(row.indexOf("|name|") + 6, row.indexOf("|body|"));
+                time = Long.parseLong(row.substring(row.indexOf("|body|") + 6, row.length()-4));
+
+                int pos = 0;
+                for (int a = 0; a < arrayName.length(); a++) {
+                    try {
+                        if (arrayName.getString(a).equals(name)) {
+                            if (arrayWhat.getString(a).equals(what)) {
+                                if (arrayTime.getLong(a) == time) {
+                                    pos = a;
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                    }
+                }
+
+                FragmentManager fm = ((MainActivity) context).getSupportFragmentManager();
+                TasksFragment fragment = (TasksFragment) fm.findFragmentById(R.id.containerView);
+                fragment.doneTask(pos);
             }
         });
 
