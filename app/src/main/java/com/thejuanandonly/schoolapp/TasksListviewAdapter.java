@@ -55,7 +55,7 @@ public class TasksListviewAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(final int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, final View convertView, ViewGroup parent) {
         View view = convertView;
         if (view == null) {
             view = inflater.inflate(R.layout.item_listview_tasks, null);
@@ -158,16 +158,6 @@ public class TasksListviewAdapter extends BaseAdapter {
         ibEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                swipeLayout.close();
-                Toast.makeText(context, position+" edit", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        ibDone.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                swipeLayout.close();
-
                 SharedPreferences prefs = context.getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
                 JSONArray arrayName, arrayWhat, arrayTime;
                 String name, what;
@@ -184,7 +174,48 @@ public class TasksListviewAdapter extends BaseAdapter {
 
                 name = row.substring(0, row.indexOf("|name|"));
                 what = row.substring(row.indexOf("|name|") + 6, row.indexOf("|body|"));
-                time = Long.parseLong(row.substring(row.indexOf("|body|") + 6, row.length()-4));
+                time = loadedDate.getTime();
+
+                int pos = 0;
+                for (int a = 0; a < arrayName.length(); a++) {
+                    try {
+                        if (arrayName.getString(a).equals(name)) {
+                            if (arrayWhat.getString(a).equals(what)) {
+                                if (arrayTime.getLong(a) == time) {
+                                    pos = a;
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                    }
+                }
+
+                FragmentManager fm = ((MainActivity) context).getSupportFragmentManager();
+                TasksFragment fragment = (TasksFragment) fm.findFragmentById(R.id.containerView);
+                fragment.editTask(pos);
+            }
+        });
+
+        ibDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences prefs = context.getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+                JSONArray arrayName, arrayWhat, arrayTime;
+                String name, what;
+                long time;
+                try {
+                    arrayName = new JSONArray(prefs.getString("TaskName", null));
+                    arrayWhat = new JSONArray(prefs.getString("TaskWhat", null));
+                    arrayTime = new JSONArray(prefs.getString("TaskTime", null));
+                } catch (Exception e) {
+                    arrayName = new JSONArray();
+                    arrayWhat = new JSONArray();
+                    arrayTime = new JSONArray();
+                }
+
+                name = row.substring(0, row.indexOf("|name|"));
+                what = row.substring(row.indexOf("|name|") + 6, row.indexOf("|body|"));
+                time = loadedDate.getTime();
 
                 int pos = 0;
                 for (int a = 0; a < arrayName.length(); a++) {
