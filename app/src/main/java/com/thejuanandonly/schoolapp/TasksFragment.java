@@ -19,10 +19,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
@@ -55,13 +57,12 @@ public class TasksFragment extends Fragment {
     private TasksListviewAdapter tasksListviewAdapter;
 
     private EditText etName, etBody;
-    private Button btnTime, btnDate, btnSave, btnClose;
+    private Button btnTime, btnDate, btnSave;
     private Switch switchCurrent;
 
     private ViewGroup head, main, list;
 
-    private LinearLayout llTime;
-    private RelativeLayout rlSwitch;
+    private RelativeLayout rlTime, rlSwitch;
 
     public TimePicker timePicker;
     public DatePicker datePicker;
@@ -69,6 +70,8 @@ public class TasksFragment extends Fragment {
     public Date time;
 
     private SharedPreferences prefs;
+
+    private ActionBarDrawerToggle mDrawerToggle;
 
     @Nullable
     @Override
@@ -90,12 +93,13 @@ public class TasksFragment extends Fragment {
 
 
         toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_head);
+        toolbar.setContentInsetsAbsolute(0, 0);
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
         toolbar.setTitle(null);
 
-        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(getActivity(), ((MainActivity) getActivity()).mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
+        mDrawerToggle = new ActionBarDrawerToggle(getActivity(), ((MainActivity) getActivity()).mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
         ((MainActivity) getActivity()).mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
@@ -111,11 +115,10 @@ public class TasksFragment extends Fragment {
         btnTime = (Button) rootView.findViewById(R.id.btnTime);
         btnDate = (Button) rootView.findViewById(R.id.btnDate);
         btnSave = (Button) rootView.findViewById(R.id.btn_save);
-        btnClose = (Button) rootView.findViewById(R.id.btn_close);
 
         switchCurrent = (Switch) rootView.findViewById(R.id.switch_current);
 
-        llTime = (LinearLayout) head.findViewById(R.id.ll_time);
+        rlTime = (RelativeLayout) head.findViewById(R.id.rl_time);
 
         rlSwitch = (RelativeLayout) head.findViewById(R.id.rl_switch);
         main = (ViewGroup) rootView.findViewById(R.id.main);
@@ -147,9 +150,10 @@ public class TasksFragment extends Fragment {
             if (editing) btnSave.setText("Save");
             else btnSave.setText("Add");
 
-            etName.setOnClickListener(new View.OnClickListener() {
+            etName.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public void onClick(View v) {
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    return false;
                 }
             });
 
@@ -162,13 +166,6 @@ public class TasksFragment extends Fragment {
                         addTask(false, 0);
                     }
 
-                    btnClose.performClick();
-                }
-            });
-
-            btnClose.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
                     Rect r = new Rect();
                     getView().getWindowVisibleDisplayFrame(r);
                     int screenHeight = getView().getRootView().getHeight();
@@ -181,11 +178,35 @@ public class TasksFragment extends Fragment {
 
                     etName.setText("");
                     etBody.setText("");
-                    btnTime.setText("Set time");
-                    btnDate.setText("Set date");
+                    btnTime.setText("time");
+                    btnDate.setText("date");
                     time = new Date();
 
                     initializeHeader(false, false, 0);
+                }
+            });
+
+            listView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    Rect r = new Rect();
+                    getView().getWindowVisibleDisplayFrame(r);
+                    int screenHeight = getView().getRootView().getHeight();
+                    int keypadHeight = screenHeight - r.bottom;
+
+                    if (keypadHeight > screenHeight * 0.15) {
+                        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                    }
+
+                    etName.setText("");
+                    etBody.setText("");
+                    btnTime.setText("time");
+                    btnDate.setText("date");
+                    time = new Date();
+
+                    initializeHeader(false, false, 0);
+                    return false;
                 }
             });
 
@@ -220,22 +241,24 @@ public class TasksFragment extends Fragment {
             TransitionManager.beginDelayedTransition(main);
             etName.setHint("Name your task");
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.setMargins(0, 16, 48, 0);
+            params.setMargins(48, 16, 48, 0);
             etName.setLayoutParams(params);
 
             toolbar.getMenu().clear();
 
+            mDrawerToggle.setDrawerIndicatorEnabled(false);
+
             TransitionManager.beginDelayedTransition(main);
             etBody.setVisibility(View.VISIBLE);
-            llTime.setVisibility(View.VISIBLE);
+            rlTime.setVisibility(View.VISIBLE);
             btnSave.setVisibility(View.VISIBLE);
-            btnClose.setVisibility(View.VISIBLE);
 
         } else {
-            etName.setOnClickListener(new View.OnClickListener() {
+            etName.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public void onClick(View v) {
+                public boolean onTouch(View view, MotionEvent motionEvent) {
                     initializeHeader(true, false, 0);
+                    return false;
                 }
             });
 
@@ -246,24 +269,26 @@ public class TasksFragment extends Fragment {
                 }
             });
 
+            listView.setOnTouchListener(null);
+
             etName.setCursorVisible(false);
             etName.getBackground().mutate().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
 
             TransitionManager.beginDelayedTransition(main);
             etBody.setVisibility(View.INVISIBLE);
-            llTime.setVisibility(View.INVISIBLE);
+            rlTime.setVisibility(View.INVISIBLE);
             btnSave.setVisibility(View.INVISIBLE);
-            btnClose.setVisibility(View.INVISIBLE);
 
             TransitionManager.beginDelayedTransition(main);
             etBody.setVisibility(View.GONE);
-            llTime.setVisibility(View.GONE);
+            rlTime.setVisibility(View.GONE);
             btnSave.setVisibility(View.GONE);
-            btnClose.setVisibility(View.GONE);
 
             MenuItem edit_item = toolbar.getMenu().add(0, R.id.action_schedule, 100, "Schedule");
             edit_item.setIcon(R.drawable.ic_event_white_24dp);
             edit_item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+            mDrawerToggle.setDrawerIndicatorEnabled(true);
 
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             params.setMargins(0, 16, 0, 0);
@@ -336,7 +361,7 @@ public class TasksFragment extends Fragment {
 
                 int month = time.getMonth() + 1;
 
-                btnDate.setText(time.getDate() + "." + month + ". " + datePicker.getYear());
+                btnDate.setText(time.getDate() + "." + month + " .");
                 dialog.dismiss();
             }
         });
@@ -599,7 +624,7 @@ public class TasksFragment extends Fragment {
         }
 
         String timeString = (String) android.text.format.DateFormat.format("HH : mm", time);
-        String dateString = (String) android.text.format.DateFormat.format("dd.MM. yyyy", time);
+        String dateString = (String) android.text.format.DateFormat.format("dd. MM.", time);
 
         btnTime.setText(timeString);
         btnDate.setText(dateString);

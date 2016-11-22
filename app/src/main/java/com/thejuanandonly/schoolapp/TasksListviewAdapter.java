@@ -190,6 +190,8 @@ public class TasksListviewAdapter extends BaseAdapter {
                     }
                 }
 
+                swipeLayout.close();
+
                 FragmentManager fm = ((MainActivity) context).getSupportFragmentManager();
                 TasksFragment fragment = (TasksFragment) fm.findFragmentById(R.id.containerView);
                 fragment.editTask(pos);
