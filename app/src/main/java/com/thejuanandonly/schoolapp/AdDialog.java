@@ -5,8 +5,11 @@ import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.CountDownTimer;
 import android.provider.Settings;
+import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.google.android.gms.ads.AdRequest;
@@ -27,9 +30,7 @@ import java.util.Random;
 public class AdDialog {
 
     ImageView adImageView;
-    Integer[] backgrounds = {R.drawable.ad_blue_bckg, R.drawable.ad_green_bckg, R.drawable.ad_turquoise_bckg,
-                                R.drawable.ad_purple_bckg, R.drawable.adr_red_bckg,};
-
+    Button bContinue;
     ArrayList<Drawable> bckgPictures;
 
     public void dialog(Activity activity) {
@@ -51,6 +52,26 @@ public class AdDialog {
         adImageView = (ImageView) dialog.findViewById(R.id.ad_ImageView);
         adImageView.setImageDrawable(bckgPictures.get(randomInt));
 
+        bContinue = (Button) dialog.findViewById(R.id.dialogContinue);
+        bContinue.setVisibility(View.GONE);
+        bContinue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        CountDownTimer timer = new CountDownTimer(3000, 1000) {
+            @Override
+            public void onTick(long l) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                bContinue.setVisibility(View.VISIBLE);
+            }
+        }.start();
 
 
         NativeExpressAdView adView = (NativeExpressAdView)dialog.findViewById(R.id.adView);
