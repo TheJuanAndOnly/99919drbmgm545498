@@ -1,7 +1,10 @@
 package com.thejuanandonly.schoolapp;
 
+import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -16,10 +19,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
@@ -41,6 +46,8 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static android.content.Context.ALARM_SERVICE;
+
 
 public class TasksFragment extends Fragment {
 
@@ -50,13 +57,12 @@ public class TasksFragment extends Fragment {
     private TasksListviewAdapter tasksListviewAdapter;
 
     private EditText etName, etBody;
-    private Button btnTime, btnDate, btnSave, btnClose;
+    private Button btnTime, btnDate, btnSave;
     private Switch switchCurrent;
 
     private ViewGroup head, main, list;
 
-    private LinearLayout llTime;
-    private RelativeLayout rlSwitch;
+    private RelativeLayout rlTime, rlSwitch;
 
     public TimePicker timePicker;
     public DatePicker datePicker;
@@ -64,6 +70,8 @@ public class TasksFragment extends Fragment {
     public Date time;
 
     private SharedPreferences prefs;
+
+    private ActionBarDrawerToggle mDrawerToggle;
 
     @Nullable
     @Override
@@ -85,12 +93,13 @@ public class TasksFragment extends Fragment {
 
 
         toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_head);
+        toolbar.setContentInsetsAbsolute(0, 0);
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
         toolbar.setTitle(null);
 
-        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(getActivity(), ((MainActivity) getActivity()).mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
+        mDrawerToggle = new ActionBarDrawerToggle(getActivity(), ((MainActivity) getActivity()).mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
         ((MainActivity) getActivity()).mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
@@ -106,18 +115,17 @@ public class TasksFragment extends Fragment {
         btnTime = (Button) rootView.findViewById(R.id.btnTime);
         btnDate = (Button) rootView.findViewById(R.id.btnDate);
         btnSave = (Button) rootView.findViewById(R.id.btn_save);
-        btnClose = (Button) rootView.findViewById(R.id.btn_close);
 
         switchCurrent = (Switch) rootView.findViewById(R.id.switch_current);
 
-        llTime = (LinearLayout) head.findViewById(R.id.ll_time);
+        rlTime = (RelativeLayout) head.findViewById(R.id.rl_time);
 
         rlSwitch = (RelativeLayout) head.findViewById(R.id.rl_switch);
         main = (ViewGroup) rootView.findViewById(R.id.main);
 
         time = new Date();
 
-        initializeHeader(false);
+        initializeHeader(false, false, 0);
 
         updateTasks(true);
 
@@ -137,25 +145,27 @@ public class TasksFragment extends Fragment {
         mDrawerToggle.syncState();
     }
 
-    public void initializeHeader(boolean adding) {
+    public void initializeHeader(boolean adding, final boolean editing, final int position) {
         if (adding) {
-            btnSave.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    addTask();
-                    etName.setText("");
-                    etBody.setText("");
-                    btnTime.setText("Set time");
-                    btnDate.setText("Set date");
-                    time = new Date();
+            if (editing) btnSave.setText("Save");
+            else btnSave.setText("Add");
 
-                    btnClose.performClick();
+            etName.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    return false;
                 }
             });
 
-            btnClose.setOnClickListener(new View.OnClickListener() {
+            btnSave.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (editing) {
+                        addTask(true, position);
+                    } else {
+                        addTask(false, 0);
+                    }
+
                     Rect r = new Rect();
                     getView().getWindowVisibleDisplayFrame(r);
                     int screenHeight = getView().getRootView().getHeight();
@@ -166,7 +176,37 @@ public class TasksFragment extends Fragment {
                         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
                     }
 
-                    initializeHeader(false);
+                    etName.setText("");
+                    etBody.setText("");
+                    btnTime.setText("time");
+                    btnDate.setText("date");
+                    time = new Date();
+
+                    initializeHeader(false, false, 0);
+                }
+            });
+
+            listView.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    Rect r = new Rect();
+                    getView().getWindowVisibleDisplayFrame(r);
+                    int screenHeight = getView().getRootView().getHeight();
+                    int keypadHeight = screenHeight - r.bottom;
+
+                    if (keypadHeight > screenHeight * 0.15) {
+                        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+                    }
+
+                    etName.setText("");
+                    etBody.setText("");
+                    btnTime.setText("time");
+                    btnDate.setText("date");
+                    time = new Date();
+
+                    initializeHeader(false, false, 0);
+                    return false;
                 }
             });
 
@@ -201,22 +241,24 @@ public class TasksFragment extends Fragment {
             TransitionManager.beginDelayedTransition(main);
             etName.setHint("Name your task");
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.setMargins(0, 16, 48, 0);
+            params.setMargins(48, 16, 48, 0);
             etName.setLayoutParams(params);
 
             toolbar.getMenu().clear();
 
+            mDrawerToggle.setDrawerIndicatorEnabled(false);
+
             TransitionManager.beginDelayedTransition(main);
             etBody.setVisibility(View.VISIBLE);
-            llTime.setVisibility(View.VISIBLE);
+            rlTime.setVisibility(View.VISIBLE);
             btnSave.setVisibility(View.VISIBLE);
-            btnClose.setVisibility(View.VISIBLE);
 
         } else {
-            etName.setOnClickListener(new View.OnClickListener() {
+            etName.setOnTouchListener(new View.OnTouchListener() {
                 @Override
-                public void onClick(View v) {
-                    initializeHeader(true);
+                public boolean onTouch(View view, MotionEvent motionEvent) {
+                    initializeHeader(true, false, 0);
+                    return false;
                 }
             });
 
@@ -227,24 +269,26 @@ public class TasksFragment extends Fragment {
                 }
             });
 
+            listView.setOnTouchListener(null);
+
             etName.setCursorVisible(false);
             etName.getBackground().mutate().setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
 
             TransitionManager.beginDelayedTransition(main);
             etBody.setVisibility(View.INVISIBLE);
-            llTime.setVisibility(View.INVISIBLE);
+            rlTime.setVisibility(View.INVISIBLE);
             btnSave.setVisibility(View.INVISIBLE);
-            btnClose.setVisibility(View.INVISIBLE);
 
             TransitionManager.beginDelayedTransition(main);
             etBody.setVisibility(View.GONE);
-            llTime.setVisibility(View.GONE);
+            rlTime.setVisibility(View.GONE);
             btnSave.setVisibility(View.GONE);
-            btnClose.setVisibility(View.GONE);
 
             MenuItem edit_item = toolbar.getMenu().add(0, R.id.action_schedule, 100, "Schedule");
             edit_item.setIcon(R.drawable.ic_event_white_24dp);
             edit_item.setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS);
+
+            mDrawerToggle.setDrawerIndicatorEnabled(true);
 
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             params.setMargins(0, 16, 0, 0);
@@ -317,7 +361,7 @@ public class TasksFragment extends Fragment {
 
                 int month = time.getMonth() + 1;
 
-                btnDate.setText(time.getDate() + "." + month + ". " + datePicker.getYear());
+                btnDate.setText(time.getDate() + "." + month + " .");
                 dialog.dismiss();
             }
         });
@@ -411,6 +455,10 @@ public class TasksFragment extends Fragment {
 
         tasksListviewAdapter = new TasksListviewAdapter(getContext(), forAdapter, todo);
         listView.setAdapter(tasksListviewAdapter);
+
+        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
+        PendingIntent mAlarmSender = PendingIntent.getBroadcast(getContext(), 0, new Intent(getContext(), NotificationRecieverActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
     }
 
     Dialog dialog;
@@ -431,7 +479,7 @@ public class TasksFragment extends Fragment {
 //        ActivityCompat.startActivity(dialog.getOwnerActivity(), i, b);
 //    }
 
-    public void addTask() {
+    public void addTask(boolean edit, int position) {
         SharedPreferences prefs = getActivity().getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
 
@@ -447,9 +495,18 @@ public class TasksFragment extends Fragment {
             arrayTime = new JSONArray();
         }
 
-        arrayName.put(etName.getText().toString());
-        arrayWhat.put(etBody.getText().toString());
-        arrayTime.put(time.getTime());
+        if (!edit) {
+            arrayName.put(etName.getText().toString());
+            arrayWhat.put(etBody.getText().toString());
+            arrayTime.put(time.getTime());
+        } else {
+            try {
+                arrayName.put(position, etName.getText().toString());
+                arrayWhat.put(position, etBody.getText().toString());
+                arrayTime.put(position, time.getTime());
+            } catch (Exception e) {
+            }
+        }
 
         editor.putString("TaskName", arrayName.toString()).apply();
         editor.putString("TaskWhat", arrayWhat.toString()).apply();
@@ -543,74 +600,82 @@ public class TasksFragment extends Fragment {
 
 
 
-//    public void editTask() {
-//        if (nameTask.getText().toString() != null && nameTask.getText().toString().length() > 0 && whatTask.getText().toString() != null && whatTask.getText().toString().length() > 0 && time.getTime() > System.currentTimeMillis()) {
-//            SharedPreferences prefs = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
-//            SharedPreferences.Editor editor = prefs.edit();
-//
-//            try {
-//                arrayName = new JSONArray(prefs.getString("TaskName", null));
-//                arrayWhat = new JSONArray(prefs.getString("TaskWhat", null));
-//                arrayTime = new JSONArray(prefs.getString("TaskTime", null));
-//            } catch (Exception e) {
-//                arrayName = new JSONArray();
-//                arrayWhat = new JSONArray();
-//                arrayTime = new JSONArray();
-//            }
-//
-//            ArrayList<String> listName = new ArrayList<String>();
-//            for (int i = 0; i < arrayName.length(); i++){
-//                try {
-//                    listName.add(arrayName.getString(i));
-//                } catch (Exception e) {
-//                }
-//            }
-//
-//            listName.remove(editName);
-//            arrayName = new JSONArray(listName);
-//
-//            ArrayList<String> listWhat = new ArrayList<String>();
-//            if (arrayWhat != null) {
-//                int len = arrayWhat.length();
-//                for (int i = 0; i < len ; i++){
-//                    try {
-//                        listWhat.add(arrayWhat.getString(i));
-//                    } catch (Exception e) {
-//                    }
-//                }
-//            }
-//            listWhat.remove(editWhat);
-//            arrayWhat = new JSONArray(listWhat);
-//
-//            ArrayList<Long> listTime = new ArrayList<Long>();
-//            for (int i = 0; i < arrayTime.length(); i++){
-//                try {
-//                    listTime.add(arrayTime.getLong(i));
-//                } catch (Exception e) {
-//                }
-//            }
-//
-//            listTime.remove(editTime);
-//            arrayTime = new JSONArray(listTime);
-//
-//            arrayName.put(nameTask.getText().toString());
-//            arrayWhat.put(whatTask.getText().toString());
-//            arrayTime.put(time.getTime());
-//
-//            editor.putString("TaskName", arrayName.toString()).apply();
-//            editor.putString("TaskWhat", arrayWhat.toString()).apply();
-//            editor.putString("TaskTime", arrayTime.toString()).apply();
-//            editor.commit();
-//
-//            MainActivity.taskAdded = true;
-//            finish();
-//
-//            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-//            PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-//            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
-//
-//        }
-//    }
+    public void editTask(int position) {
+        SharedPreferences prefs = getActivity().getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+        JSONArray arrayName, arrayWhat, arrayTime;
+
+        try {
+            arrayName = new JSONArray(prefs.getString("TaskName", null));
+            arrayWhat = new JSONArray(prefs.getString("TaskWhat", null));
+            arrayTime = new JSONArray(prefs.getString("TaskTime", null));
+        } catch (Exception e) {
+            arrayName = new JSONArray();
+            arrayWhat = new JSONArray();
+            arrayTime = new JSONArray();
+        }
+
+        initializeHeader(true, true, position);
+
+        try {
+            etName.setText(arrayName.getString(position));
+            etBody.setText(arrayWhat.getString(position));
+            time.setTime(arrayTime.getLong(position));
+        } catch (Exception e) {
+        }
+
+        String timeString = (String) android.text.format.DateFormat.format("HH : mm", time);
+        String dateString = (String) android.text.format.DateFormat.format("dd. MM.", time);
+
+        btnTime.setText(timeString);
+        btnDate.setText(dateString);
+    }
+
+    public void removeTask(int position) {
+        SharedPreferences prefs = getActivity().getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+
+        JSONArray arrayName, arrayWhat, arrayTime;
+
+        try {
+            arrayName = new JSONArray(prefs.getString("TaskName", null));
+            arrayWhat = new JSONArray(prefs.getString("TaskWhat", null));
+            arrayTime = new JSONArray(prefs.getString("TaskTime", null));
+        } catch (Exception e) {
+            arrayName = new JSONArray();
+            arrayWhat = new JSONArray();
+            arrayTime = new JSONArray();
+        }
+
+        ArrayList<String> arrayListNames = new ArrayList<>();
+        ArrayList<String> arrayListWhats = new ArrayList<>();
+        long[] times = new long[arrayTime.length()];
+
+        for (int a = 0; a < arrayName.length(); a++) {
+            try {
+                arrayListNames.add(a, arrayName.getString(a));
+                arrayListWhats.add(a, arrayWhat.getString(a));
+                times[a] = arrayTime.getLong(a);
+            } catch (Exception e) {
+            }
+        }
+
+        arrayName = new JSONArray();
+        arrayWhat = new JSONArray();
+        arrayTime = new JSONArray();
+
+        for (int a = 0; a < arrayListNames.size(); a++) {
+            if (a != position) {
+                arrayName.put(arrayListNames.get(a));
+                arrayWhat.put(arrayListWhats.get(a));
+                arrayTime.put(times[a]);
+            }
+        }
+
+        editor.putString("TaskName", arrayName.toString());
+        editor.putString("TaskWhat", arrayWhat.toString());
+        editor.putString("TaskTime", arrayTime.toString());
+        editor.apply();
+    }
 //
 //    public void alwaysOnScreen(Context context, String name) {
 //        SharedPreferences prefs = getSharedPreferences("settings", Context.MODE_PRIVATE);

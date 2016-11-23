@@ -5,13 +5,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main">
 
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/lw_tasks"
+        android:animateLayoutChanges="true"
+        android:layout_below="@+id/toolbar_head"
+        android:background="@color/darker"
+        android:dividerHeight="0dp"
+        android:divider="@null"/>
+
     <android.support.v7.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:background="@color/darker"
         app:theme="@style/ToolBarStyle"
-        android:id="@+id/toolbar_head">
+        android:id="@+id/toolbar_head"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -82,84 +94,87 @@
                 android:hint="What is your task?"
                 android:textColorHint="#64ffffff"/>
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="2"
-                android:id="@+id/ll_time"
+                android:id="@+id/rl_time"
                 android:layout_below="@+id/et_body"
-                android:layout_alignRight="@id/et_name"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:layout_alignLeft="@+id/et_name"
+                android:layout_alignRight="@+id/et_name"
                 android:background="@color/darker">
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Set time"
+                    android:text="time"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="32dp"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:layout_centerVertical="true"
                     android:textColor="@color/white"
                     android:id="@+id/btnTime"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_alignParentStart="true"
-                    android:layout_weight="1"
+                    android:layout_toRightOf="@+id/iv_time"
                     android:background="@android:color/transparent"/>
-
-                <ImageView
-                    android:layout_width="1dp"
-                    android:layout_height="fill_parent"
-                    android:background="@color/white"
-                    android:layout_margin="10dp"/>
 
                 <Button
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Set date"
+                    android:text="date"
+                    android:layout_marginLeft="18dp"
+                    android:layout_marginRight="32dp"
+                    android:layout_toRightOf="@+id/iv_date"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:layout_centerVertical="true"
                     android:textColor="@color/white"
                     android:id="@+id/btnDate"
-                    android:layout_alignParentBottom="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_weight="1"
                     android:background="@android:color/transparent"/>
-            </LinearLayout>
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/btn_save"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:layout_alignParentRight="true"
-                android:text="SAVE"
-                android:background="@null"
-                android:textColor="@color/white"
-                android:layout_below="@+id/ll_time"/>
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_done_white_24dp"
+                    android:id="@+id/iv_done"
+                    android:layout_centerVertical="true"
+                    android:layout_toLeftOf="@+id/btn_save"/>
 
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/btn_close"
-                android:text="CLOSE"
-                android:background="@null"
-                android:textColor="@color/white"
-                android:layout_alignBaseline="@+id/btn_save"
-                android:layout_alignBottom="@+id/btn_save"
-                android:layout_toLeftOf="@+id/btn_save"
-                android:layout_toStartOf="@+id/btn_save" />
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/btn_save"
+                    android:layout_alignParentRight="true"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:layout_marginLeft="18dp"
+                    android:layout_centerVertical="true"
+                    android:text="SAVE"
+                    android:background="@null"
+                    android:textColor="@color/white"/>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_clock_white"
+                    android:id="@+id/iv_time"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:id="@+id/iv_date"
+                    android:src="@drawable/ic_date_range_white_24dp"
+                    android:layout_toRightOf="@+id/btnTime"
+                    android:layout_centerVertical="true" />
+            </RelativeLayout>
 
         </RelativeLayout>
 
 
     </android.support.v7.widget.Toolbar>
-
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/lw_tasks"
-        android:animateLayoutChanges="true"
-        android:layout_below="@+id/toolbar_head"
-        android:background="@color/darker"
-        android:dividerHeight="0dp"
-        android:divider="@null"/>
 
 </RelativeLayout>
