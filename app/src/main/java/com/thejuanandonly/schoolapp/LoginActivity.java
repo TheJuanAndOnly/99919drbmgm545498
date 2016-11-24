@@ -23,7 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.google.android.gms.analytics.Tracker;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +42,6 @@ public class LoginActivity extends Activity {
     boolean nicknameSelected = false;
     private static int RESULT_LOAD_IMAGE = 1;
     public static Uri avatarURI;
-    private Tracker mTracker;
 
 
     @Override
@@ -52,8 +50,6 @@ public class LoginActivity extends Activity {
         setContentView(R.layout.login_layout);
 
         // Obtain the shared Tracker instance.
-        AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        mTracker = application.getDefaultTracker();
 
         nickname = (EditText) findViewById(R.id.nickname);
 

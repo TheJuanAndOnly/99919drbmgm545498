@@ -64,9 +64,23 @@ class ImageLoader extends AsyncTask<String, Void, Bitmap> {
 
 
                 if (bitmapWidth > bitmapHeight) {
-                    imageView.setImageBitmap(rotateImage(bitmap, 90f));
+
+                        imageView.setImageBitmap(rotateImage(bitmap, 90f));
+
+                    if (imageView.getDrawable() == null) {
+                        imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.deleted_picture));
+                        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                    }
+
                 } else {
-                    imageView.setImageBitmap(bitmap);
+
+                        imageView.setImageBitmap(bitmap);
+
+                    if (imageView.getDrawable() == null) {
+                        imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.deleted_picture));
+                        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                    }
+
                 }
             }
         }

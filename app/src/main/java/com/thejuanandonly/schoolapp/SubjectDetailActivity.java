@@ -27,7 +27,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.Tracker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,7 +47,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
     android.support.v7.widget.Toolbar toolbar;
     private Menu menu;
     public static int menuButtonChange = 1;
-    private Tracker mTracker;
 
     private SubjectData subjectData;
     Thread predictionThread = new Thread();
@@ -61,8 +59,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
         setContentView(R.layout.subject_detail_layout);
 
         // Obtain the shared Tracker instance.
-        AnalyticsApplication application = (AnalyticsApplication) getApplication();
-        mTracker = application.getDefaultTracker();
 
         subjectData = new SubjectData(this, getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE));
         subjectData.setSubject(getIntent().getExtras().getString("subject", ""));

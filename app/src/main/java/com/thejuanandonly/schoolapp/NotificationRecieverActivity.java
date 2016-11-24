@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.Icon;
 import android.os.PowerManager;
 import android.os.Vibrator;
 import android.provider.Settings;
@@ -27,11 +28,6 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
         SharedPreferences prefs = context.getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
         JSONArray arrayName, arrayWhat, arrayTime;
 
-        int numberOfTask = prefs.getInt("NumberOfTask", 0);
-        int taskPosition = 0;
-
-        taskPosition = intent.getIntExtra("LastTask", taskPosition);
-
         try {
             arrayName = new JSONArray(prefs.getString("TaskName", null));
             arrayWhat = new JSONArray(prefs.getString("TaskWhat", null));
@@ -42,31 +38,29 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
             arrayTime = new JSONArray();
         }
 
-        long time = 0;
+        ArrayList<Date> times = new ArrayList<Date>();
 
-        ArrayList<Date> timess = new ArrayList<Date>();
-
-        for (int taskToShow = 0; taskToShow < numberOfTask; taskToShow++) {
+        for (int taskToShow = 0; taskToShow < arrayName.length(); taskToShow++) {
             try {
-                time = arrayTime.getLong(taskToShow);
-                timess.add(taskToShow, new Date(time));
+                times.add(new Date(arrayTime.getLong(taskToShow)));
             } catch (Exception e) {
             }
         }
 
-        for (int timePosition = 0; timePosition < numberOfTask; timePosition++) {
-            if (timess.get(timePosition).getTime() < System.currentTimeMillis() && timess.get(timePosition).getTime() > System.currentTimeMillis() - 10000) {
+        for (int timePosition = 0; timePosition < arrayName.length(); timePosition++) {
+            if (times.get(timePosition).getTime() < System.currentTimeMillis() && times.get(timePosition).getTime() > System.currentTimeMillis() - 60000) {
                 try {
-                    notifyUser(context, arrayName.getString(timePosition), arrayWhat.getString(timePosition));
-                    taskPosition = timePosition;
+                    if (!arrayName.getString(timePosition).equals(null)) {
+                        notifyUser(context, arrayName.getString(timePosition), arrayWhat.getString(timePosition));
+                    }
                 } catch (Exception e) {
                 }
             }
         }
 
-        AlarmManager alarmManager = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
-        PendingIntent mAlarmSender = PendingIntent.getBroadcast(context, 0, intent.putExtra("LastTask", taskPosition), PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 10000, mAlarmSender);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, new Intent(context, NotificationRecieverActivity.class), 0);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, pendingIntent);
     }
 
     public void notifyUser(Context context, String name, String what) {
@@ -112,11 +106,11 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
                         .setContentIntent(contentIntent).build();
             }
 
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             notification.flags |= Notification.FLAG_AUTO_CANCEL;
             notificationManager.notify(1, notification);
 
-            PowerManager.WakeLock screenLock = ((PowerManager) context.getSystemService(context.POWER_SERVICE)).newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
+            PowerManager.WakeLock screenLock = ((PowerManager) context.getSystemService(Context.POWER_SERVICE)).newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK | PowerManager.ACQUIRE_CAUSES_WAKEUP, "TAG");
             screenLock.acquire();
             screenLock.release();
         }

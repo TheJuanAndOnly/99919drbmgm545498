@@ -5,10 +5,11 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,19 +17,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.ListPopupWindow;
-import android.text.Layout;
-import android.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
-import android.widget.ArrayAdapter;
+import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,7 +33,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
+import android.widget.PopupMenu;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,7 +42,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.messenger.MessengerUtils;
 import com.facebook.messenger.ShareToMessengerParams;
-import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.ads.MobileAds;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,21 +50,19 @@ import org.json.JSONException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 /**
  * Created by Daniel on 10/31/2015.
  */
+
 public class NotesFragment extends Fragment {
 
     android.support.v7.widget.Toolbar toolbar;
     static View v;
 
 
-    RecyclerView recyclerView;
-    LinearLayoutManager manager;
 
     //Notes
     ArrayList<String> notesGroupNames;
@@ -77,9 +72,6 @@ public class NotesFragment extends Fragment {
     String[] namesArray;
     String[] aboutArray;
     Integer[] colorsArray;
-
-    Spinner spinner_1;
-
 
 
     //JSON for loading
@@ -105,6 +97,8 @@ public class NotesFragment extends Fragment {
 
         loadArrFromSP();
 
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-4648715887566496~3996876969");
+
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this.getActivity());
 
@@ -121,16 +115,7 @@ public class NotesFragment extends Fragment {
         toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle(" ");
         toolbar.setBackgroundColor(Color.parseColor("#2c3e50"));
-        toolbar.setPadding(3,5,3,0);
-
-        ImageView img = (ImageView) getActivity().findViewById(R.id.overviewImg);
-        img.setVisibility(View.GONE);
-
-        TextView quote = (TextView) getActivity().findViewById(R.id.quote);
-        quote.setVisibility(View.GONE);
-
-        TextView author = (TextView) getActivity().findViewById(R.id.author);
-        author.setVisibility(View.GONE);
+        toolbar.setPadding(3, 5, 3, 0);
 
         return rootView;
     }
@@ -204,23 +189,6 @@ public class NotesFragment extends Fragment {
                 notesAbout.add(aboutFromET);
 
 
-//                if (dialog.redBool) {
-//                    color = Color.parseColor("#e74c3c");
-//                    colors.add(color);
-//                } else if (dialog.greenBool) {
-//                    color = Color.parseColor("#2ecc71");
-//                    colors.add(color);
-//                } else if (dialog.orangeBool) {
-//                    color = Color.parseColor("#e67e22");
-//                    colors.add(color);
-//                } else if (dialog.purpleBool) {
-//                    color = Color.parseColor("#9b59b6");
-//                    colors.add(color);
-//                } else {
-//                    color = Color.parseColor("#3498db");
-//                    colors.add(color);
-//                }
-
                 if (dialog.redBool) {
                     color = Color.parseColor("#395165");
                     colors.add(color);
@@ -239,8 +207,6 @@ public class NotesFragment extends Fragment {
                 }
 
 
-
-
                 if (namesArray.length == 0) {
                     namesArray = new String[notesGroupNames.size()];
                 } else {
@@ -252,12 +218,12 @@ public class NotesFragment extends Fragment {
                 }
                 if (colorsArray.length == 0) {
                     colorsArray = new Integer[colors.size()];
-                } else  {
+                } else {
                 }
 
-                    namesArray = notesGroupNames.toArray(namesArray);
-                    aboutArray = notesAbout.toArray(aboutArray);
-                    colorsArray = colors.toArray(colorsArray);
+                namesArray = notesGroupNames.toArray(namesArray);
+                aboutArray = notesAbout.toArray(aboutArray);
+                colorsArray = colors.toArray(colorsArray);
 
                 JSONArray aboutJSON = new JSONArray(Arrays.asList(aboutArray));
                 JSONArray namesJSON = new JSONArray(Arrays.asList(namesArray));
@@ -300,10 +266,7 @@ public class NotesFragment extends Fragment {
         listView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-
-
     }
-
 
 }
 
@@ -434,9 +397,6 @@ class CustomDialog extends SaveSharedPreferences {
 }
 
 
-
-
-
 class ListViewAdapter extends BaseAdapter {
 
     Context context;
@@ -456,6 +416,9 @@ class ListViewAdapter extends BaseAdapter {
     public LinearLayout coloredBar;
     public LinearLayout linearInSV, linearWithPicture;
 
+    //size of images in the scrollView
+    int imageWidth = 0;
+
     SaveSharedPreferences saveToSP = new SaveSharedPreferences();
 
     public ArrayList<ArrayList<String>> arrayOfArrays;
@@ -465,6 +428,11 @@ class ListViewAdapter extends BaseAdapter {
     private static LayoutInflater inflater = null;
 
     public ListViewAdapter(Context context, String[] namesArray, String[] aboutArray, Integer[] colorsArray, int code) {
+
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        int width = display.getWidth();
+        imageWidth = width / 4;
 
         this.context = context;
         final int REQUEST_CODE_SHARE_TO_MESSENGER = 9;
@@ -576,9 +544,12 @@ class ListViewAdapter extends BaseAdapter {
             vi = inflater.inflate(R.layout.recylcerview_notes_item, null);
         }
 
+        Typeface robotoRegular = Typeface.createFromAsset(context.getAssets(), "fonts/roboto_regular.ttf");
 
         groupName = (TextView) vi.findViewById(R.id.itemName);
+        groupName.setTypeface(robotoRegular);
         about = (TextView) vi.findViewById(R.id.itemAbout);
+        about.setTypeface(robotoRegular);
         scrollView = (HorizontalScrollView) vi.findViewById(R.id.viewPager);
         linearInSV = (LinearLayout) vi.findViewById(R.id.linearScrollView);
         coloredBar = (LinearLayout) vi.findViewById(R.id.colorBar);
@@ -589,16 +560,17 @@ class ListViewAdapter extends BaseAdapter {
         about.setText(String.valueOf(aboutArray[position]));
         coloredBar.setBackgroundColor(colorsArray[position]);
 
-
         try {
             for (int i = 0; i < arrayOfArrays.get(position).size(); i++) {
 
-                ViewGroup.LayoutParams params = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(imageWidth, LinearLayout.LayoutParams.MATCH_PARENT);
+                params.setMargins(0, 0, 2, 0);
                 final ImageView imageView = new ImageView(context);
                 imageView.setTag(arrayOfArrays.get(position).get(i) + "`" + position);
                 imageView.setLayoutParams(params);
-                imageView.setScaleType(ImageView.ScaleType.MATRIX);
                 loadBitmap(arrayOfArrays.get(position).get(i), imageView, true);
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -649,8 +621,8 @@ class ListViewAdapter extends BaseAdapter {
                                         arrayOfArrays.get(position).remove(finalTempInt);
 
                                         String save = "";
-                                        for (int i = 0; i < arrayOfArrays.size(); i++){
-                                            for (int j = 0; j < arrayOfArrays.get(i).size(); j++){
+                                        for (int i = 0; i < arrayOfArrays.size(); i++) {
+                                            for (int j = 0; j < arrayOfArrays.get(i).size(); j++) {
                                                 save += arrayOfArrays.get(i).get(j) + "`";
                                             }
                                             save += "~";
@@ -696,15 +668,6 @@ class ListViewAdapter extends BaseAdapter {
         }
 
 
-//        addPictures.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                ((MainActivity) context).addingImages(position, getCount());
-//
-//            }
-//        });
-
         final PopupMenu popup = new PopupMenu(context, settings);
         popup.getMenuInflater().inflate(R.menu.notes_menu, popup.getMenu());
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -714,7 +677,8 @@ class ListViewAdapter extends BaseAdapter {
 
                 switch (itemTitle) {
 
-                    case "Add Pictures": ((MainActivity) context).addingImages(position, getCount());
+                    case "Add Pictures":
+                        ((MainActivity) context).addingImages(position, getCount());
                         break;
 
                     case "Delete":
@@ -741,12 +705,12 @@ class ListViewAdapter extends BaseAdapter {
                         try {
                             arrayOfArrays.remove(position);
                         } catch (IndexOutOfBoundsException e) {
-                            Toast.makeText(context, "size is " + arrayOfArrays.size(), Toast.LENGTH_SHORT).show();
+
                         }
 
                         String save = "";
-                        for (int i = 0; i < arrayOfArrays.size(); i++){
-                            for (int j = 0; j < arrayOfArrays.get(i).size(); j++){
+                        for (int i = 0; i < arrayOfArrays.size(); i++) {
+                            for (int j = 0; j < arrayOfArrays.get(i).size(); j++) {
                                 save += arrayOfArrays.get(i).get(j) + "`";
                             }
                             save += "~";
@@ -762,9 +726,14 @@ class ListViewAdapter extends BaseAdapter {
                     case "Share":
 
 
-                        Toast.makeText(context, "Comming soon", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(context, "Comming soon", Toast.LENGTH_SHORT).show();
 
-
+                        if (hasNetworkConnection()) {
+                            AdDialog dialog = new AdDialog();
+                            dialog.dialog(((Activity) context));
+                        } else {
+                            Toast.makeText(context, "Comming soon", Toast.LENGTH_SHORT).show();
+                        }
 
 
                 }
@@ -790,6 +759,22 @@ class ListViewAdapter extends BaseAdapter {
         task.execute(uri);
     }
 
+    private boolean hasNetworkConnection() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
+    }
 
 
     @Override

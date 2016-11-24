@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:weightSum="3">
+
+
+
+    <agency.tango.materialintroscreen.parallax.ParallaxLinearLayout
+        android:layout_weight="1.8"
+        android:layout_height="0dp"
+        android:layout_marginTop="40dp"
+        android:padding="15dp"
+        android:layout_width="match_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/calendar"
+            app:layout_parallaxFactor="2"
+             >
+        </ImageView>
+
+
+
+
+    </agency.tango.materialintroscreen.parallax.ParallaxLinearLayout>
+
+
+    <agency.tango.materialintroscreen.parallax.ParallaxLinearLayout
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_weight="1.2"
+        android:weightSum="3"
+        android:orientation="vertical"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom"
+        android:textAlignment="center"
+        android:paddingLeft="30dp"
+        android:textSize="24sp"
+        android:paddingRight="30dp"
+        android:textColor="@color/white"
+        app:layout_parallaxFactor="0.2"
+        android:text="Tasks"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="top"
+        android:textAlignment="center"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:textColor="@color/white"
+        app:layout_parallaxFactor="0.4"
+        android:textSize="17sp"
+        android:text="Keep track of your assignments, all in one friendly environment."/>
+
+</agency.tango.materialintroscreen.parallax.ParallaxLinearLayout>
+</LinearLayout>

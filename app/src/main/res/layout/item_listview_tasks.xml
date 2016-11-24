@@ -1,0 +1,135 @@
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/rl_time"
+            android:background="@color/darker">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:id="@+id/iv_time"
+                android:background="@drawable/ic_clock_white"
+                android:layout_toLeftOf="@+id/tv_time"
+                android:layout_marginRight="8dp"
+                android:layout_centerVertical="true"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_time"
+                android:textSize="13sp"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:text="Monday 26.11.2016"
+                android:textColor="@color/white"
+                android:layout_marginTop="18dp"
+                android:layout_marginBottom="18dp"/>
+
+        </RelativeLayout>
+
+        <com.daimajia.swipe.SwipeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:drag_edge="right"
+            android:id="@+id/swipe_layout">
+
+            <LinearLayout
+                android:layout_width="120dp"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/ib_edit"
+                    android:src="@drawable/ic_mode_edit_white_24dp"
+                    android:background="#64ff00aa"
+                    android:layout_weight="1"/>
+
+                <ImageButton
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:id="@+id/ib_done"
+                    android:src="@drawable/ic_done_white_24dp"
+                    android:background="#6463ff40"
+                    android:layout_weight="1"/>
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/rl_item"
+                android:background="@color/dark">
+
+                <View
+                    android:layout_width="4dp"
+                    android:layout_height="60dp"
+                    android:id="@+id/view_color"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="2dp"
+                    android:layout_centerVertical="true"
+                    android:background="@color/mainblue"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginLeft="28dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/view_color"
+                    android:layout_toLeftOf="@+id/ib_info"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/tv_name"
+                        android:layout_weight="1"
+                        android:textSize="16sp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="Name Name Name Name Name Name Name Name Name"
+                        android:layout_marginBottom="2dp"
+                        android:textColor="@color/white" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/tv_body"
+                        android:layout_weight="1"
+                        android:textSize="12sp"
+                        android:maxLines="1"
+                        android:ellipsize="end"
+                        android:text="Body Body Body Body Body Body Body Body Body Body Body"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/white"/>
+                </LinearLayout>
+
+                <ImageButton
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/ib_info"
+                    android:background="@drawable/ic_info_outline_white_24dp"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="14dp"
+                    android:layout_alignParentRight="true"/>
+
+            </RelativeLayout>
+
+        </com.daimajia.swipe.SwipeLayout>
+
+    </LinearLayout>
+</LinearLayout>

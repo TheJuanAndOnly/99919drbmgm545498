@@ -33,7 +33,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.analytics.Tracker;
 import com.thejuanandonly.schoolapp.R;
 
 import org.json.JSONArray;
@@ -54,7 +53,6 @@ public class SettingsFragment extends Fragment {
     EditText changeName;
     TextView userNicktxtview;
     Button set;
-    private Tracker mTracker;
 
     @Nullable
     @Override
@@ -65,8 +63,6 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onStart() {
 
-        AnalyticsApplication application = (AnalyticsApplication) getActivity().getApplication();
-        mTracker = application.getDefaultTracker();
 
         percentageListener();
         theme();
@@ -74,15 +70,6 @@ public class SettingsFragment extends Fragment {
         toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("Settings");
         toolbar.setBackgroundColor(getResources().getColor(R.color.mainblue));
-
-        ImageView img = (ImageView) getActivity().findViewById(R.id.overviewImg);
-        img.setVisibility(View.GONE);
-
-        TextView quote = (TextView) getActivity().findViewById(R.id.quote);
-        quote.setVisibility(View.GONE);
-
-        TextView author = (TextView) getActivity().findViewById(R.id.author);
-        author.setVisibility(View.GONE);
 
         Switch notificationsCheckBox = (Switch) getView().findViewById(R.id.notificationsCheckBox);
         Switch soundsCheckBox = (Switch) getView().findViewById(R.id.soundsNotificationCheckBox);
@@ -143,9 +130,6 @@ public class SettingsFragment extends Fragment {
 
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences("User", getContext().MODE_PRIVATE);
         final SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        userPhotoimgview = (ImageView) getView().findViewById(R.id.usersPhoto);
-        userNicktxtview = (TextView) getView().findViewById(R.id.usersNickname);
 
         changeName = (EditText) getView().findViewById(R.id.changeName);
         changeName.setTextColor(getResources().getColor(R.color.white));

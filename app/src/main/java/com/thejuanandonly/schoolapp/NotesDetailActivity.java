@@ -56,6 +56,9 @@ public class NotesDetailActivity extends AppCompatActivity {
     //CustomSharedPreferences
     SaveSharedPreferences customSharedPrefs = new SaveSharedPreferences();
 
+    //Which picture to open
+    int openPicture = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,10 +89,18 @@ public class NotesDetailActivity extends AppCompatActivity {
         mAdapter = new ViewPagerAdapter(this.getApplicationContext(), arrayOfPictures);
         mViewPager.setAdapter(mAdapter);
 
+        for (int i = 0; i < arrayOfPictures.size(); i++) {
+            if (uriFromIntent.equals(arrayOfPictures.get(i))) {
+                break;
+            } else {
+                openPicture++;
+            }
+        }
+
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                mViewPager.setCurrentItem(positionFromIntent,true);
+                mViewPager.setCurrentItem(openPicture,true);
             }
         });
 
@@ -104,11 +115,12 @@ public class NotesDetailActivity extends AppCompatActivity {
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             imageView.setLayoutParams(params);
 
-//            imageView.setImageBitmap(BitmapScaled(arrayOfPictures.get(i), 100, 100));
-//            imageView.setTag(i);
+//          imageView.setImageBitmap(BitmapScaled(arrayOfPictures.get(i), 100, 100));
+//          imageView.setTag(i);
             imageView.setTag(arrayOfPictures.get(i));
 
             loadBitmap(arrayOfPictures.get(i), imageView, true);
+            imageView.setRotation(90f);
             imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -122,17 +134,6 @@ public class NotesDetailActivity extends AppCompatActivity {
             images.addView(imageView);
 
         }
-
-    }
-
-    public void animate() {
-
-
-        Animation downUp = AnimationUtils.loadAnimation(initialContext, R.anim.down_up);
-        downUp.setDuration(1000);
-        linearWithPicture.startAnimation(downUp);
-        linearWithPicture.setVisibility(View.VISIBLE);
-
 
     }
 
@@ -170,35 +171,6 @@ public class NotesDetailActivity extends AppCompatActivity {
 
     }
 
-    private Bitmap BitmapScaled(String picturePath, int width, int height) {
-        BitmapFactory.Options sizeOptions = new BitmapFactory.Options();
-        sizeOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(picturePath, sizeOptions);
-
-        int inSampleSize = calculateInSampleSize(sizeOptions, width, height);
-
-        sizeOptions.inJustDecodeBounds = false;
-        sizeOptions.inSampleSize = inSampleSize;
-
-        return BitmapFactory.decodeFile(picturePath, sizeOptions);
-    }
-
-    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int SizeSample = 1;
-
-        if (height > reqHeight || width > reqWidth) {
-
-            final int heightRatio = Math.round((float) height / (float) reqHeight);
-            final int widthRatio = Math.round((float) width / (float) reqWidth);
-
-            SizeSample = heightRatio < widthRatio ? heightRatio : widthRatio;
-        }
-
-        return SizeSample;
-    }
-
 }
 
 
@@ -225,12 +197,10 @@ class ViewPagerAdapter extends PagerAdapter {
     public Object instantiateItem(final ViewGroup collection, int position) {
 
         final PhotoView imageView = new PhotoView(mContext);
-//        imageView.setImageURI(Uri.parse(images.get(position)));
         collection.addView(imageView);
         imageView.setTag(images.get(position));
         loadBitmap(images.get(position), imageView, false);
 
-//        mAttacher = new PhotoViewAttacher(imageView);
         return imageView;
 
     }
