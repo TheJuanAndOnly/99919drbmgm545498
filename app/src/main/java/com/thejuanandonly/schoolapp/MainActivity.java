@@ -92,9 +92,6 @@ public class MainActivity extends AppCompatActivity {
     FragmentManager mFragmentManager;
     FragmentTransaction mFragmentTransaction;
     LinearLayout drawerFull;
-    public ImageView userPhotoimgview;
-    public TextView userNicktxtview;
-    RelativeLayout NAVd;
     public int actualFragment = 1;
     public static int api;
     public static int theme;
@@ -129,14 +126,10 @@ public class MainActivity extends AppCompatActivity {
 
         drawerFull = (LinearLayout) findViewById(R.id.drawerFull);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
-        userPhotoimgview = (ImageView) findViewById(R.id.usersPhoto);
-        userNicktxtview = (TextView) findViewById(R.id.usersNickname);
-
 
         checkStoragePermission();
         setLevel();
         levelTimer();
-        setQuote();
         setOverall();
 
         Locale.setDefault(Locale.US);
@@ -147,13 +140,6 @@ public class MainActivity extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
 
         int height = displaymetrics.heightPixels;
-
-        NAVd = (RelativeLayout)findViewById(R.id.userDetails);
-        if (height <= 853) {
-            NAVd.setBackgroundDrawable(getResources().getDrawable(R.drawable.blueprint));
-        } else {
-            NAVd.setBackgroundDrawable(getResources().getDrawable(R.drawable.nav_bckg));
-        }
 
         mFragmentManager = getSupportFragmentManager();
         mFragmentTransaction = mFragmentManager.beginTransaction();
@@ -178,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
                 if (menuItem.getItemId() == R.id.nav_item_overview) {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new OverviewFragment()).commit();
+                    mNavigationView.setCheckedItem(R.id.nav_item_overview);
                     actualFragment = 1;
                     invalidateOptionsMenu();
                 }
@@ -185,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 if (menuItem.getItemId() == R.id.nav_item_tasks) {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
+                    mNavigationView.setCheckedItem(R.id.nav_item_tasks);
                     actualFragment = 2;
                     invalidateOptionsMenu();
                 }
@@ -192,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
                 if (menuItem.getItemId() == R.id.nav_item_notes) {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new NotesFragment(), "NotesFragment").commit();
+                    mNavigationView.setCheckedItem(R.id.nav_item_notes);
                     actualFragment = 3;
                     invalidateOptionsMenu();
                 }
@@ -199,14 +188,8 @@ public class MainActivity extends AppCompatActivity {
                 if (menuItem.getItemId() == R.id.nav_item_settings) {
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new SettingsFragment()).commit();
+                    mNavigationView.setCheckedItem(R.id.nav_item_settings);
                     actualFragment = 4;
-                    invalidateOptionsMenu();
-                }
-
-                if (menuItem.getItemId() == R.id.nav_item_support) {
-                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.containerView, new SupportFragment()).commit();
-                    actualFragment = 5;
                     invalidateOptionsMenu();
                 }
 
@@ -214,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
+
         android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
@@ -233,6 +217,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "wake lock", Toast.LENGTH_SHORT).show();
         }
 
+        mNavigationView.setCheckedItem(R.id.nav_item_overview);
+        setTasksCount();
     }
 
     @Override
@@ -290,6 +276,23 @@ public class MainActivity extends AppCompatActivity {
             fragment.openDialog();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setTasksCount () {
+        SharedPreferences prefs = getSharedPreferences("ListOfTasks", MODE_PRIVATE);
+        JSONArray arrayName;
+        try {
+            arrayName = new JSONArray(prefs.getString("TaskName", null));
+        } catch (Exception e) {
+            arrayName = new JSONArray();
+        }
+
+        int count = arrayName.length();
+
+        mNavigationView.getMenu().findItem(R.id.nav_item_tasks).setActionView(R.layout.nav_tasks_counter);
+
+        TextView view = (TextView) mNavigationView.getMenu().findItem(R.id.nav_item_tasks).getActionView().findViewById(R.id.tv_count);
+        view.setText(count+"");
     }
 
     public void addingImages(int position, int count) {
@@ -400,7 +403,6 @@ public class MainActivity extends AppCompatActivity {
     public void setLevel(){
 
         TextView levelText = (TextView) findViewById(R.id.levelText);
-        TextView levelDot = (TextView) findViewById(R.id.levelDot);
         ProgressBar bar = (ProgressBar) findViewById(R.id.levelProgress);
         TextView xp = (TextView) findViewById(R.id.xpProgress);
 
@@ -596,11 +598,8 @@ public class MainActivity extends AppCompatActivity {
         Log.d("debug", String.valueOf(numberOfDoneTask * array[7]));
 
         if (points <= borders[0]) {
-            levelText.setText("Level 1");
-            levelDot.setText("1");
-            levelDot.setBackgroundResource(R.drawable.dot1);
+            levelText.setText("level 1");
 
-            bar.getProgressDrawable().setColorFilter(getResources().getColor(R.color.dotBlue), PorterDuff.Mode.SRC_IN);
             bar.setMax(borders[0]);
             bar.setProgress(points);
 
@@ -625,14 +624,8 @@ public class MainActivity extends AppCompatActivity {
                 if (imglvl == 7) imglvl = 0;
             }
 
-            levelText.setText("Level " + level);
-            levelDot.setText(String.valueOf(level));
+            levelText.setText("level " + level);
 
-            final TypedArray imgs = getResources().obtainTypedArray(R.array.dots_array);
-            final int resID = imgs.getResourceId(imglvl, 0);
-            levelDot.setBackgroundResource(resID);
-
-            bar.getProgressDrawable().setColorFilter(colors.getColor(imglvl, 0), PorterDuff.Mode.SRC_IN);
             bar.setMax(max);
             bar.setProgress(points - (finalBorder - max));
 
@@ -804,27 +797,6 @@ public class MainActivity extends AppCompatActivity {
                 //overallTv.setText("");
                 Log.e("debug", e.toString());
             }
-        }
-    }
-
-    public void setQuote(){
-        TextView quoteTv = (TextView) findViewById(R.id.quote);
-        TextView authorTv = (TextView) findViewById(R.id.author);
-
-        String[] quotes = getResources().getStringArray(R.array.quotes);
-        String[] authors = getResources().getStringArray(R.array.authors);
-
-        int rnd = (int) (Math.random() * 26);
-
-        quoteTv.setText(quotes[rnd]);
-        authorTv.setText(authors[rnd]);
-
-        if (quotes[rnd].length() >= 120){
-            quoteTv.setTextSize(16);
-            authorTv.setTextSize(14);
-        }else {
-            quoteTv.setTextSize(18);
-            authorTv.setTextSize(16);
         }
     }
 
@@ -1053,123 +1025,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (getSharedPreferences("Global", Context.MODE_PRIVATE).getBoolean("doPermissionCheck", true)) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 
-                RelativeLayout user = (RelativeLayout) findViewById(R.id.userDetailLayout);
-                LinearLayout permis = (LinearLayout) findViewById(R.id.permissionLayout);
-                user.setVisibility(View.GONE);
-                permis.setVisibility(View.VISIBLE);
-
-                Button turnOn = (Button) findViewById(R.id.turnOn);
-                Button notNow = (Button) findViewById(R.id.notNow);
-
-                turnOn.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        ActivityCompat.requestPermissions(MainActivity.this,
-                                new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                1);
-                    }
-                });
-                notNow.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        getSharedPreferences("Global", Context.MODE_PRIVATE).edit().putBoolean("doPermissionCheck", false).apply();
-                        updateUserDetails(false);
-                    }
-                });
-            } else {
-                updateUserDetails(true);
+                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
-        }else {
-            updateUserDetails(false);
         }
-    }
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case 1: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-                    updateUserDetails(true);
-
-                } else {
-
-
-                    // permission denied, boo! Disable the
-                    // functionality that depends on this permission.
-                    updateUserDetails(false);
-                }
-                break;
-            }
-            case 2:
-
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    super.recreate();
-                }
-
-                break;
-
-            // other 'case' lines to check for other
-            // permissions this app might request
-        }
-    }
-
-    public void updateUserDetails(boolean usePhotos) {
-        SharedPreferences sharedPreferences = getSharedPreferences("User", MODE_PRIVATE);
-        userNickname = sharedPreferences.getString("nickname", null);
-        String imageUriString = sharedPreferences.getString("avatar", null);
-
-        RelativeLayout user = (RelativeLayout) findViewById(R.id.userDetailLayout);
-        LinearLayout permis = (LinearLayout) findViewById(R.id.permissionLayout);
-        user.setVisibility(View.VISIBLE);
-        permis.setVisibility(View.GONE);
-
-        if (usePhotos && imageUriString != null) {
-            Bitmap bitmap = null;
-            int w = 0, h = 0;
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(imageUriString));
-                w = bitmap.getWidth();
-                h = bitmap.getHeight();
-            } catch (IOException e) {
-                Toast.makeText(this, "exception", Toast.LENGTH_SHORT).show();
-            }
-            int radius = w > h ? h : w;
-            Bitmap roundBitmap = ImageToCircle.getCroppedBitmap(bitmap, radius);
-
-            userPhotoimgview.setImageBitmap(roundBitmap);
-        }
-        else {
-
-          DisplayMetrics displaymetrics = new DisplayMetrics();
-            getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-
-            int height = displaymetrics.heightPixels;
-
-            NAVd = (RelativeLayout)findViewById(R.id.userDetails);
-            if (height <= 853) {
-                user.setBackgroundResource(R.drawable.not_now_lowres);
-            } else {
-                user.setBackgroundResource(R.drawable.not_now);
-            }
-
-
-            RelativeLayout photos = (RelativeLayout) findViewById(R.id.usersPhotoLayout);
-            photos.setVisibility(View.INVISIBLE);
-        }
-
-        userNicktxtview.setText(userNickname);
     }
 
     public void updateNotification() {

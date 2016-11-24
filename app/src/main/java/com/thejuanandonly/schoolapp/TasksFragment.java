@@ -2,9 +2,12 @@ package com.thejuanandonly.schoolapp;
 
 import android.app.AlarmManager;
 import android.app.Dialog;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -47,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static android.content.Context.ALARM_SERVICE;
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class TasksFragment extends Fragment {
@@ -78,22 +82,14 @@ public class TasksFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView =  inflater.inflate(R.layout.tasks_layout, null);
 
-        ImageView img = (ImageView) getActivity().findViewById(R.id.overviewImg);
-        img.setVisibility(View.GONE);
-        TextView quote = (TextView) getActivity().findViewById(R.id.quote);
-        quote.setVisibility(View.GONE);
-        TextView author = (TextView) getActivity().findViewById(R.id.author);
-        author.setVisibility(View.GONE);
-
-
         prefs = getActivity().getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
 
         toolbarMain = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbarMain.setVisibility(View.GONE);
 
-
         toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_head);
         toolbar.setContentInsetsAbsolute(0, 0);
+        toolbar.setPadding(0, 0, 0, 0);
 
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
@@ -361,7 +357,7 @@ public class TasksFragment extends Fragment {
 
                 int month = time.getMonth() + 1;
 
-                btnDate.setText(time.getDate() + "." + month + " .");
+                btnDate.setText(time.getDate() + ". " + month + ".");
                 dialog.dismiss();
             }
         });
@@ -455,6 +451,8 @@ public class TasksFragment extends Fragment {
 
         tasksListviewAdapter = new TasksListviewAdapter(getContext(), forAdapter, todo);
         listView.setAdapter(tasksListviewAdapter);
+
+        alwaysOnScreen(getContext());
 
         AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
         PendingIntent mAlarmSender = PendingIntent.getBroadcast(getContext(), 0, new Intent(getContext(), NotificationRecieverActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
@@ -676,47 +674,59 @@ public class TasksFragment extends Fragment {
         editor.putString("TaskTime", arrayTime.toString());
         editor.apply();
     }
-//
-//    public void alwaysOnScreen(Context context, String name) {
-//        SharedPreferences prefs = getSharedPreferences("settings", Context.MODE_PRIVATE);
-//
-//        boolean a = prefs.getBoolean("active", true);
-//
-//        if (a == true) {
-//            String nameForAlways = null;
-//            if (numberOfTask == 1) {
-//                nameForAlways = " active task";
-//            } else if (numberOfTask > 1) {
-//                nameForAlways = " active tasks";
-//            }
-//
-//            ArrayList<String> listNamez = new ArrayList<String>();
-//            for (int i = 0; i < arrayName.length(); i++){
-//                try {
-//                    listNamez.add(arrayName.getString(i));
-//                } catch (Exception e) {
-//                }
-//            }
-//
-//            String childWithNames = listNamez.toString();
-//
-//            Intent intent = new Intent(context, MainActivity.class);
-//            intent.putExtra("fromNotification", true);
-//            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
-//
-//            Notification notification = new Notification.Builder(context)
-//                    .setContentTitle(name + nameForAlways)
-//                    .setContentText(childWithNames.substring(1, childWithNames.length()-1))
-//                    .setSmallIcon(R.drawable.ic_active_tasks)
-//                    .setContentIntent(contentIntent).build();
-//
-//            NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
-//            notification.flags |= Notification.FLAG_NO_CLEAR;
-//            notificationManager.notify(0, notification);
-//        } else {
-//            NotificationManager notificationManager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-//            notificationManager.cancel(0);
-//        }
-//    }
+
+    public void alwaysOnScreen(Context context) {
+        JSONArray arrayName;
+        SharedPreferences preferences = context.getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+
+        try {
+            arrayName = new JSONArray(preferences.getString("TaskName", null));
+        } catch (Exception e) {
+            arrayName = new JSONArray();
+        }
+
+        int numberOfTask = arrayName.length();
+
+
+        SharedPreferences prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
+
+        boolean a = prefs.getBoolean("active", true);
+
+        if (a == true) {
+            String nameForAlways = null;
+            if (numberOfTask == 1) {
+                nameForAlways = " active task";
+            } else if (numberOfTask > 1) {
+                nameForAlways = " active tasks";
+            }
+
+            ArrayList<String> listNamez = new ArrayList<String>();
+            for (int i = 0; i < arrayName.length(); i++){
+                try {
+                    listNamez.add(arrayName.getString(i));
+                } catch (Exception e) {
+                }
+            }
+
+            String childWithNames = listNamez.toString();
+
+            Intent intent = new Intent(context, MainActivity.class);
+            intent.putExtra("fromNotification", true);
+            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
+
+            Notification notification = new Notification.Builder(context)
+                    .setContentTitle(numberOfTask + nameForAlways)
+                    .setContentText(childWithNames.substring(1, childWithNames.length()-1))
+                    .setSmallIcon(R.drawable.ic_active_tasks)
+                    .setContentIntent(contentIntent).build();
+
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
+            notification.flags |= Notification.FLAG_NO_CLEAR;
+            notificationManager.notify(0, notification);
+        } else {
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(0);
+        }
+    }
 }
 

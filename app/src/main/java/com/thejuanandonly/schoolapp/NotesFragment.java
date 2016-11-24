@@ -129,15 +129,6 @@ public class NotesFragment extends Fragment {
         toolbar.setBackgroundColor(Color.parseColor("#2c3e50"));
         toolbar.setPadding(3,5,3,0);
 
-        ImageView img = (ImageView) getActivity().findViewById(R.id.overviewImg);
-        img.setVisibility(View.GONE);
-
-        TextView quote = (TextView) getActivity().findViewById(R.id.quote);
-        quote.setVisibility(View.GONE);
-
-        TextView author = (TextView) getActivity().findViewById(R.id.author);
-        author.setVisibility(View.GONE);
-
         return rootView;
     }
 

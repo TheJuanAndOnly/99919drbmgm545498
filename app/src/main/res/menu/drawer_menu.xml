@@ -15,15 +15,12 @@
             android:id="@+id/nav_item_notes"
             android:icon="@drawable/ic_speaker_notes_white_24dp"/>
     </group>
+
     <group android:id="@+id/bottom"
         android:checkableBehavior="single">
         <item android:title="Settings"
             android:id="@+id/nav_item_settings"
             android:icon="@drawable/ic_settings_white_24dp"/>
-
-        <item android:title="Support"
-            android:id="@+id/nav_item_support"
-            android:icon="@drawable/ic_bug_report_white_24dp"/>
     </group>
 
 </menu>
