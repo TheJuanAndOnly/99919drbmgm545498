@@ -120,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(this);
 
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-4648715887566496~3996876969");
 
         api = android.os.Build.VERSION.SDK_INT;
 
@@ -193,6 +192,10 @@ public class MainActivity extends AppCompatActivity {
                     invalidateOptionsMenu();
                 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master
                 return false;
             }
 
@@ -1019,8 +1022,8 @@ public class MainActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = getSharedPreferences("User", MODE_PRIVATE);
         userNickname = sharedPreferences.getString("nickname", null);
-        if (userNickname == null) {
-            startActivity(new Intent(this, LoginActivity.class));
+        if (userNickname == null) { //TODO: change this
+            startActivity(new Intent(this, TutikActivity.class));
             return;
         }
 

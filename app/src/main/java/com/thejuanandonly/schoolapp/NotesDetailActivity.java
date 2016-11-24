@@ -197,12 +197,10 @@ class ViewPagerAdapter extends PagerAdapter {
     public Object instantiateItem(final ViewGroup collection, int position) {
 
         final PhotoView imageView = new PhotoView(mContext);
-//        imageView.setImageURI(Uri.parse(images.get(position)));
         collection.addView(imageView);
         imageView.setTag(images.get(position));
         loadBitmap(images.get(position), imageView, false);
 
-//        mAttacher = new PhotoViewAttacher(imageView);
         return imageView;
 
     }
