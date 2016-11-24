@@ -53,15 +53,6 @@ public class SettingsFragment extends Fragment {
         toolbar.setTitle("Settings");
         toolbar.setBackgroundColor(getResources().getColor(R.color.darker));
 
-        ImageView img = (ImageView) getActivity().findViewById(R.id.overviewImg);
-        img.setVisibility(View.GONE);
-
-        TextView quote = (TextView) getActivity().findViewById(R.id.quote);
-        quote.setVisibility(View.GONE);
-
-        TextView author = (TextView) getActivity().findViewById(R.id.author);
-        author.setVisibility(View.GONE);
-
         SwitchCompat notificationsCheckBox = (SwitchCompat) getView().findViewById(R.id.notificationsCheckBox);
         SwitchCompat soundsCheckBox = (SwitchCompat) getView().findViewById(R.id.soundsNotificationCheckBox);
         SwitchCompat vibrationsCheckBox = (SwitchCompat) getView().findViewById(R.id.vibrationsNotificationCheckBox);
