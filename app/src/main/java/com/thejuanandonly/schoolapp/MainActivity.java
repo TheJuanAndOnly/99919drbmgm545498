@@ -41,6 +41,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -822,10 +823,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void notificationsClick(View view) {
-        Switch notificationsCheckBox, soundsCheckBox, vibrationsCheckBox, activeTasksCheckBox;
-        notificationsCheckBox = (Switch) findViewById(R.id.notificationsCheckBox);
-        soundsCheckBox = (Switch) findViewById(R.id.soundsNotificationCheckBox);
-        vibrationsCheckBox = (Switch) findViewById(R.id.vibrationsNotificationCheckBox);
+        SwitchCompat notificationsCheckBox, soundsCheckBox, vibrationsCheckBox, activeTasksCheckBox;
+        notificationsCheckBox = (SwitchCompat) findViewById(R.id.notificationsCheckBox);
+        soundsCheckBox = (SwitchCompat) findViewById(R.id.soundsNotificationCheckBox);
+        vibrationsCheckBox = (SwitchCompat) findViewById(R.id.vibrationsNotificationCheckBox);
 
         boolean isChecked = notificationsCheckBox.isChecked();
         soundsCheckBox.setChecked(isChecked);
