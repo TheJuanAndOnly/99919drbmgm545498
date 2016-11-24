@@ -8,6 +8,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,17 +53,29 @@ public class OverviewFragment extends Fragment {
 
 
         toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar.setVisibility(View.GONE);
+
+        toolbar = (android.support.v7.widget.Toolbar) rootView.findViewById(R.id.toolbar);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.setSupportActionBar(toolbar);
         toolbar.setTitle("Overview");
         toolbar.setBackgroundColor(getResources().getColor(android.R.color.transparent));
 
-        ImageView img = (ImageView) getActivity().findViewById(R.id.overviewImg);
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(getActivity(), ((MainActivity) getActivity()).mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
+        ((MainActivity) getActivity()).mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
+
+        ImageView img = (ImageView) rootView.findViewById(R.id.overviewImg);
         img.setVisibility(View.VISIBLE);
 
-        TextView quote = (TextView) getActivity().findViewById(R.id.quote);
+        TextView quote = (TextView) rootView.findViewById(R.id.quote);
         quote.setVisibility(View.VISIBLE);
 
-        TextView author = (TextView) getActivity().findViewById(R.id.author);
+        TextView author = (TextView) rootView.findViewById(R.id.author);
         author.setVisibility(View.VISIBLE);
+
+
+        setQuote(rootView);
 
         lv = (ListView) rootView.findViewById(R.id.SubjectListView);
 
@@ -89,6 +103,16 @@ public class OverviewFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onDestroy() {
+        toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar.setVisibility(View.VISIBLE);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        activity.setSupportActionBar(toolbar);
+
+        super.onDestroy();
     }
 
     @Override
@@ -123,6 +147,27 @@ public class OverviewFragment extends Fragment {
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
         if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.black));
+    }
+
+    public void setQuote(View view){
+        TextView quoteTv = (TextView) view.findViewById(R.id.quote);
+        TextView authorTv = (TextView) view.findViewById(R.id.author);
+
+        String[] quotes = getResources().getStringArray(R.array.quotes);
+        String[] authors = getResources().getStringArray(R.array.authors);
+
+        int rnd = (int) (Math.random() * 26);
+
+        quoteTv.setText(quotes[rnd]);
+        authorTv.setText(authors[rnd]);
+
+        if (quotes[rnd].length() >= 120){
+            quoteTv.setTextSize(16);
+            authorTv.setTextSize(14);
+        }else {
+            quoteTv.setTextSize(18);
+            authorTv.setTextSize(16);
+        }
     }
 
 }

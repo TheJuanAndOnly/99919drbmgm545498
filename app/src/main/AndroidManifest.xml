@@ -67,10 +67,9 @@
 
         </activity>
 
-        <receiver android:process=":remote" android:name=".NotificationRecieverActivity"></receiver>
-
-        <receiver android:name=".LoadAfterBoot">
+        <receiver android:name=".NotificationRecieverActivity">
             <intent-filter>
+                <action android:name="android.intent.action.REBOOT"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>

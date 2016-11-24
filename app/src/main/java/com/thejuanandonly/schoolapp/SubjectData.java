@@ -75,7 +75,7 @@ public class SubjectData {
 
         for (int i = 0; i < GRADE_TYPE_COUNT; i++){
             for (String category : arrayOfCategories) {
-                String grades = prefs.getString(category + "Grades" + i, "err");
+                String grades = prefs.getString(category + "Grades" + i, "");
 
                 List<String> tempList = new ArrayList<>();
                 for (char c : grades.toCharArray()){
@@ -137,8 +137,8 @@ public class SubjectData {
 
         Log.d(TAG, this.toString());
 
-        for (int i = 0; i < GRADE_TYPE_COUNT; i++){
-            for (int j = 0; j < arrayOfCategories.size(); j++) {
+        for (int i = 0; i < allGrades.size(); i++){
+            for (int j = 0; j < allGrades.get(i).size(); j++) {
                 String category = arrayOfCategories.get(j);
 
                 List<String> arrayOfGrades = allGrades.get(i).get(j);
@@ -258,6 +258,10 @@ public class SubjectData {
         } catch (IndexOutOfBoundsException e){
             this.allGrades.get(gradeType).add(allGrades);
         }
+    }
+
+    public void setGrades(List<List<String>> grades){
+        this.allGrades.set(gradeType, grades);
     }
 
     public List<Integer> getPercentageConversion() {
