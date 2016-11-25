@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
@@ -282,7 +283,7 @@ public class NotesFragment extends Fragment {
         String nameString, aboutString;
         int color;
 
-        public boolean redBool, greenBool, orangeBool, purpleBool, blueBool;
+        public boolean redBool, greenBool, orangeBool, purpleBool;
 
 
         public void showDialog(Activity activity, String positiveButton, String negativeButton) {

@@ -31,19 +31,6 @@
             android:id="@+id/head"
             android:background="@color/darker">
 
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/et_name"
-                android:layout_marginTop="16dp"
-                android:layout_marginRight="24dp"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                android:inputType="textCapSentences"
-                android:singleLine="true"
-                android:hint="Add new task"
-                android:textColorHint="#64ffffff"/>
-
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -174,6 +161,21 @@
                     android:layout_toRightOf="@+id/btnTime"
                     android:layout_centerVertical="true" />
             </RelativeLayout>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/et_name"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:inputType="textCapSentences"
+                android:singleLine="true"
+                android:hint="Add new task"
+                android:textColorHint="#64ffffff"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
 
         </RelativeLayout>
 
