@@ -46,4 +46,10 @@
         <item name="windowActionBar">false</item>
     </style>
 
+    <style name="TasksSwitch" parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">#ffffff</item>
+        <item name="colorSwitchThumbNormal">#ffffff</item>
+        <item name="android:colorForeground">#ffffff</item>
+    </style>
+
 </resources>

@@ -41,7 +41,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:background="#964d66e2">
+                android:background="#4d66e2">
 
                 <TextView
                     android:id="@+id/overall"
@@ -104,7 +104,6 @@
             android:id="@+id/nav_view"
             android:background="#642c3e50"
             app:itemTextAppearance="@style/NavigationDrawerItems"
-            app:itemBackground="@drawable/nav_item_background"
             app:itemIconTint="@color/nav_item_state"
             app:menu="@menu/drawer_menu"/>
 

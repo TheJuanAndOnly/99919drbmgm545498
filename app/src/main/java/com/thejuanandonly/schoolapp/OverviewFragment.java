@@ -112,6 +112,10 @@ public class OverviewFragment extends Fragment {
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
 
+        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(getActivity(), ((MainActivity) getActivity()).mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
+        ((MainActivity) getActivity()).mDrawerLayout.setDrawerListener(mDrawerToggle);
+        mDrawerToggle.syncState();
+
         super.onDestroy();
     }
 

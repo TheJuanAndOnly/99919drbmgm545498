@@ -12,6 +12,9 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
+import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -19,6 +22,7 @@ import com.transitionseverywhere.TransitionManager;
 
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -57,16 +61,19 @@ public class TasksFragment extends Fragment {
 
     android.support.v7.widget.Toolbar toolbarMain, toolbar;
 
-    private ListView listView;
+    public ListView listView;
     private TasksListviewAdapter tasksListviewAdapter;
 
-    private EditText etName, etBody;
-    private Button btnTime, btnDate, btnSave;
-    private Switch switchCurrent;
+    public EditText etName, etBody;
+    private TextView tvTodo, tvDone;
+    public Button btnTime, btnDate, btnSave;
+    private SwitchCompat switchCurrent;
+
+    private ImageView ivTime, ivDate, ivAdd;
 
     private ViewGroup head, main, list;
 
-    private RelativeLayout rlTime, rlSwitch;
+    public RelativeLayout rlTime, rlSwitch;
 
     public TimePicker timePicker;
     public DatePicker datePicker;
@@ -112,7 +119,29 @@ public class TasksFragment extends Fragment {
         btnDate = (Button) rootView.findViewById(R.id.btnDate);
         btnSave = (Button) rootView.findViewById(R.id.btn_save);
 
-        switchCurrent = (Switch) rootView.findViewById(R.id.switch_current);
+        ivTime = (ImageView) rootView.findViewById(R.id.iv_time);
+        ivDate = (ImageView) rootView.findViewById(R.id.iv_date);
+        ivAdd = (ImageView) rootView.findViewById(R.id.iv_add);
+
+        tvTodo = (TextView) rootView.findViewById(R.id.tv_todo);
+        tvDone = (TextView) rootView.findViewById(R.id.tv_done);
+
+        tvDone.setTypeface(null, Typeface.NORMAL);
+        tvTodo.setTypeface(tvTodo.getTypeface(), Typeface.BOLD);
+
+        switchCurrent = (SwitchCompat) rootView.findViewById(R.id.switch_current);
+        switchCurrent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (switchCurrent.isChecked()) {
+                    tvDone.setTypeface(tvDone.getTypeface(), Typeface.BOLD);
+                    tvTodo.setTypeface(null, Typeface.NORMAL);
+                } else {
+                    tvDone.setTypeface(null, Typeface.NORMAL);
+                    tvTodo.setTypeface(tvTodo.getTypeface(), Typeface.BOLD);
+                }
+            }
+        });
 
         rlTime = (RelativeLayout) head.findViewById(R.id.rl_time);
 
@@ -182,6 +211,13 @@ public class TasksFragment extends Fragment {
                 }
             });
 
+            ivAdd.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    btnSave.performClick();
+                }
+            });
+
             listView.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -216,6 +252,13 @@ public class TasksFragment extends Fragment {
                 }
             });
 
+            ivTime.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    btnTime.performClick();
+                }
+            });
+
             btnDate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -224,6 +267,13 @@ public class TasksFragment extends Fragment {
                         yearplus = 1900;
                     }
                     setDate(time.getDate(), time.getMonth(), time.getYear() + yearplus);
+                }
+            });
+
+            ivDate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    btnDate.performClick();
                 }
             });
 
@@ -692,7 +742,7 @@ public class TasksFragment extends Fragment {
 
         boolean a = prefs.getBoolean("active", true);
 
-        if (a == true) {
+        if (a == true && numberOfTask > 0) {
             String nameForAlways = null;
             if (numberOfTask == 1) {
                 nameForAlways = " active task";

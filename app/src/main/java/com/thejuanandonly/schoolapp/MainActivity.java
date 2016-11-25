@@ -79,12 +79,14 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Arrays;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.thejuanandonly.schoolapp.R.id.imageView;
 import static com.thejuanandonly.schoolapp.R.id.picture_group_gridView;
+import static com.thejuanandonly.schoolapp.R.id.rl_switch;
 
 public class MainActivity extends AppCompatActivity {
     DrawerLayout mDrawerLayout;
@@ -161,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
                 setOverall();
 
                 if (menuItem.getItemId() == R.id.nav_item_overview) {
+                    mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_overview));
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new OverviewFragment()).commit();
                     mNavigationView.setCheckedItem(R.id.nav_item_overview);
@@ -169,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (menuItem.getItemId() == R.id.nav_item_tasks) {
+                    mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_tasks));
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
                     mNavigationView.setCheckedItem(R.id.nav_item_tasks);
@@ -177,6 +181,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (menuItem.getItemId() == R.id.nav_item_notes) {
+                    mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_notes));
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new NotesFragment(), "NotesFragment").commit();
                     mNavigationView.setCheckedItem(R.id.nav_item_notes);
@@ -185,6 +190,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (menuItem.getItemId() == R.id.nav_item_settings) {
+                    mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_settings));
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new SettingsFragment()).commit();
                     mNavigationView.setCheckedItem(R.id.nav_item_settings);
@@ -192,10 +198,6 @@ public class MainActivity extends AppCompatActivity {
                     invalidateOptionsMenu();
                 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
                 return false;
             }
 
@@ -220,6 +222,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "wake lock", Toast.LENGTH_SHORT).show();
         }
 
+        mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_overview));
         mNavigationView.setCheckedItem(R.id.nav_item_overview);
         setTasksCount();
     }
@@ -229,7 +232,20 @@ public class MainActivity extends AppCompatActivity {
         if (mDrawerLayout.isDrawerOpen(drawerFull)) {
             mDrawerLayout.closeDrawer(drawerFull);
         } else {
-            super.onBackPressed();
+            if (actualFragment == 2) {
+                FragmentManager fm = getSupportFragmentManager();
+                TasksFragment fragment = (TasksFragment) fm.findFragmentById(R.id.containerView);
+                if (fragment.rlSwitch.getVisibility() != View.VISIBLE) {
+                    fragment.etName.setText("");
+                    fragment.etBody.setText("");
+                    fragment.btnTime.setText("time");
+                    fragment.btnDate.setText("date");
+                    fragment.time = new Date();
+
+                    fragment.initializeHeader(false, false, 0);
+                } else super.onBackPressed();
+            } else super.onBackPressed();
+
         }
     }
 
