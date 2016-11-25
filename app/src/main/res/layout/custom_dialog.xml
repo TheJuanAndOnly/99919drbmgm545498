@@ -2,13 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
+    android:background="@drawable/dialog_rounded_background"
     android:orientation="vertical">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add a note"
+        android:text="Add a Note-Group"
         android:textSize="21dp"
         android:layout_marginTop="24dp"
         android:layout_marginRight="24dp"
@@ -24,7 +24,7 @@
         android:layout_marginLeft="24dp"
         android:text="Picture Group Name"/>
 
-    <EditText
+    <android.support.v7.widget.AppCompatEditText
         android:id="@+id/Notes_GroupName"
         android:layout_width="match_parent"
         android:layout_height="25dp"
@@ -47,7 +47,7 @@
         android:text="About"
         android:id="@+id/textView5" />
 
-    <EditText
+    <android.support.v7.widget.AppCompatEditText
         android:id="@+id/Notes_About"
         android:layout_width="match_parent"
         android:layout_height="25dp"
@@ -56,56 +56,13 @@
         android:layout_marginBottom="20dp"
         android:layout_marginRight="24dp"
         android:textSize="17sp"
-        android:hint="Name"
+        android:hint="About this group"
         android:textColor="#B1B1B1"
         android:background="@drawable/edittext_notes"
         android:layout_gravity="center" />
     
     
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:gravity="center"
-        android:orientation="horizontal">
 
-        <ImageView
-            android:id="@+id/red"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:padding="3dp"
-            android:src="@drawable/circle_red"/>
-
-        <ImageView
-            android:id="@+id/purple"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:padding="3dp"
-            android:src="@drawable/circle_purple"/>
-
-        <ImageView
-            android:id="@+id/green"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:padding="3dp"
-            android:src="@drawable/circle_green"/>
-
-        <ImageView
-            android:id="@+id/orange"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:padding="3dp"
-            android:src="@drawable/circle_orange"/>
-
-        <ImageView
-            android:id="@+id/blue"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:padding="3dp"
-            android:src="@drawable/circle_blue"/>
-
-
-    </LinearLayout>
 
 
     <LinearLayout

@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="AndroidSwipeLayout-f66ac6942b">
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.github.daimajia/AndroidSwipeLayout/f66ac6942b/jars/classes.jar!/" />
       <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.github.daimajia/AndroidSwipeLayout/f66ac6942b/res" />
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.github.daimajia/AndroidSwipeLayout/f66ac6942b/jars/classes.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>

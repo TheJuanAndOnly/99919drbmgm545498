@@ -126,7 +126,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         textView.setText(String.valueOf(subjectData.getTestsToWrite()));
 
         LinearLayout ttwLayout = (LinearLayout) findViewById(R.id.ttwLayout);
-        if (subjectData.getGradeType() == 0 && !subjectData.isUseCategories()){
+        if (!subjectData.isUseCategories()){
             ttwLayout.setVisibility(View.VISIBLE);
         }else {
             ttwLayout.setVisibility(View.GONE);
@@ -766,15 +766,15 @@ public class SubjectDetailActivity extends AppCompatActivity {
             case PERCENTAGE:
 
                 int percentage = 0;
-                for (int i = 0; i < chars.length; i++){
-                    if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5' ||
-                            chars[i] == '6' || chars[i] == '7' || chars[i] == '8' || chars[i] == '9' || chars[i] == '0'){
+                for (char aChar1 : chars) {
+                    if (aChar1 == '1' || aChar1 == '2' || aChar1 == '3' || aChar1 == '4' || aChar1 == '5' ||
+                            aChar1 == '6' || aChar1 == '7' || aChar1 == '8' || aChar1 == '9' || aChar1 == '0') {
 
-                        int num = Character.getNumericValue(chars[i]);
+                        int num = Character.getNumericValue(aChar1);
                         if (percentage == -1) percentage = 0;
                         percentage = (percentage * 10) + num;
 
-                    }else if (percentage != -1){
+                    } else if (percentage != -1) {
                         arrayOfGrades.add(String.valueOf(percentage));
                         percentage = -1;
                     }
@@ -792,7 +792,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                             if (chars[j] == '+' || chars[j] == '-') {
                                 string += String.valueOf(chars[j]);
                             }
-                        }catch (ArrayIndexOutOfBoundsException e){}
+                        }catch (ArrayIndexOutOfBoundsException ignored){}
 
                         arrayOfGrades.add(string);
                     }
@@ -809,37 +809,48 @@ public class SubjectDetailActivity extends AppCompatActivity {
                                 string += chars[i + 1];
                                 i++;
                             }
-                        }catch (ArrayIndexOutOfBoundsException e){}
+                        }catch (ArrayIndexOutOfBoundsException ignored){}
 
                         arrayOfGrades.add(string);
                     }
                 }
                 break;
             default:
-                for (int i = 0; i < chars.length; i++) {
-                    if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5') {
-                        String string = String.valueOf(chars[i]);
+                for (char aChar : chars) {
+                    if (aChar == '1' || aChar == '2' || aChar == '3' || aChar == '4' || aChar == '5') {
+                        String string = String.valueOf(aChar);
                         arrayOfGrades.add(string);
                     }
                 }
                 break;
         }
 
-        for (int i = 0; i < arrayOfCategories.size(); i++){
+        List<List<String>> allGrades =
+            chunkArray(
+                    arrayOfGrades,
+                    (int) Math.ceil(
+                            (double) arrayOfGrades.size() / (double) arrayOfCategories.size()
+                    )
+            );
 
-            int length = arrayOfGrades.size() / arrayOfCategories.size();
+        subjectData.setGrades(allGrades);
 
-            List<String> arrayOfGrades2 = new ArrayList<>();
-
-            for (int j = 0; j < length; j++){
-
-                arrayOfGrades2.add(arrayOfGrades.get((i * length) + j));
-            }
-
-            subjectData.setGrades(gradeType, arrayOfCategories.get(i), arrayOfGrades2);
-        }
 
         setListView();
+    }
+
+    public List<List<String>> chunkArray(List<String> array, int chunkSize) {
+        int numOfChunks = (int) Math.ceil((double) array.size() / chunkSize);
+        List<List<String>> output = new ArrayList<>(numOfChunks);
+
+        for(int i = 0; i < numOfChunks; ++i) {
+            int start = i * chunkSize;
+            int length = Math.min(array.size() - start, chunkSize);
+
+            output.add(array.subList(start, start + length));
+        }
+
+        return output;
     }
 //////////////////////////////////////////////////////////////////////////
     public void deleteCategory(View view) {
@@ -849,18 +860,15 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
         List<String> arrayOfCategories = new ArrayList<>(subjectData.getArrayOfCategories());
         List<Integer> arrayOfPercentages = new ArrayList<>(subjectData.getArrayOfPercentages());
-
-        Log.d(TAG, arrayOfCategories.toString());
-        Log.d(TAG, arrayOfPercentages.toString());
+        List<List<String>> grades = subjectData.getGrades();
 
         arrayOfCategories.remove(position);
         arrayOfPercentages.remove(position);
-
-        Log.d(TAG, arrayOfCategories.toString());
-        Log.d(TAG, arrayOfPercentages.toString());
+        grades.remove(position);
 
         subjectData.setArrayOfCategories(arrayOfCategories);
         subjectData.setArrayOfPercentages(arrayOfPercentages);
+        subjectData.setGrades(grades);
 
         setListView();
     }
@@ -1283,24 +1291,35 @@ public class SubjectDetailActivity extends AppCompatActivity {
 //////////////////////////////////////////////////////////////////////////
     public void titleClick(View view) {
 
-        RelativeLayout relativeLayout;
-        Button rollDownButton;
+        RelativeLayout gradesBigLayout = (RelativeLayout) findViewById(R.id.grades_big_layout);
+        RelativeLayout predictionBigLayout = (RelativeLayout) findViewById(R.id.prediction_big_layout);
 
-        if (view == findViewById(R.id.rollDownButton) || view == findViewById(R.id.grades_small_layout)) {
-            relativeLayout = (RelativeLayout) findViewById(R.id.grades_big_layout);
-            rollDownButton = (Button) findViewById(R.id.rollDownButton);
+        Button gradesButton = (Button) findViewById(R.id.rollDownButton);
+        Button predictionButton = (Button) findViewById(R.id.rollDownButton2);
+
+        if (view == gradesButton || view == findViewById(R.id.grades_small_layout)) {
+            if (gradesBigLayout.getVisibility() == View.VISIBLE){
+                gradesBigLayout.setVisibility(View.GONE);
+                gradesButton.setBackgroundResource(R.drawable.ic_arrow_drop_down_white_24dp);
+            } else {
+                gradesBigLayout.setVisibility(View.VISIBLE);
+                gradesButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_white_24dp);
+
+                predictionBigLayout.setVisibility(View.GONE);
+                predictionButton.setBackgroundResource(R.drawable.ic_arrow_drop_down_white_24dp);
+            }
         }
         else {
-            relativeLayout = (RelativeLayout) findViewById(R.id.prediction_big_layout);
-            rollDownButton = (Button) findViewById(R.id.rollDownButton2);
-        }
+            if (predictionBigLayout.getVisibility() == View.VISIBLE){
+                predictionBigLayout.setVisibility(View.GONE);
+                predictionButton.setBackgroundResource(R.drawable.ic_arrow_drop_down_white_24dp);
+            } else {
+                predictionBigLayout.setVisibility(View.VISIBLE);
+                predictionButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_white_24dp);
 
-        if (relativeLayout.getVisibility() == View.GONE) {
-            relativeLayout.setVisibility(View.VISIBLE);
-            rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_white_24dp);
-        } else {
-            relativeLayout.setVisibility(View.GONE);
-            rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_down_white_24dp);
+                gradesBigLayout.setVisibility(View.GONE);
+                gradesButton.setBackgroundResource(R.drawable.ic_arrow_drop_down_white_24dp);
+            }
         }
 
         setListView();
@@ -1310,7 +1329,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         TextView textView = (TextView) findViewById(R.id.testsToWriteEditText);
 
         if (view == findViewById(R.id.ttwAddBtn) || view == findViewById(R.id.ttwAddLayout)){
-            if (Integer.parseInt(textView.getText().toString()) < 3) {
+            if (Integer.parseInt(textView.getText().toString()) < 5) {
                 int ttw = Integer.parseInt(textView.getText().toString()) + 1;
                 textView.setText(String.valueOf(ttw));
 
@@ -1338,21 +1357,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
     }
 
     public void setPredictionListView(){
-
         final ListView listView = (ListView) findViewById(R.id.predictionListView);
-
-        if (subjectData.getGradeType() == TEN_GRADE){
-            listView.setVisibility(View.GONE);
-
-            findViewById(R.id.comingSoonLayout).setVisibility(View.VISIBLE);
-
-            return;
-        }
-        else{
-            listView.setVisibility(View.VISIBLE);
-
-            findViewById(R.id.comingSoonLayout).setVisibility(View.GONE);
-        }
 
         if (predictionThread != null && predictionThread.isAlive()) {
             predictionThread.interrupt();
