@@ -1,6 +1,7 @@
 package com.thejuanandonly.schoolapp;
 
 import android.Manifest;
+import android.animation.PropertyValuesHolder;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -40,6 +41,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.text.InputType;
@@ -69,6 +71,14 @@ import android.widget.Toast;
 
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.db.chart.Tools;
+import com.db.chart.animation.Animation;
+import com.db.chart.animation.easing.BounceEase;
+import com.db.chart.model.LineSet;
+import com.db.chart.model.Point;
+import com.db.chart.renderer.AxisRenderer;
+import com.db.chart.tooltip.Tooltip;
+import com.db.chart.view.LineChartView;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.google.android.gms.ads.MobileAds;
@@ -104,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
     String reset;
     public String userNickname;
 
+    private CardView cvHead;
+    private LineChartView lineChartView;
 
     //Notes stuff
     private static int RESULT_LOAD_IMAGE = 1;
@@ -113,7 +125,9 @@ public class MainActivity extends AppCompatActivity {
     public int position;
     public int count;
 
-
+    private final String[] mLabels = {"Jan", "Fev", "Mar", "Apr", "Jun", "May", "Jul", "Aug", "Sep"};
+    private final float[][] mValues = {{3.5f, 4.7f, 4.3f, 8f, 6.5f, 9.9f, 7f, 8.3f, 7.0f}, {4.5f, 2.5f, 2.5f, 9f, 4.5f, 9.5f, 5f, 8.3f, 1.8f}};
+    private Tooltip mTip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +142,11 @@ public class MainActivity extends AppCompatActivity {
 
         drawerFull = (LinearLayout) findViewById(R.id.drawerFull);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+
+        cvHead = (CardView) findViewById(R.id.cv_head);
+        lineChartView = (LineChartView) findViewById(R.id.lcv_nav_chart);
+
+        updateChart(this, lineChartView);
 
         checkStoragePermission();
         setLevel();
@@ -165,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (menuItem.getItemId() == R.id.nav_item_overview) {
                     mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_overview));
+                    cvHead.setCardBackgroundColor(getResources().getColor(R.color.sexyOrange));
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new OverviewFragment()).commit();
                     mNavigationView.setCheckedItem(R.id.nav_item_overview);
@@ -174,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (menuItem.getItemId() == R.id.nav_item_tasks) {
                     mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_tasks));
+                    cvHead.setCardBackgroundColor(getResources().getColor(R.color.sexyTurqiousee));
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
                     mNavigationView.setCheckedItem(R.id.nav_item_tasks);
@@ -183,6 +204,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (menuItem.getItemId() == R.id.nav_item_notes) {
                     mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_notes));
+                    cvHead.setCardBackgroundColor(getResources().getColor(R.color.sexyBlue));
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new NotesFragment(), "NotesFragment").commit();
                     mNavigationView.setCheckedItem(R.id.nav_item_notes);
@@ -192,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (menuItem.getItemId() == R.id.nav_item_settings) {
                     mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_settings));
+                    cvHead.setCardBackgroundColor(getResources().getColor(R.color.sexyRed));
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new SettingsFragment()).commit();
                     mNavigationView.setCheckedItem(R.id.nav_item_settings);
@@ -224,6 +247,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_overview));
+        cvHead.setCardBackgroundColor(getResources().getColor(R.color.sexyOrange));
         mNavigationView.setCheckedItem(R.id.nav_item_overview);
         setTasksCount();
     }
@@ -324,6 +348,80 @@ public class MainActivity extends AppCompatActivity {
         this.count = count;
 
 
+    }
+
+    public void updateChart(Context mContext, final LineChartView mChart) {
+        mTip = new Tooltip(mContext, R.layout.linechart_tooltip, R.id.value);
+
+//        ((TextView) mTip.findViewById(R.id.value)).setTypeface(Typeface.createFromAsset(mContext.getAssets(), "OpenSans-Semibold.ttf"));
+
+        mTip.setVerticalAlignment(Tooltip.Alignment.BOTTOM_TOP);
+        mTip.setDimensions((int) Tools.fromDpToPx(58), (int) Tools.fromDpToPx(25));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+
+            mTip.setEnterAnimation(PropertyValuesHolder.ofFloat(View.ALPHA, 1),
+                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f),
+                    PropertyValuesHolder.ofFloat(View.SCALE_X, 1f)).setDuration(200);
+
+            mTip.setExitAnimation(PropertyValuesHolder.ofFloat(View.ALPHA, 0),
+                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 0f),
+                    PropertyValuesHolder.ofFloat(View.SCALE_X, 0f)).setDuration(200);
+
+            mTip.setPivotX(Tools.fromDpToPx(65) / 2);
+            mTip.setPivotY(Tools.fromDpToPx(25));
+        }
+
+        mChart.setTooltips(mTip);
+
+        // Data
+        LineSet dataset = new LineSet(mLabels, mValues[0]);
+        dataset.setColor(Color.parseColor("#758cbb"))
+                .setFill(Color.parseColor("#2d374c"))
+                .setDotsColor(Color.parseColor("#758cbb"))
+                .setThickness(4)
+                .setDashed(new float[] {10f, 10f})
+                .beginAt(5);
+        mChart.addData(dataset);
+
+        dataset = new LineSet(mLabels, mValues[0]);
+        dataset.setColor(Color.parseColor("#b3b5bb"))
+                .setFill(Color.parseColor("#2d374c"))
+                .setDotsColor(Color.parseColor("#ffc755"))
+                .setThickness(4)
+                .endAt(6);
+        mChart.addData(dataset);
+
+        // Chart
+        mChart.setBorderSpacing(Tools.fromDpToPx(15))
+                .setAxisBorderValues(0, 20)
+                .setYLabels(AxisRenderer.LabelPosition.NONE)
+                .setLabelsColor(Color.parseColor("#6a84c3"))
+                .setXAxis(false)
+                .setYAxis(false);
+
+        Runnable chartAction = new Runnable() {
+            @Override
+            public void run() {
+                mTip.prepare(mChart.getEntriesArea(0).get(3), mValues[0][3]);
+                mChart.showTooltip(mTip, true);
+            }
+        };
+
+        Animation anim = new Animation().setEasing(new BounceEase()).setEndAction(chartAction);
+
+        mChart.show(anim);
+
+//        mChart.dismissAllTooltips();
+//        if (firstStage) {
+//            mChart.updateValues(0, mValues[1]);
+//            mChart.updateValues(1, mValues[1]);
+//        } else {
+//            mChart.updateValues(0, mValues[0]);
+//            mChart.updateValues(1, mValues[0]);
+//        }
+//        mChart.getChartAnimation().setEndAction(mBaseAction);
+//        mChart.notifyDataUpdate();
     }
 
 
@@ -657,7 +755,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void setOverall(){
 
-        TextView overallTv = (TextView) findViewById(R.id.overall);
+        TextView overallTv = (TextView) findViewById(R.id.tv_overall);
 
         int ovr = 0;
         int ovrCnt = 0;

@@ -37,7 +37,7 @@ apply plugin: 'com.android.application'
         compile "com.andkulikov:transitionseverywhere:1.7.0"
         compile 'com.google.firebase:firebase-ads:9.8.0'
         compile 'agency.tango.android:material-intro-screen:0.0.3'
-
+        compile 'com.diogobernardino:williamchart:2.3.0'
     }
 
 

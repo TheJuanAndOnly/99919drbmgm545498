@@ -40,19 +40,49 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:background="#4d66e2">
+                android:layout_height="wrap_content"
+                android:background="#642c3e50">
 
-                <TextView
-                    android:id="@+id/overall"
-                    android:layout_width="wrap_content"
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Overall:"
-                    android:layout_centerVertical="true"
+                    android:id="@+id/cv_head"
                     android:layout_centerHorizontal="true"
-                    android:textSize="14sp"
-                    android:textColor="@color/white"
-                    android:layout_marginTop="2dp"/>
+                    android:layout_centerVertical="true"
+                    android:layout_margin="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:weightSum="2">
+
+                        <TextView
+                            android:id="@+id/tv_overall"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Overall:"
+                            android:gravity="center"
+                            android:textSize="14sp"
+                            android:textColor="@color/white"
+                            android:layout_margin="24dp"
+                            android:layout_weight="1"/>
+
+                        <TextView
+                            android:id="@+id/tv_overalla"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Overall:"
+                            android:gravity="center"
+                            android:textSize="14sp"
+                            android:layout_toRightOf="@+id/tv_overall"
+                            android:textColor="@color/white"
+                            android:layout_margin="24dp"
+                            android:layout_weight="1"/>
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
 
             </RelativeLayout>
 
@@ -107,10 +137,27 @@
             app:itemIconTint="@color/nav_item_state"
             app:menu="@menu/drawer_menu"/>
 
-        <View
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:background="@color/blue"/>
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="1"
+            android:background="#642c3e50">
+
+            <com.db.chart.view.LineChartView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/lcv_nav_chart"
+                android:layout_margin="12dp"
+                android:gravity="center"
+                android:layout_weight="1"/>
+
+            <com.google.android.gms.ads.AdView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/av_nav_ad"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
