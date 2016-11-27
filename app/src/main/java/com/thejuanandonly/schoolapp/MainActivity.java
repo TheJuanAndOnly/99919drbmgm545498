@@ -30,6 +30,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -48,11 +49,13 @@ import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.DragEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -93,6 +96,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Arrays;
+import java.util.zip.Inflater;
 
 import static com.facebook.FacebookSdk.getApplicationContext;
 import static com.thejuanandonly.schoolapp.R.id.imageView;
@@ -918,23 +922,46 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void notificationsClick(View view) {
-        SwitchCompat notificationsCheckBox, soundsCheckBox, vibrationsCheckBox, activeTasksCheckBox;
+    public void notificationsClick(final View view) {
+        final SwitchCompat notificationsCheckBox, soundsCheckBox, vibrationsCheckBox, activeTasksCheckBox;
         notificationsCheckBox = (SwitchCompat) findViewById(R.id.notificationsCheckBox);
         soundsCheckBox = (SwitchCompat) findViewById(R.id.soundsNotificationCheckBox);
         vibrationsCheckBox = (SwitchCompat) findViewById(R.id.vibrationsNotificationCheckBox);
 
-        boolean isChecked = notificationsCheckBox.isChecked();
+        final boolean isChecked = notificationsCheckBox.isChecked();
         soundsCheckBox.setChecked(isChecked);
         vibrationsCheckBox.setChecked(isChecked);
 
-        if (!isChecked) {
-            soundsCheckBox.setVisibility(View.GONE);
-            vibrationsCheckBox.setVisibility(View.GONE);
-        } else {
-            soundsCheckBox.setVisibility(View.VISIBLE);
-            vibrationsCheckBox.setVisibility(View.VISIBLE);
-        }
+        Handler handler = new Handler();
+
+        final AlphaAnimation fadeOutAnim = new AlphaAnimation(100, 0);
+        fadeOutAnim.setDuration(2000);
+        final AlphaAnimation fadeInAnim = new AlphaAnimation(0, 100);
+        fadeInAnim.setDuration(2000);
+
+
+                if (!isChecked) {
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            soundsCheckBox.setVisibility(View.GONE);
+                            vibrationsCheckBox.setVisibility(View.GONE);
+                        }
+                    }, 300);
+
+                } else {
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            soundsCheckBox.setVisibility(View.VISIBLE);
+                            vibrationsCheckBox.setVisibility(View.VISIBLE);
+                        }
+                    });
+
+                }
+
+
 
         SharedPreferences prefs = getSharedPreferences("settings", Context.MODE_PRIVATE);
         boolean n = !prefs.getBoolean("notifications", true),

@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -24,6 +27,7 @@ import android.support.v7.widget.SwitchCompat;
 import android.widget.TextView;
 
 import org.json.JSONArray;
+import org.w3c.dom.Text;
 
 public class SettingsFragment extends Fragment {
     int position;
@@ -100,8 +104,40 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 ((MainActivity) getContext()).notificationsClick(getView());
+
+                Handler handler = new Handler();
+                final TextView infoTextview = (TextView) getView().findViewById(R.id.textView4);
+                final AlphaAnimation fadeIn = new AlphaAnimation(0, 100);
+                final AlphaAnimation fadeOut = new AlphaAnimation(100, 0);
+
+
+                if (isChecked) {
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            infoTextview.startAnimation(fadeOut);
+                            infoTextview.setVisibility(View.GONE);
+                        }
+                    });
+
+                } else {
+
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            infoTextview.startAnimation(fadeIn);
+                            infoTextview.setVisibility(View.VISIBLE);
+                        }
+                    }, 290);
+
+
+                }
+
             }
         });
+
+
 
         soundsCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -113,6 +149,7 @@ public class SettingsFragment extends Fragment {
         vibrationsCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
                 ((MainActivity) getContext()).vibrationsNotificationClick(getView());
             }
         });
