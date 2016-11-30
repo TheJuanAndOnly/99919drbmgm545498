@@ -23,6 +23,6 @@
         android:layout_centerVertical="true"
         android:layout_toRightOf="@+id/value"
         android:layout_toEndOf="@+id/value"
-        android:src="@drawable/ic_trending_up_white_24dp"/>
+        android:src="@drawable/ic_trending_up"/>
 
 </RelativeLayout>
