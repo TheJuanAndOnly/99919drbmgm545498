@@ -313,13 +313,8 @@ public class MainActivity extends AppCompatActivity {
                 .setFill(Color.parseColor("#2d374c"))
                 .setDotsColor(Color.parseColor("#758cbb"))
                 .setThickness(4)
-<<<<<<< HEAD
-                .setDashed(new float[] {10f, 10f})
-                .beginAt(4);
-=======
                 .setDashed(new float[]{10f, 10f})
                 .beginAt(5);
->>>>>>> origin/master
         mChart.addData(dataset);
 
         dataset = new LineSet(mLabels, mValues);
@@ -340,10 +335,6 @@ public class MainActivity extends AppCompatActivity {
         mChart.show();
     }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -435,12 +426,7 @@ public class MainActivity extends AppCompatActivity {
         }.start();
     }
 
-<<<<<<< HEAD
-    public void setLevel(){
-=======
     public void setLevel() {
-
->>>>>>> origin/master
         TextView levelText = (TextView) findViewById(R.id.levelText);
         ProgressBar bar = (ProgressBar) findViewById(R.id.levelProgress);
         TextView xp = (TextView) findViewById(R.id.xpProgress);
