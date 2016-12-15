@@ -192,10 +192,6 @@ public class MainActivity extends AppCompatActivity {
                     invalidateOptionsMenu();
                 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
                 return false;
             }
 

@@ -8,7 +8,8 @@
     android:background="@color/darkbluebackground">
 
     <TextView
-        android:layout_width="29.5dp"
+        android:layout_width="wrap_content"
+        android:minWidth="29.5dp"
         android:layout_height="wrap_content"
         android:id="@+id/getOr_text_view"
         android:textAppearance="?android:attr/textAppearanceListItemSmall"
