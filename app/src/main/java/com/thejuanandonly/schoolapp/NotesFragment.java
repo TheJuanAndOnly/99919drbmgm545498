@@ -6,18 +6,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -29,12 +29,12 @@ import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.support.v7.widget.AppCompatEditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupMenu;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,7 +61,6 @@ public class NotesFragment extends Fragment {
 
     android.support.v7.widget.Toolbar toolbar;
     static View v;
-
 
 
     //Notes
@@ -119,6 +118,8 @@ public class NotesFragment extends Fragment {
 
         return rootView;
     }
+
+
 
     public void loadArrFromSP() {
 
@@ -270,131 +271,63 @@ public class NotesFragment extends Fragment {
 
 }
 
-class CustomDialog extends SaveSharedPreferences {
-
-    Dialog dialog;
-    Button positive, negative;
-    ImageView red, green, blue, purple, orange;
-    ViewGroup.LayoutParams params;
-
-    EditText name, about;
-    String nameString, aboutString;
-    int color;
-
-    public boolean redBool, greenBool, orangeBool, purpleBool, blueBool;
 
 
-    public void showDialog(Activity activity, String positiveButton, String negativeButton) {
-        dialog = new Dialog(activity);
-        dialog.setCancelable(true);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.custom_dialog);
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        positive = (Button) dialog.findViewById(R.id.dialogPositive);
-        negative = (Button) dialog.findViewById(R.id.dialogNegative);
+    class CustomDialog extends SaveSharedPreferences {
 
-        negative.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.cancel();
-            }
-        });
+        Dialog dialog;
+        Button positive, negative;
+        ImageView red, green, blue, purple, orange;
+        ViewGroup.LayoutParams params;
+
+        AppCompatEditText name, about;
+        String nameString, aboutString;
+        int color;
+
+        public boolean redBool, greenBool, orangeBool, purpleBool;
 
 
-        name = (EditText) dialog.findViewById(R.id.Notes_GroupName);
-        nameString = name.getText().toString();
-        about = (EditText) dialog.findViewById(R.id.Notes_About);
-        aboutString = about.getText().toString();
+        public void showDialog(Activity activity, String positiveButton, String negativeButton) {
+            dialog = new Dialog(activity);
+            dialog.setCancelable(true);
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(R.layout.custom_dialog);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+            positive = (Button) dialog.findViewById(R.id.dialogPositive);
+            negative = (Button) dialog.findViewById(R.id.dialogNegative);
+
+            negative.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.cancel();
+                }
+            });
 
 
-        DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
-        int width = metrics.widthPixels;
-        dialog.getWindow().setLayout((6 * width) / 7, LinearLayout.LayoutParams.WRAP_CONTENT);
+            name = (AppCompatEditText) dialog.findViewById(R.id.Notes_GroupName);
+            nameString = name.getText().toString();
+            about = (AppCompatEditText) dialog.findViewById(R.id.Notes_About);
+            aboutString = about.getText().toString();
 
-        red = (ImageView) dialog.findViewById(R.id.red);
-        blue = (ImageView) dialog.findViewById(R.id.blue);
-        green = (ImageView) dialog.findViewById(R.id.green);
-        orange = (ImageView) dialog.findViewById(R.id.orange);
-        purple = (ImageView) dialog.findViewById(R.id.purple);
 
-        params = red.getLayoutParams();
-        params.width = (((6 * width) / 7) / 6) + 10;
-        params.height = params.width;
+            DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
+            int width = metrics.widthPixels;
+            dialog.getWindow().setLayout((6 * width) / 7, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-        red.setLayoutParams(params);
-        blue.setLayoutParams(params);
-        green.setLayoutParams(params);
-        orange.setLayoutParams(params);
-        purple.setLayoutParams(params);
 
-        red.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                redBool = true;
-                blueBool = false;
-                greenBool = false;
-                orangeBool = false;
-                purpleBool = false;
-            }
-        });
+            dialog.show();
 
-        blue.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                redBool = false;
-                blueBool = true;
-                greenBool = false;
-                orangeBool = false;
-                purpleBool = false;
-            }
-        });
-
-        green.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                redBool = false;
-                blueBool = false;
-                greenBool = true;
-                orangeBool = false;
-                purpleBool = false;
-            }
-        });
-
-        orange.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                redBool = false;
-                blueBool = false;
-                greenBool = false;
-                orangeBool = true;
-                purpleBool = false;
-            }
-        });
-
-        purple.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                redBool = false;
-                blueBool = false;
-                greenBool = false;
-                orangeBool = false;
-                purpleBool = true;
-            }
-        });
-
-        dialog.show();
-
-        negative.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
+            negative.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+        }
     }
 
-
-}
 
 
 class ListViewAdapter extends BaseAdapter {

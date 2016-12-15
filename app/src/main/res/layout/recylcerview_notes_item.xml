@@ -47,6 +47,7 @@
                         android:gravity="bottom"
                         android:textSize="23sp"
                         android:textColor="@color/white"
+                        android:singleLine="true"
                         android:text="English"
                         android:layout_marginLeft="15dp"
                         android:layout_weight="2"/>
@@ -58,6 +59,7 @@
                         android:textSize="14sp"
                         android:layout_marginLeft="15dp"
                         android:gravity="top"
+                        android:singleLine="true"
                         android:textColor="@color/white"
                         android:text="Test Unit 9 + 9 - Hleath"
                         android:layout_weight="1.4"/>

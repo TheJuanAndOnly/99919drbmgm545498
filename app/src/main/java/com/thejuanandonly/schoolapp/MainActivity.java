@@ -1,17 +1,12 @@
 package com.thejuanandonly.schoolapp;
 
 import android.Manifest;
-import android.annotation.TargetApi;
-import android.app.Activity;
+import android.animation.PropertyValuesHolder;
 import android.app.AlarmManager;
-import android.app.AlertDialog;
-import android.app.Application;
-import android.app.Dialog;
-import android.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,20 +14,14 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -40,51 +29,39 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.SwitchCompat;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.Switch;
-
-import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import android.widget.TimePicker;
 import android.widget.Toast;
 
-
-import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.db.chart.Tools;
+import com.db.chart.animation.Animation;
+import com.db.chart.animation.easing.BounceEase;
+import com.db.chart.model.LineSet;
+import com.db.chart.renderer.AxisRenderer;
+import com.db.chart.tooltip.Tooltip;
+import com.db.chart.view.LineChartView;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
-import com.google.android.gms.ads.MobileAds;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
-import java.util.Arrays;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
-import static com.thejuanandonly.schoolapp.R.id.imageView;
-import static com.thejuanandonly.schoolapp.R.id.picture_group_gridView;
 
 public class MainActivity extends AppCompatActivity {
     DrawerLayout mDrawerLayout;
@@ -101,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
     String reset;
     public String userNickname;
 
+    private CardView cvHead;
+    private LineChartView lineChartView;
 
     //Notes stuff
     private static int RESULT_LOAD_IMAGE = 1;
@@ -110,7 +89,9 @@ public class MainActivity extends AppCompatActivity {
     public int position;
     public int count;
 
-
+    private final String[] mLabels = {"Jan", "Fev", "Mar", "Apr", "Jun", "May", "Jul", "Aug", "Sep"};
+    private final float[][] mValues = {{3.5f, 4.7f, 4.3f, 8f, 6.5f, 9.9f, 7f, 8.3f, 7.0f}, {4.5f, 2.5f, 2.5f, 9f, 4.5f, 9.5f, 5f, 8.3f, 1.8f}};
+    private Tooltip mTip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +106,11 @@ public class MainActivity extends AppCompatActivity {
 
         drawerFull = (LinearLayout) findViewById(R.id.drawerFull);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+
+        cvHead = (CardView) findViewById(R.id.cv_head);
+        lineChartView = (LineChartView) findViewById(R.id.lcv_nav_chart);
+
+        updateChart(this, lineChartView);
 
         checkStoragePermission();
         setLevel();
@@ -161,6 +147,8 @@ public class MainActivity extends AppCompatActivity {
                 setOverall();
 
                 if (menuItem.getItemId() == R.id.nav_item_overview) {
+                    mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_overview));
+                    cvHead.setCardBackgroundColor(getResources().getColor(R.color.sexyOrange));
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new OverviewFragment()).commit();
                     mNavigationView.setCheckedItem(R.id.nav_item_overview);
@@ -169,6 +157,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (menuItem.getItemId() == R.id.nav_item_tasks) {
+                    mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_tasks));
+                    cvHead.setCardBackgroundColor(getResources().getColor(R.color.sexyTurqiousee));
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
                     mNavigationView.setCheckedItem(R.id.nav_item_tasks);
@@ -177,6 +167,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (menuItem.getItemId() == R.id.nav_item_notes) {
+                    mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_notes));
+                    cvHead.setCardBackgroundColor(getResources().getColor(R.color.sexyBlue));
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new NotesFragment(), "NotesFragment").commit();
                     mNavigationView.setCheckedItem(R.id.nav_item_notes);
@@ -185,6 +177,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 if (menuItem.getItemId() == R.id.nav_item_settings) {
+                    mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_settings));
+                    cvHead.setCardBackgroundColor(getResources().getColor(R.color.sexyRed));
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new SettingsFragment()).commit();
                     mNavigationView.setCheckedItem(R.id.nav_item_settings);
@@ -216,6 +210,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "wake lock", Toast.LENGTH_SHORT).show();
         }
 
+        mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_overview));
+        cvHead.setCardBackgroundColor(getResources().getColor(R.color.sexyOrange));
         mNavigationView.setCheckedItem(R.id.nav_item_overview);
         setTasksCount();
     }
@@ -225,7 +221,20 @@ public class MainActivity extends AppCompatActivity {
         if (mDrawerLayout.isDrawerOpen(drawerFull)) {
             mDrawerLayout.closeDrawer(drawerFull);
         } else {
-            super.onBackPressed();
+            if (actualFragment == 2) {
+                FragmentManager fm = getSupportFragmentManager();
+                TasksFragment fragment = (TasksFragment) fm.findFragmentById(R.id.containerView);
+                if (fragment.rlSwitch.getVisibility() != View.VISIBLE) {
+                    fragment.etName.setText("");
+                    fragment.etBody.setText("");
+                    fragment.btnTime.setText("time");
+                    fragment.btnDate.setText("date");
+                    fragment.time = new Date();
+
+                    fragment.initializeHeader(false, false, 0);
+                } else super.onBackPressed();
+            } else super.onBackPressed();
+
         }
     }
 
@@ -251,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
             getMenuInflater().inflate(R.menu.menu_tasks, menu);
         } else if (actualFragment == 3) {
             getMenuInflater().inflate(R.menu.menu_notes, menu);
-        } else if (actualFragment == 4){
+        } else if (actualFragment == 4) {
             getMenuInflater().inflate(R.menu.menu_settings, menu);
         } else {
             getMenuInflater().inflate(R.menu.menu_support, menu);
@@ -277,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setTasksCount () {
+    private void setTasksCount() {
         SharedPreferences prefs = getSharedPreferences("ListOfTasks", MODE_PRIVATE);
         JSONArray arrayName;
         try {
@@ -291,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
         mNavigationView.getMenu().findItem(R.id.nav_item_tasks).setActionView(R.layout.nav_tasks_counter);
 
         TextView view = (TextView) mNavigationView.getMenu().findItem(R.id.nav_item_tasks).getActionView().findViewById(R.id.tv_count);
-        view.setText(count+"");
+        view.setText(count + "");
     }
 
     public void addingImages(int position, int count) {
@@ -305,6 +314,79 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void updateChart(Context mContext, final LineChartView mChart) {
+        mTip = new Tooltip(mContext, R.layout.linechart_tooltip, R.id.value);
+
+//        ((TextView) mTip.findViewById(R.id.value)).setTypeface(Typeface.createFromAsset(mContext.getAssets(), "OpenSans-Semibold.ttf"));
+
+        mTip.setVerticalAlignment(Tooltip.Alignment.BOTTOM_TOP);
+        mTip.setDimensions((int) Tools.fromDpToPx(58), (int) Tools.fromDpToPx(25));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+
+            mTip.setEnterAnimation(PropertyValuesHolder.ofFloat(View.ALPHA, 1),
+                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f),
+                    PropertyValuesHolder.ofFloat(View.SCALE_X, 1f)).setDuration(200);
+
+            mTip.setExitAnimation(PropertyValuesHolder.ofFloat(View.ALPHA, 0),
+                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 0f),
+                    PropertyValuesHolder.ofFloat(View.SCALE_X, 0f)).setDuration(200);
+
+            mTip.setPivotX(Tools.fromDpToPx(65) / 2);
+            mTip.setPivotY(Tools.fromDpToPx(25));
+        }
+
+        mChart.setTooltips(mTip);
+
+        // Data
+        LineSet dataset = new LineSet(mLabels, mValues[0]);
+        dataset.setColor(Color.parseColor("#758cbb"))
+                .setFill(Color.parseColor("#2d374c"))
+                .setDotsColor(Color.parseColor("#758cbb"))
+                .setThickness(4)
+                .setDashed(new float[]{10f, 10f})
+                .beginAt(5);
+        mChart.addData(dataset);
+
+        dataset = new LineSet(mLabels, mValues[0]);
+        dataset.setColor(Color.parseColor("#b3b5bb"))
+                .setFill(Color.parseColor("#2d374c"))
+                .setDotsColor(Color.parseColor("#ffc755"))
+                .setThickness(4)
+                .endAt(6);
+        mChart.addData(dataset);
+
+        // Chart
+        mChart.setBorderSpacing(Tools.fromDpToPx(15))
+                .setAxisBorderValues(0, 20)
+                .setYLabels(AxisRenderer.LabelPosition.NONE)
+                .setLabelsColor(Color.parseColor("#6a84c3"))
+                .setXAxis(false)
+                .setYAxis(false);
+
+        Runnable chartAction = new Runnable() {
+            @Override
+            public void run() {
+                mTip.prepare(mChart.getEntriesArea(0).get(3), mValues[0][3]);
+                mChart.showTooltip(mTip, true);
+            }
+        };
+
+        Animation anim = new Animation().setEasing(new BounceEase()).setEndAction(chartAction);
+
+        mChart.show(anim);
+
+//        mChart.dismissAllTooltips();
+//        if (firstStage) {
+//            mChart.updateValues(0, mValues[1]);
+//            mChart.updateValues(1, mValues[1]);
+//        } else {
+//            mChart.updateValues(0, mValues[0]);
+//            mChart.updateValues(1, mValues[0]);
+//        }
+//        mChart.getChartAnimation().setEndAction(mBaseAction);
+//        mChart.notifyDataUpdate();
+    }
 
 
     @Override
@@ -359,12 +441,13 @@ public class MainActivity extends AppCompatActivity {
             savedUriArrayList.add(picture);
             try {
                 arraylistOfArraylist.remove(position);
-            } catch (IndexOutOfBoundsException e) {}
+            } catch (IndexOutOfBoundsException e) {
+            }
             arraylistOfArraylist.add(position, savedUriArrayList);
 
             String save = "";
-            for (int i = 0; i < arraylistOfArraylist.size(); i++){
-                for (int j = 0; j < arraylistOfArraylist.get(i).size(); j++){
+            for (int i = 0; i < arraylistOfArraylist.size(); i++) {
+                for (int j = 0; j < arraylistOfArraylist.get(i).size(); j++) {
                     save += arraylistOfArraylist.get(i).get(j) + "`";
                 }
                 save += "~";
@@ -382,9 +465,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-    public void levelTimer(){
+    public void levelTimer() {
         new CountDownTimer(300000, 3000) {
 
             public void onTick(long millisUntilFinished) {
@@ -399,7 +480,7 @@ public class MainActivity extends AppCompatActivity {
         }.start();
     }
 
-    public void setLevel(){
+    public void setLevel() {
 
         TextView levelText = (TextView) findViewById(R.id.levelText);
         ProgressBar bar = (ProgressBar) findViewById(R.id.levelProgress);
@@ -417,9 +498,10 @@ public class MainActivity extends AppCompatActivity {
         JSONArray arrayOfSubjects = new JSONArray();
         try {
             arrayOfSubjects = new JSONArray(arrayPrefs.getString("List", null));
-        }catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
-        for (int i = 0; i < arrayOfSubjects.length(); i++){
+        for (int i = 0; i < arrayOfSubjects.length(); i++) {
 
             String currentSubj = "";
             try {
@@ -429,7 +511,7 @@ public class MainActivity extends AppCompatActivity {
 
             SharedPreferences prefs = getSharedPreferences("Subject" + currentSubj, Context.MODE_PRIVATE);
             double avg = Double.parseDouble(prefs.getString("AvgGrade", "0"));
-            int gradeType = prefs.getInt("GradeType" , 0);
+            int gradeType = prefs.getInt("GradeType", 0);
 
             if (avg != 0) {
 
@@ -497,15 +579,15 @@ public class MainActivity extends AppCompatActivity {
 
                     JSONArray categories = new JSONArray(prefs.getString("ListOfCategories", null));
 
-                    for (int j = 0; j < categories.length(); j++){
+                    for (int j = 0; j < categories.length(); j++) {
 
-                        JSONArray arrayOfGrades = new JSONArray(prefs.getString(categories.getString(j) + "Grades" + prefs.getInt("GradeType" , 0), null));
+                        JSONArray arrayOfGrades = new JSONArray(prefs.getString(categories.getString(j) + "Grades" + prefs.getInt("GradeType", 0), null));
 
-                        for (int k = 0; k < arrayOfGrades.length(); k++){
+                        for (int k = 0; k < arrayOfGrades.length(); k++) {
 
-                            switch (prefs.getInt("GradeType", 0)){
+                            switch (prefs.getInt("GradeType", 0)) {
                                 case 0:
-                                    switch ((int) Math.round(Double.parseDouble(arrayOfGrades.getString(k)))){
+                                    switch ((int) Math.round(Double.parseDouble(arrayOfGrades.getString(k)))) {
                                         case 1:
                                             points += array[8];
                                             Log.d("debug", String.valueOf(array[8]));
@@ -580,7 +662,8 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                     }
-                }catch (Exception e){}
+                } catch (Exception e) {
+                }
             }
         }
 
@@ -634,9 +717,9 @@ public class MainActivity extends AppCompatActivity {
         colors.recycle();
     }
 
-    public void setOverall(){
+    public void setOverall() {
 
-        TextView overallTv = (TextView) findViewById(R.id.overall);
+        TextView overallTv = (TextView) findViewById(R.id.tv_overall);
 
         int ovr = 0;
         int ovrCnt = 0;
@@ -651,14 +734,15 @@ public class MainActivity extends AppCompatActivity {
         JSONArray arrayOfSubjects = new JSONArray();
         try {
             arrayOfSubjects = new JSONArray(arrayPrefs.getString("List", null));
-        }catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
-        if (arrayOfSubjects.length() == 0){
+        if (arrayOfSubjects.length() == 0) {
             overallTv.setText("");
             return;
         }
 
-        for (int i = 0; i < arrayOfSubjects.length(); i++){
+        for (int i = 0; i < arrayOfSubjects.length(); i++) {
 
             String currentSubj = "";
             try {
@@ -667,9 +751,9 @@ public class MainActivity extends AppCompatActivity {
             }
 
             SharedPreferences prefs = getSharedPreferences("Subject" + currentSubj, Context.MODE_PRIVATE);
-            int gradeType = prefs.getInt("GradeType" , 0);
+            int gradeType = prefs.getInt("GradeType", 0);
 
-            switch (gradeType){
+            switch (gradeType) {
                 case 0:
                     normal++;
                     break;
@@ -731,18 +815,18 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            try{
+            try {
                 double d = Double.parseDouble(String.valueOf(ovr)) / Double.parseDouble(String.valueOf(ovrCnt));
                 String s;
-                try{
+                try {
                     s = String.valueOf(d).substring(0, 4);
-                }catch (StringIndexOutOfBoundsException e){
+                } catch (StringIndexOutOfBoundsException e) {
                     s = String.valueOf(d);
                 }
                 overallTv.setText("Overall: " + s);
 
                 Log.d("debugC", ovr + ", " + ovrCnt + ", " + d);
-            }catch (ArithmeticException e){
+            } catch (ArithmeticException e) {
                 //overallTv.setText("");
                 Log.e("debug", e.toString());
             }
@@ -760,7 +844,7 @@ public class MainActivity extends AppCompatActivity {
                 int gradeType = prefs.getInt("GradeType", 0);
                 double avg = Double.parseDouble(prefs.getString("AvgGrade", "0"));
 
-                switch (gradeType){
+                switch (gradeType) {
                     case 0:
                         ovr += avg * 2;
                         ovrCnt++;
@@ -780,42 +864,64 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            try{
+            try {
                 double d = Double.parseDouble(String.valueOf(ovr)) / Double.parseDouble(String.valueOf(ovrCnt));
                 String s;
-                try{
+                try {
                     s = String.valueOf(d).substring(0, 4);
-                }catch (StringIndexOutOfBoundsException e){
+                } catch (StringIndexOutOfBoundsException e) {
                     s = String.valueOf(d);
                 }
 
                 overallTv.setText("Overall: " + s + " / 10");
 
                 Log.d("debugC", ovr + ", " + ovrCnt + ", " + d);
-            }catch (ArithmeticException e){
+            } catch (ArithmeticException e) {
                 //overallTv.setText("");
                 Log.e("debug", e.toString());
             }
         }
     }
 
-    public void notificationsClick(View view) {
-        Switch notificationsCheckBox, soundsCheckBox, vibrationsCheckBox, activeTasksCheckBox;
-        notificationsCheckBox = (Switch) findViewById(R.id.notificationsCheckBox);
-        soundsCheckBox = (Switch) findViewById(R.id.soundsNotificationCheckBox);
-        vibrationsCheckBox = (Switch) findViewById(R.id.vibrationsNotificationCheckBox);
+    public void notificationsClick(final View view) {
+        final SwitchCompat notificationsCheckBox, soundsCheckBox, vibrationsCheckBox, activeTasksCheckBox;
+        notificationsCheckBox = (SwitchCompat) findViewById(R.id.notificationsCheckBox);
+        soundsCheckBox = (SwitchCompat) findViewById(R.id.soundsNotificationCheckBox);
+        vibrationsCheckBox = (SwitchCompat) findViewById(R.id.vibrationsNotificationCheckBox);
 
-        boolean isChecked = notificationsCheckBox.isChecked();
+        final boolean isChecked = notificationsCheckBox.isChecked();
         soundsCheckBox.setChecked(isChecked);
         vibrationsCheckBox.setChecked(isChecked);
 
+        Handler handler = new Handler();
+
+        final AlphaAnimation fadeOutAnim = new AlphaAnimation(100, 0);
+        fadeOutAnim.setDuration(2000);
+        final AlphaAnimation fadeInAnim = new AlphaAnimation(0, 100);
+        fadeInAnim.setDuration(2000);
+
+
         if (!isChecked) {
-            soundsCheckBox.setVisibility(View.GONE);
-            vibrationsCheckBox.setVisibility(View.GONE);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    soundsCheckBox.setVisibility(View.GONE);
+                    vibrationsCheckBox.setVisibility(View.GONE);
+                }
+            }, 300);
+
         } else {
-            soundsCheckBox.setVisibility(View.VISIBLE);
-            vibrationsCheckBox.setVisibility(View.VISIBLE);
+
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    soundsCheckBox.setVisibility(View.VISIBLE);
+                    vibrationsCheckBox.setVisibility(View.VISIBLE);
+                }
+            });
+
         }
+
 
         SharedPreferences prefs = getSharedPreferences("settings", Context.MODE_PRIVATE);
         boolean n = !prefs.getBoolean("notifications", true),
@@ -935,7 +1041,7 @@ public class MainActivity extends AppCompatActivity {
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         builder.setView(input);
 
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -968,10 +1074,10 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
         }
 
-        for (int i = 0; i < set.length(); i++){
+        for (int i = 0; i < set.length(); i++) {
 
             try {
-                if (subject.equals(set.getString(i))){
+                if (subject.equals(set.getString(i))) {
 
                     Toast.makeText(this, "This subject already exists", Toast.LENGTH_LONG).show();
                     subjectDialog();
@@ -986,7 +1092,8 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 set.put(subject);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
 
         } else {
             Toast.makeText(this, "Don't leave the space blank!", Toast.LENGTH_LONG).show();
@@ -1014,7 +1121,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
     }
 
-    public void checkStoragePermission(){
+    public void checkStoragePermission() {
 
         SharedPreferences sharedPreferences = getSharedPreferences("User", MODE_PRIVATE);
         userNickname = sharedPreferences.getString("nickname", null);
@@ -1049,7 +1156,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             ArrayList<String> listNamez = new ArrayList<String>();
-            for (int i = 0; i < arrayName.length(); i++){
+            for (int i = 0; i < arrayName.length(); i++) {
                 try {
                     listNamez.add(arrayName.getString(i));
                 } catch (Exception e) {
@@ -1072,7 +1179,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Notification notification = new Notification.Builder(this)
                         .setContentTitle(numberOfTask + nameForAlways)
-                        .setContentText(childWithNames.substring(1, childWithNames.length()-1))
+                        .setContentText(childWithNames.substring(1, childWithNames.length() - 1))
                         .setSmallIcon(R.drawable.ic_active_tasks)
                         .setContentIntent(contentIntent).build();
 
