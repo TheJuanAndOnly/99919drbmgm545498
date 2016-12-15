@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,13 +15,12 @@ import java.util.List;
  */
 public class SubjectData {
 
-    public static final int GRADE_TYPE_COUNT = 4;
-
     private String subject;
     private String average;
 
     private int gradeType;
     private int testsToWrite;
+    private int gradeToGet = 2;
 
     private boolean useCategories;
     private boolean usePercentages;
@@ -36,7 +34,7 @@ public class SubjectData {
 
     private static final String TAG = "GradeDay SubjectData";
 
-    public SubjectData(Context context, SharedPreferences prefs){
+    SubjectData(Context context, SharedPreferences prefs){
 
         String categories = prefs.getString("ListOfCategories", "Grades`");
         String percentages = prefs.getString("ListOfPercentages", "100`");
@@ -113,7 +111,7 @@ public class SubjectData {
         Log.d(TAG, this.toString());
     }
 
-    public void save(SharedPreferences prefs){
+    void save(SharedPreferences prefs){
         SharedPreferences.Editor editor = prefs.edit();
 
         if (allGrades == null) return;
@@ -169,59 +167,59 @@ public class SubjectData {
         this.subject = subject;
     }
 
-    public String getAverage() {
+    String getAverage() {
         return average;
     }
 
-    public void setAverage(String average) {
+    void setAverage(String average) {
         this.average = average;
     }
 
-    public int getGradeType() {
+    int getGradeType() {
         return gradeType;
     }
 
-    public void setGradeType(int gradeType) {
+    void setGradeType(int gradeType) {
         this.gradeType = gradeType;
     }
 
-    public int getTestsToWrite() {
+    int getTestsToWrite() {
         return testsToWrite;
     }
 
-    public void setTestsToWrite(int testsToWrite) {
+    void setTestsToWrite(int testsToWrite) {
         this.testsToWrite = testsToWrite;
     }
 
-    public boolean isUseCategories() {
+    boolean isUseCategories() {
         return useCategories;
     }
 
-    public void setUseCategories(boolean useCategories) {
+    void setUseCategories(boolean useCategories) {
         this.useCategories = useCategories;
     }
 
-    public boolean isUsePercentages() {
+    boolean isUsePercentages() {
         return usePercentages;
     }
 
-    public void setUsePercentages(boolean usePercentages) {
+    void setUsePercentages(boolean usePercentages) {
         this.usePercentages = usePercentages;
     }
 
-    public List<String> getArrayOfCategories() {
+    List<String> getArrayOfCategories() {
         return arrayOfCategories;
     }
 
-    public void setArrayOfCategories(List<String> arrayOfCategories) {
+    void setArrayOfCategories(List<String> arrayOfCategories) {
         this.arrayOfCategories = arrayOfCategories;
     }
 
-    public List<Integer> getArrayOfPercentages() {
+    List<Integer> getArrayOfPercentages() {
         return arrayOfPercentages;
     }
 
-    public void setArrayOfPercentages(List<Integer> arrayOfPercentages) {
+    void setArrayOfPercentages(List<Integer> arrayOfPercentages) {
         this.arrayOfPercentages = arrayOfPercentages;
     }
 
@@ -236,22 +234,26 @@ public class SubjectData {
         return allGrades.get(gradeType).get(arrayOfCategories.indexOf(category));
     }
 
-    public List<String> getGrades(String category) {
+    List<String> getGrades(String category) {
         return allGrades.get(gradeType).get(arrayOfCategories.indexOf(category));
     }
 
     /**
      * @return List of lists of grades in categories, in currently used grade type
      */
-    public List<List<String>> getGrades(){
+    List<List<String>> getGrades(){
         return allGrades.get(gradeType);
     }
 
-    public List<List<List<String>>> getAllGrades(){
+    List<List<List<String>>> getAllGrades(){
         return allGrades;
     }
 
-    public void setGrades(int gradeType, String category, List<String> allGrades) {
+    void setAllGrades(List<List<List<String>>> allGrades){
+        this.allGrades = new ArrayList<>(allGrades);
+    }
+
+    void setGrades(int gradeType, String category, List<String> allGrades) {
         int index = arrayOfCategories.indexOf(category);
         try {
             this.allGrades.get(gradeType).set(index, allGrades);
@@ -260,12 +262,20 @@ public class SubjectData {
         }
     }
 
-    public void setGrades(List<List<String>> grades){
+    void setGrades(List<List<String>> grades){
         this.allGrades.set(gradeType, grades);
     }
 
-    public List<Integer> getPercentageConversion() {
+    List<Integer> getPercentageConversion() {
         return percentageConversion;
+    }
+
+    public int getGradeToGet() {
+        return gradeToGet;
+    }
+
+    public void setGradeToGet(int gradeToGet) {
+        this.gradeToGet = gradeToGet;
     }
 
     @Override
@@ -286,8 +296,97 @@ public class SubjectData {
         ret += "    Use Percentages " + usePercentages + "\n";
         ret += "    Percentages " + arrayOfPercentages.toString() + "\n";
 
-        ret += "    Tests To Write " + testsToWrite;
+        ret += "    Tests To Write " + testsToWrite + "\n";
+        ret += "    Percentage Conversion " + percentageConversion.toString();
 
         return ret;
+    }
+
+    /*
+     * Static fields and methods:
+     */
+
+    public static final int GRADE_TYPE_COUNT = 4;
+    public static final int NUMERIC = 0;
+    public static final int PERCENTAGE = 1;
+    public static final int ALPHABETIC = 2;
+    public static final int TEN_GRADE = 3;
+
+    public static double letterToNumber(String letter){
+        switch (letter){
+            case "A+":
+                return 4.33;
+
+            case "A":
+                return 4;
+
+            case "A-":
+                return 4 - 0.33 ;
+
+            case "B+":
+                return 3 + 0.33;
+
+            case "B":
+                return 3;
+
+            case "B-":
+                return 3 - 0.33;
+
+            case "C+":
+                return 2 + 0.33;
+
+            case "C":
+                return 2;
+
+            case "C-":
+                return 2 - 0.33;
+
+            case "D+":
+                return  + 0.33;
+
+            case "D":
+                return 1;
+
+            case "D-":
+                return 1 - 0.33;
+
+            case "F":
+                return 0;
+
+            default:
+                return 0;
+        }
+    }
+
+    public static String numberToLetter(double number){
+        if (number == 4.33) {
+            return "A+";
+        } else if (number == 4) {
+            return "A";
+        } else if (number == 3.67) {
+            return "A-";
+        } else if (number == 3.33) {
+            return "B+";
+        } else if (number == 3) {
+            return "B";
+        } else if (number == 2.67) {
+            return "B-";
+        } else if (number == 2.33) {
+            return "C+";
+        } else if (number == 2) {
+            return "C";
+        } else if (number == 1.67) {
+            return "C-";
+        } else if (number == 1.33) {
+            return "D+";
+        } else if (number == 1) {
+            return "D";
+        } else if (number == 0.67) {
+            return "D-";
+        } else if (number == 0) {
+            return "F";
+        } else {
+            return "";
+        }
     }
 }

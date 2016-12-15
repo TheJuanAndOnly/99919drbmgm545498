@@ -2,17 +2,11 @@ package com.thejuanandonly.schoolapp;
 
 import android.Manifest;
 import android.animation.PropertyValuesHolder;
-import android.annotation.TargetApi;
-import android.app.Activity;
 import android.app.AlarmManager;
-import android.app.AlertDialog;
-import android.app.Application;
-import android.app.Dialog;
-import android.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -20,20 +14,14 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -42,62 +30,38 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.DragEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
-
-import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
-import android.widget.Switch;
-
-import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import android.widget.TimePicker;
 import android.widget.Toast;
 
-
-import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.db.chart.Tools;
 import com.db.chart.animation.Animation;
 import com.db.chart.animation.easing.BounceEase;
 import com.db.chart.model.LineSet;
-import com.db.chart.model.Point;
 import com.db.chart.renderer.AxisRenderer;
 import com.db.chart.tooltip.Tooltip;
 import com.db.chart.view.LineChartView;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
-import com.google.android.gms.ads.MobileAds;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.File;
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Arrays;
-
-import static com.facebook.FacebookSdk.getApplicationContext;
-import static com.thejuanandonly.schoolapp.R.id.imageView;
-import static com.thejuanandonly.schoolapp.R.id.picture_group_gridView;
-import static com.thejuanandonly.schoolapp.R.id.rl_switch;
 
 public class MainActivity extends AppCompatActivity {
     DrawerLayout mDrawerLayout;
@@ -285,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
             getMenuInflater().inflate(R.menu.menu_tasks, menu);
         } else if (actualFragment == 3) {
             getMenuInflater().inflate(R.menu.menu_notes, menu);
-        } else if (actualFragment == 4){
+        } else if (actualFragment == 4) {
             getMenuInflater().inflate(R.menu.menu_settings, menu);
         } else {
             getMenuInflater().inflate(R.menu.menu_support, menu);
@@ -311,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setTasksCount () {
+    private void setTasksCount() {
         SharedPreferences prefs = getSharedPreferences("ListOfTasks", MODE_PRIVATE);
         JSONArray arrayName;
         try {
@@ -325,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
         mNavigationView.getMenu().findItem(R.id.nav_item_tasks).setActionView(R.layout.nav_tasks_counter);
 
         TextView view = (TextView) mNavigationView.getMenu().findItem(R.id.nav_item_tasks).getActionView().findViewById(R.id.tv_count);
-        view.setText(count+"");
+        view.setText(count + "");
     }
 
     public void addingImages(int position, int count) {
@@ -349,8 +313,13 @@ public class MainActivity extends AppCompatActivity {
                 .setFill(Color.parseColor("#2d374c"))
                 .setDotsColor(Color.parseColor("#758cbb"))
                 .setThickness(4)
+<<<<<<< HEAD
                 .setDashed(new float[] {10f, 10f})
                 .beginAt(4);
+=======
+                .setDashed(new float[]{10f, 10f})
+                .beginAt(5);
+>>>>>>> origin/master
         mChart.addData(dataset);
 
         dataset = new LineSet(mLabels, mValues);
@@ -371,6 +340,10 @@ public class MainActivity extends AppCompatActivity {
         mChart.show();
     }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -423,12 +396,13 @@ public class MainActivity extends AppCompatActivity {
             savedUriArrayList.add(picture);
             try {
                 arraylistOfArraylist.remove(position);
-            } catch (IndexOutOfBoundsException e) {}
+            } catch (IndexOutOfBoundsException e) {
+            }
             arraylistOfArraylist.add(position, savedUriArrayList);
 
             String save = "";
-            for (int i = 0; i < arraylistOfArraylist.size(); i++){
-                for (int j = 0; j < arraylistOfArraylist.get(i).size(); j++){
+            for (int i = 0; i < arraylistOfArraylist.size(); i++) {
+                for (int j = 0; j < arraylistOfArraylist.get(i).size(); j++) {
                     save += arraylistOfArraylist.get(i).get(j) + "`";
                 }
                 save += "~";
@@ -446,9 +420,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-    public void levelTimer(){
+    public void levelTimer() {
         new CountDownTimer(300000, 3000) {
 
             public void onTick(long millisUntilFinished) {
@@ -463,7 +435,12 @@ public class MainActivity extends AppCompatActivity {
         }.start();
     }
 
+<<<<<<< HEAD
     public void setLevel(){
+=======
+    public void setLevel() {
+
+>>>>>>> origin/master
         TextView levelText = (TextView) findViewById(R.id.levelText);
         ProgressBar bar = (ProgressBar) findViewById(R.id.levelProgress);
         TextView xp = (TextView) findViewById(R.id.xpProgress);
@@ -480,9 +457,10 @@ public class MainActivity extends AppCompatActivity {
         JSONArray arrayOfSubjects = new JSONArray();
         try {
             arrayOfSubjects = new JSONArray(arrayPrefs.getString("List", null));
-        }catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
-        for (int i = 0; i < arrayOfSubjects.length(); i++){
+        for (int i = 0; i < arrayOfSubjects.length(); i++) {
 
             String currentSubj = "";
             try {
@@ -492,7 +470,7 @@ public class MainActivity extends AppCompatActivity {
 
             SharedPreferences prefs = getSharedPreferences("Subject" + currentSubj, Context.MODE_PRIVATE);
             double avg = Double.parseDouble(prefs.getString("AvgGrade", "0"));
-            int gradeType = prefs.getInt("GradeType" , 0);
+            int gradeType = prefs.getInt("GradeType", 0);
 
             if (avg != 0) {
 
@@ -560,15 +538,15 @@ public class MainActivity extends AppCompatActivity {
 
                     JSONArray categories = new JSONArray(prefs.getString("ListOfCategories", null));
 
-                    for (int j = 0; j < categories.length(); j++){
+                    for (int j = 0; j < categories.length(); j++) {
 
-                        JSONArray arrayOfGrades = new JSONArray(prefs.getString(categories.getString(j) + "Grades" + prefs.getInt("GradeType" , 0), null));
+                        JSONArray arrayOfGrades = new JSONArray(prefs.getString(categories.getString(j) + "Grades" + prefs.getInt("GradeType", 0), null));
 
-                        for (int k = 0; k < arrayOfGrades.length(); k++){
+                        for (int k = 0; k < arrayOfGrades.length(); k++) {
 
-                            switch (prefs.getInt("GradeType", 0)){
+                            switch (prefs.getInt("GradeType", 0)) {
                                 case 0:
-                                    switch ((int) Math.round(Double.parseDouble(arrayOfGrades.getString(k)))){
+                                    switch ((int) Math.round(Double.parseDouble(arrayOfGrades.getString(k)))) {
                                         case 1:
                                             points += array[8];
                                             Log.d("debug", String.valueOf(array[8]));
@@ -643,7 +621,8 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                     }
-                }catch (Exception e){}
+                } catch (Exception e) {
+                }
             }
         }
 
@@ -697,7 +676,7 @@ public class MainActivity extends AppCompatActivity {
         colors.recycle();
     }
 
-    public void setOverall(){
+    public void setOverall() {
 
         TextView overallTv = (TextView) findViewById(R.id.tv_overall);
 
@@ -714,14 +693,15 @@ public class MainActivity extends AppCompatActivity {
         JSONArray arrayOfSubjects = new JSONArray();
         try {
             arrayOfSubjects = new JSONArray(arrayPrefs.getString("List", null));
-        }catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
-        if (arrayOfSubjects.length() == 0){
+        if (arrayOfSubjects.length() == 0) {
             overallTv.setText("");
             return;
         }
 
-        for (int i = 0; i < arrayOfSubjects.length(); i++){
+        for (int i = 0; i < arrayOfSubjects.length(); i++) {
 
             String currentSubj = "";
             try {
@@ -730,9 +710,9 @@ public class MainActivity extends AppCompatActivity {
             }
 
             SharedPreferences prefs = getSharedPreferences("Subject" + currentSubj, Context.MODE_PRIVATE);
-            int gradeType = prefs.getInt("GradeType" , 0);
+            int gradeType = prefs.getInt("GradeType", 0);
 
-            switch (gradeType){
+            switch (gradeType) {
                 case 0:
                     normal++;
                     break;
@@ -794,18 +774,18 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            try{
+            try {
                 double d = Double.parseDouble(String.valueOf(ovr)) / Double.parseDouble(String.valueOf(ovrCnt));
                 String s;
-                try{
+                try {
                     s = String.valueOf(d).substring(0, 4);
-                }catch (StringIndexOutOfBoundsException e){
+                } catch (StringIndexOutOfBoundsException e) {
                     s = String.valueOf(d);
                 }
                 overallTv.setText("Overall: " + s);
 
                 Log.d("debugC", ovr + ", " + ovrCnt + ", " + d);
-            }catch (ArithmeticException e){
+            } catch (ArithmeticException e) {
                 //overallTv.setText("");
                 Log.e("debug", e.toString());
             }
@@ -823,7 +803,7 @@ public class MainActivity extends AppCompatActivity {
                 int gradeType = prefs.getInt("GradeType", 0);
                 double avg = Double.parseDouble(prefs.getString("AvgGrade", "0"));
 
-                switch (gradeType){
+                switch (gradeType) {
                     case 0:
                         ovr += avg * 2;
                         ovrCnt++;
@@ -843,42 +823,64 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            try{
+            try {
                 double d = Double.parseDouble(String.valueOf(ovr)) / Double.parseDouble(String.valueOf(ovrCnt));
                 String s;
-                try{
+                try {
                     s = String.valueOf(d).substring(0, 4);
-                }catch (StringIndexOutOfBoundsException e){
+                } catch (StringIndexOutOfBoundsException e) {
                     s = String.valueOf(d);
                 }
 
                 overallTv.setText("Overall: " + s + " / 10");
 
                 Log.d("debugC", ovr + ", " + ovrCnt + ", " + d);
-            }catch (ArithmeticException e){
+            } catch (ArithmeticException e) {
                 //overallTv.setText("");
                 Log.e("debug", e.toString());
             }
         }
     }
 
-    public void notificationsClick(View view) {
-        SwitchCompat notificationsCheckBox, soundsCheckBox, vibrationsCheckBox, activeTasksCheckBox;
+    public void notificationsClick(final View view) {
+        final SwitchCompat notificationsCheckBox, soundsCheckBox, vibrationsCheckBox, activeTasksCheckBox;
         notificationsCheckBox = (SwitchCompat) findViewById(R.id.notificationsCheckBox);
         soundsCheckBox = (SwitchCompat) findViewById(R.id.soundsNotificationCheckBox);
         vibrationsCheckBox = (SwitchCompat) findViewById(R.id.vibrationsNotificationCheckBox);
 
-        boolean isChecked = notificationsCheckBox.isChecked();
+        final boolean isChecked = notificationsCheckBox.isChecked();
         soundsCheckBox.setChecked(isChecked);
         vibrationsCheckBox.setChecked(isChecked);
 
+        Handler handler = new Handler();
+
+        final AlphaAnimation fadeOutAnim = new AlphaAnimation(100, 0);
+        fadeOutAnim.setDuration(2000);
+        final AlphaAnimation fadeInAnim = new AlphaAnimation(0, 100);
+        fadeInAnim.setDuration(2000);
+
+
         if (!isChecked) {
-            soundsCheckBox.setVisibility(View.GONE);
-            vibrationsCheckBox.setVisibility(View.GONE);
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    soundsCheckBox.setVisibility(View.GONE);
+                    vibrationsCheckBox.setVisibility(View.GONE);
+                }
+            }, 300);
+
         } else {
-            soundsCheckBox.setVisibility(View.VISIBLE);
-            vibrationsCheckBox.setVisibility(View.VISIBLE);
+
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    soundsCheckBox.setVisibility(View.VISIBLE);
+                    vibrationsCheckBox.setVisibility(View.VISIBLE);
+                }
+            });
+
         }
+
 
         SharedPreferences prefs = getSharedPreferences("settings", Context.MODE_PRIVATE);
         boolean n = !prefs.getBoolean("notifications", true),
@@ -998,7 +1000,7 @@ public class MainActivity extends AppCompatActivity {
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         builder.setView(input);
 
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -1031,10 +1033,10 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
         }
 
-        for (int i = 0; i < set.length(); i++){
+        for (int i = 0; i < set.length(); i++) {
 
             try {
-                if (subject.equals(set.getString(i))){
+                if (subject.equals(set.getString(i))) {
 
                     Toast.makeText(this, "This subject already exists", Toast.LENGTH_LONG).show();
                     subjectDialog();
@@ -1049,7 +1051,8 @@ public class MainActivity extends AppCompatActivity {
 
             try {
                 set.put(subject);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
 
         } else {
             Toast.makeText(this, "Don't leave the space blank!", Toast.LENGTH_LONG).show();
@@ -1077,7 +1080,7 @@ public class MainActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
     }
 
-    public void checkStoragePermission(){
+    public void checkStoragePermission() {
 
         SharedPreferences sharedPreferences = getSharedPreferences("User", MODE_PRIVATE);
         userNickname = sharedPreferences.getString("nickname", null);
@@ -1112,7 +1115,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             ArrayList<String> listNamez = new ArrayList<String>();
-            for (int i = 0; i < arrayName.length(); i++){
+            for (int i = 0; i < arrayName.length(); i++) {
                 try {
                     listNamez.add(arrayName.getString(i));
                 } catch (Exception e) {
@@ -1135,7 +1138,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Notification notification = new Notification.Builder(this)
                         .setContentTitle(numberOfTask + nameForAlways)
-                        .setContentText(childWithNames.substring(1, childWithNames.length()-1))
+                        .setContentText(childWithNames.substring(1, childWithNames.length() - 1))
                         .setSmallIcon(R.drawable.ic_active_tasks)
                         .setContentIntent(contentIntent).build();
 

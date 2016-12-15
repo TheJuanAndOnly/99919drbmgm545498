@@ -45,27 +45,17 @@ public class CustomSubjectAdapter extends ArrayAdapter<Subject> {
         nameTV.setText(subject.subject);
         averageTV.setText(subject.average);
 
-        String s = averageTV.getText().toString();
-        if (s.equals("")){
-            TextView separator = (TextView) convertView.findViewById(R.id.separatorLV);
-            separator.setBackgroundColor(Color.TRANSPARENT);
-        }
+
 
         SharedPreferences preferences = getContext().getSharedPreferences("themeSave", Context.MODE_PRIVATE);
         int theme = preferences.getInt("theme", 0);
 
-        TextView separator = (TextView) convertView.findViewById(R.id.separatorLV);
-
-        ImageView img = (ImageView) convertView.findViewById(R.id.leftTV);
 
         int pos = position;
         while(pos > 6){
             pos -= 7;
         }
 
-        final TypedArray imgs = getContext().getResources().obtainTypedArray(R.array.dots_array);
-        final int resID = imgs.getResourceId(pos, 0);
-        img.setBackgroundResource(resID);
 
         SharedPreferences arrayPrefs = getContext().getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
 
@@ -208,15 +198,15 @@ public class CustomSubjectAdapter extends ArrayAdapter<Subject> {
 
         if (result > 0){
 
-            arrow.setBackgroundResource(R.drawable.ic_trending_up_white_24dp);
+            arrow.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_trending_up));
 
         }else if (result < 0){
 
-            arrow.setBackgroundResource(R.drawable.ic_trending_down_white_24dp);
+            arrow.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_trending_down));
 
         }else {
 
-            arrow.setBackgroundResource(R.drawable.ic_trending_flat_white_24dp);
+            arrow.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_trending_flat_white_24dp));
 
         }
 

@@ -119,6 +119,8 @@ public class NotesFragment extends Fragment {
         return rootView;
     }
 
+
+
     public void loadArrFromSP() {
 
         try {

@@ -31,18 +31,16 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by Robo on 10/22/2015.
  */
 public class SubjectDetailActivity extends AppCompatActivity {
-
-    public static final int NUMERIC = 0;
-    public static final int PERCENTAGE = 1;
-    public static final int ALPHABETIC = 2;
-    public static final int TEN_GRADE = 3;
 
     android.support.v7.widget.Toolbar toolbar;
     private Menu menu;
@@ -499,12 +497,12 @@ public class SubjectDetailActivity extends AppCompatActivity {
             if (grades.isEmpty()) averages.add(0.0);
 
             for (String grade : grades) {
-                if (subjectData.getGradeType() == SubjectDetailActivity.ALPHABETIC) {
+                if (subjectData.getGradeType() == SubjectData.ALPHABETIC) {
 
                     try {
-                        averages.set(i, averages.get(i) + SubjectDetailActivity.letterToNumber(grade));
+                        averages.set(i, averages.get(i) + SubjectData.letterToNumber(grade));
                     }catch (IndexOutOfBoundsException e){
-                        averages.add(SubjectDetailActivity.letterToNumber(grade));
+                        averages.add(SubjectData.letterToNumber(grade));
                     }
                 }
                 else {
@@ -538,83 +536,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
         }
 
         return temp;
-    }
-
-    public static double letterToNumber(String letter){
-        switch (letter){
-            case "A+":
-                return 4.33;
-
-            case "A":
-                return 4;
-
-            case "A-":
-                return 4 - 0.33 ;
-
-            case "B+":
-                return 3 + 0.33;
-
-            case "B":
-                return 3;
-
-            case "B-":
-                return 3 - 0.33;
-
-            case "C+":
-                return 2 + 0.33;
-
-            case "C":
-                return 2;
-
-            case "C-":
-                return 2 - 0.33;
-
-            case "D+":
-                return  + 0.33;
-
-            case "D":
-                return 1;
-
-            case "D-":
-                return 1 - 0.33;
-
-            case "F":
-                return 0;
-
-            default:
-                return 0;
-        }
-    }
-    public static String numberToLetter(double number){
-        if (number == 4.33) {
-            return "A+";
-        } else if (number == 4) {
-            return "A";
-        } else if (number == 3.67) {
-            return "A-";
-        } else if (number == 3.33) {
-            return "B+";
-        } else if (number == 3) {
-            return "B";
-        } else if (number == 2.67) {
-            return "B-";
-        } else if (number == 2.33) {
-            return "C+";
-        } else if (number == 2) {
-            return "C";
-        } else if (number == 1.67) {
-            return "C-";
-        } else if (number == 1.33) {
-            return "D+";
-        } else if (number == 1) {
-            return "D";
-        } else if (number == 0.67) {
-            return "D-";
-        } else if (number == 0) {
-            return "F";
-        } else {
-            return "";
-        }
     }
 //////////////////////////////////////////////////////////////////////////
     public void addCategory(View view) {
@@ -688,7 +609,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
         int gradeType = subjectData.getGradeType();
         switch (gradeType){
-            case PERCENTAGE:
+            case SubjectData.PERCENTAGE:
                 int percentage = 0;
                 for (char aChar : chars) {
                     if (aChar == '1' || aChar == '2' || aChar == '3' || aChar == '4' || aChar == '5' ||
@@ -706,7 +627,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 if (percentage != -1 && chars.length != 0) arrayOfGrades.add(String.valueOf(percentage));
                 break;
 
-            case ALPHABETIC:
+            case SubjectData.ALPHABETIC:
                 for (int i = 0; i < chars.length; i++) {
                     if (chars[i] == 'A' || chars[i] == 'B' || chars[i] == 'C' || chars[i] == 'D' || chars[i] == 'F') {
                         String string = String.valueOf(chars[i]);
@@ -724,7 +645,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 }
                 break;
 
-            case TEN_GRADE:
+            case SubjectData.TEN_GRADE:
                 for (int i = 0; i < chars.length; i++) {
                     if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5' ||
                             chars[i] == '6' || chars[i] == '7' || chars[i] == '8' || chars[i] == '9' || chars[i] == '0') {
@@ -756,14 +677,12 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
     public void saveCategory(String gradesString){
 
-        List<String> arrayOfCategories = new ArrayList<>(subjectData.getArrayOfCategories());
-
         char[] chars = gradesString.toCharArray();
         List<String> arrayOfGrades = new ArrayList<>();
 
         int gradeType = subjectData.getGradeType();
         switch (gradeType){
-            case PERCENTAGE:
+            case SubjectData.PERCENTAGE:
 
                 int percentage = 0;
                 for (char aChar1 : chars) {
@@ -781,7 +700,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 }
                 if (percentage != -1) arrayOfGrades.add(String.valueOf(percentage));
                 break;
-            case ALPHABETIC:
+            case SubjectData.ALPHABETIC:
                 for (int i = 0; i < chars.length; i++) {
                     if (chars[i] == 'A' || chars[i] == 'B' || chars[i] == 'C' || chars[i] == 'D' || chars[i] == 'F') {
                         String string = String.valueOf(chars[i]);
@@ -798,7 +717,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                     }
                 }
                 break;
-            case TEN_GRADE:
+            case SubjectData.TEN_GRADE:
                 for (int i = 0; i < chars.length; i++) {
                     if (chars[i] == '1' || chars[i] == '2' || chars[i] == '3' || chars[i] == '4' || chars[i] == '5' ||
                             chars[i] == '6' || chars[i] == '7' || chars[i] == '8' || chars[i] == '9' || chars[i] == '0') {
@@ -825,32 +744,9 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 break;
         }
 
-        List<List<String>> allGrades =
-            chunkArray(
-                    arrayOfGrades,
-                    (int) Math.ceil(
-                            (double) arrayOfGrades.size() / (double) arrayOfCategories.size()
-                    )
-            );
-
-        subjectData.setGrades(allGrades);
-
+        subjectData.setGrades(subjectData.getGradeType(), "Grades", arrayOfGrades);
 
         setListView();
-    }
-
-    public List<List<String>> chunkArray(List<String> array, int chunkSize) {
-        int numOfChunks = (int) Math.ceil((double) array.size() / chunkSize);
-        List<List<String>> output = new ArrayList<>(numOfChunks);
-
-        for(int i = 0; i < numOfChunks; ++i) {
-            int start = i * chunkSize;
-            int length = Math.min(array.size() - start, chunkSize);
-
-            output.add(array.subList(start, start + length));
-        }
-
-        return output;
     }
 //////////////////////////////////////////////////////////////////////////
     public void deleteCategory(View view) {
@@ -1141,6 +1037,24 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 subjectData.setUseCategories(switch1.isChecked());
                 subjectData.setUsePercentages(switch2.isChecked());
 
+                if (!subjectData.isUseCategories()){
+                    List<List<String>> grades = new ArrayList<>(subjectData.getGrades());
+                    List<String> newGrades = new ArrayList<>(1);
+
+                    for (List<String> list : grades){
+                        newGrades.addAll(list);
+                    }
+
+                    grades = new ArrayList<>(Collections.singletonList(newGrades));
+
+                    subjectData.setGrades(grades);
+
+                    subjectData.setArrayOfCategories(Collections.singletonList("Grades"));
+                    subjectData.setArrayOfPercentages(Collections.singletonList(100));
+
+                    mergeAllCats();
+                }
+
                 if (subjectData.isUsePercentages()) {
                     List<Integer> arrayOfPercentages = new ArrayList<>(subjectData.getArrayOfPercentages());
 
@@ -1178,6 +1092,23 @@ public class SubjectDetailActivity extends AppCompatActivity {
         });
 
         dialog.show();
+    }
+
+    private void mergeAllCats(){
+        List<List<List<String>>> allGrades = new ArrayList<>(subjectData.getAllGrades());
+
+        for (int i = 0; i < allGrades.size(); i++) {
+            List<List<String>> gradeType = allGrades.get(i);
+
+            List<String> newGrades = new ArrayList<>(gradeType.get(0).size() * gradeType.size());
+            for (List<String> cat : gradeType) {
+                newGrades.addAll(cat);
+            }
+            gradeType = new ArrayList<>(Collections.singletonList(newGrades));
+            allGrades.set(i, gradeType);
+        }
+
+        subjectData.setAllGrades(allGrades);
     }
 
     public View getViewByPos(int position, ListView listView){
