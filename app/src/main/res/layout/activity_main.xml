@@ -30,100 +30,73 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:background="@color/dark"
         android:orientation="vertical">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:id="@+id/rl_head">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
+            <ImageView
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:id="@+id/iv_logo"
+                android:src="@drawable/ic_logo"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="#642c3e50">
+                android:id="@+id/levelText"
+                android:text="level 1"
+                android:textSize="12sp"
+                android:textColor="#129e90"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/iv_logo"/>
 
-                <android.support.v7.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/cv_head"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:layout_margin="12dp">
+            <TextView
+                android:id="@+id/tv_overall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Overall:"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/white"
+                android:layout_below="@+id/levelText"
+                android:layout_centerHorizontal="true"/>
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:weightSum="2">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/xpProgress"
+                android:text="500/1000"
+                android:textSize="6sp"
+                android:textColor="@color/white"
+                android:layout_marginBottom="2dp"
+                android:layout_marginTop="8dp"
+                android:layout_below="@+id/tv_overall"
+                android:layout_alignRight="@+id/levelProgress"/>
 
-                        <TextView
-                            android:id="@+id/tv_overall"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Overall:"
-                            android:gravity="center"
-                            android:textSize="14sp"
-                            android:textColor="@color/white"
-                            android:layout_margin="24dp"
-                            android:layout_weight="1"/>
-
-                        <TextView
-                            android:id="@+id/tv_overalla"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Overall:"
-                            android:gravity="center"
-                            android:textSize="14sp"
-                            android:layout_toRightOf="@+id/tv_overall"
-                            android:textColor="@color/white"
-                            android:layout_margin="24dp"
-                            android:layout_weight="1"/>
-
-                    </LinearLayout>
-
-                </android.support.v7.widget.CardView>
-
-            </RelativeLayout>
-
-            <RelativeLayout
+            <ProgressBar
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="3dp"
+                android:id="@+id/levelProgress"
+                android:max="100"
+                android:progress="50"
+                android:indeterminateOnly="false"
+                android:progressDrawable="@drawable/nav_progressbar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/xpProgress"
+                android:layout_marginBottom="18dp"
+                android:layout_marginLeft="36dp"
+                android:layout_marginRight="36dp"/>
 
-                <ProgressBar
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:id="@+id/levelProgress"
-                    android:max="100"
-                    android:progress="50"
-                    android:progressDrawable="@drawable/nav_progressbar"
-                    style="?android:attr/progressBarStyleHorizontal"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/xpProgress"
-                    android:text="100xp"
-                    android:textSize="10sp"
-                    android:textColor="@color/white"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="8dp"/>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/levelText"
-                    android:text="level 1"
-                    android:textSize="10sp"
-                    android:textColor="@color/white"
-                    android:layout_centerVertical="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="8dp"/>
-
-            </RelativeLayout>
-
-        </LinearLayout>
-
+        </RelativeLayout>
 
         <android.support.design.widget.NavigationView
             xmlns:android="http://schemas.android.com/apk/res/android"
@@ -132,7 +105,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:id="@+id/nav_view"
-            android:background="#642c3e50"
+            android:background="@android:color/transparent"
             app:itemTextAppearance="@style/NavigationDrawerItems"
             app:itemIconTint="@color/nav_item_state"
             app:menu="@menu/drawer_menu"/>
@@ -141,8 +114,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_weight="1"
-            android:background="#642c3e50">
+            android:layout_weight="1">
 
             <com.db.chart.view.LineChartView
                 android:layout_width="match_parent"
@@ -151,11 +123,6 @@
                 android:layout_margin="12dp"
                 android:gravity="center"
                 android:layout_weight="1"/>
-
-            <com.google.android.gms.ads.AdView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/av_nav_ad"/>
 
         </LinearLayout>
 

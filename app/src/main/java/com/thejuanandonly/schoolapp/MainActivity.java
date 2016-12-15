@@ -114,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
     String reset;
     public String userNickname;
 
-    private CardView cvHead;
     private LineChartView lineChartView;
 
     //Notes stuff
@@ -124,10 +123,6 @@ public class MainActivity extends AppCompatActivity {
     public ArrayList<ArrayList<String>> arraylistOfArraylist;
     public int position;
     public int count;
-
-    private final String[] mLabels = {"Jan", "Fev", "Mar", "Apr", "Jun", "May", "Jul", "Aug", "Sep"};
-    private final float[][] mValues = {{3.5f, 4.7f, 4.3f, 8f, 6.5f, 9.9f, 7f, 8.3f, 7.0f}, {4.5f, 2.5f, 2.5f, 9f, 4.5f, 9.5f, 5f, 8.3f, 1.8f}};
-    private Tooltip mTip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,15 +138,14 @@ public class MainActivity extends AppCompatActivity {
         drawerFull = (LinearLayout) findViewById(R.id.drawerFull);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 
-        cvHead = (CardView) findViewById(R.id.cv_head);
         lineChartView = (LineChartView) findViewById(R.id.lcv_nav_chart);
 
-        updateChart(this, lineChartView);
+        updateChart(lineChartView);
 
         checkStoragePermission();
         setLevel();
         levelTimer();
-        setOverall();
+//        setOverall();
 
         Locale.setDefault(Locale.US);
 
@@ -179,12 +173,11 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 mDrawerLayout.closeDrawers();
 
-                setLevel();
-                setOverall();
+//                setLevel();
+//                setOverall();
 
                 if (menuItem.getItemId() == R.id.nav_item_overview) {
                     mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_overview));
-                    cvHead.setCardBackgroundColor(getResources().getColor(R.color.sexyOrange));
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new OverviewFragment()).commit();
                     mNavigationView.setCheckedItem(R.id.nav_item_overview);
@@ -194,7 +187,6 @@ public class MainActivity extends AppCompatActivity {
 
                 if (menuItem.getItemId() == R.id.nav_item_tasks) {
                     mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_tasks));
-                    cvHead.setCardBackgroundColor(getResources().getColor(R.color.sexyTurqiousee));
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
                     mNavigationView.setCheckedItem(R.id.nav_item_tasks);
@@ -204,7 +196,6 @@ public class MainActivity extends AppCompatActivity {
 
                 if (menuItem.getItemId() == R.id.nav_item_notes) {
                     mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_notes));
-                    cvHead.setCardBackgroundColor(getResources().getColor(R.color.sexyBlue));
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new NotesFragment(), "NotesFragment").commit();
                     mNavigationView.setCheckedItem(R.id.nav_item_notes);
@@ -214,7 +205,6 @@ public class MainActivity extends AppCompatActivity {
 
                 if (menuItem.getItemId() == R.id.nav_item_settings) {
                     mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_settings));
-                    cvHead.setCardBackgroundColor(getResources().getColor(R.color.sexyRed));
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.containerView, new SettingsFragment()).commit();
                     mNavigationView.setCheckedItem(R.id.nav_item_settings);
@@ -247,7 +237,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_overview));
-        cvHead.setCardBackgroundColor(getResources().getColor(R.color.sexyOrange));
         mNavigationView.setCheckedItem(R.id.nav_item_overview);
         setTasksCount();
     }
@@ -350,81 +339,37 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void updateChart(Context mContext, final LineChartView mChart) {
-        mTip = new Tooltip(mContext, R.layout.linechart_tooltip, R.id.value);
+    public void updateChart(final LineChartView mChart) {
+        String[] mLabels = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"};
+        float[] mValues = new float[]{100, 90, 85, 60, 95, 90, 100};
+        float[] mValuesFuture = new float[]{90, 90, 90, 60, 90, 85, 100};
 
-//        ((TextView) mTip.findViewById(R.id.value)).setTypeface(Typeface.createFromAsset(mContext.getAssets(), "OpenSans-Semibold.ttf"));
-
-        mTip.setVerticalAlignment(Tooltip.Alignment.BOTTOM_TOP);
-        mTip.setDimensions((int) Tools.fromDpToPx(58), (int) Tools.fromDpToPx(25));
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-
-            mTip.setEnterAnimation(PropertyValuesHolder.ofFloat(View.ALPHA, 1),
-                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 1f),
-                    PropertyValuesHolder.ofFloat(View.SCALE_X, 1f)).setDuration(200);
-
-            mTip.setExitAnimation(PropertyValuesHolder.ofFloat(View.ALPHA, 0),
-                    PropertyValuesHolder.ofFloat(View.SCALE_Y, 0f),
-                    PropertyValuesHolder.ofFloat(View.SCALE_X, 0f)).setDuration(200);
-
-            mTip.setPivotX(Tools.fromDpToPx(65) / 2);
-            mTip.setPivotY(Tools.fromDpToPx(25));
-        }
-
-        mChart.setTooltips(mTip);
-
-        // Data
-        LineSet dataset = new LineSet(mLabels, mValues[0]);
+        LineSet dataset = new LineSet(mLabels, mValuesFuture);
         dataset.setColor(Color.parseColor("#758cbb"))
                 .setFill(Color.parseColor("#2d374c"))
                 .setDotsColor(Color.parseColor("#758cbb"))
                 .setThickness(4)
                 .setDashed(new float[] {10f, 10f})
-                .beginAt(5);
+                .beginAt(4);
         mChart.addData(dataset);
 
-        dataset = new LineSet(mLabels, mValues[0]);
+        dataset = new LineSet(mLabels, mValues);
         dataset.setColor(Color.parseColor("#b3b5bb"))
                 .setFill(Color.parseColor("#2d374c"))
                 .setDotsColor(Color.parseColor("#ffc755"))
                 .setThickness(4)
-                .endAt(6);
+                .endAt(5);
         mChart.addData(dataset);
 
-        // Chart
-        mChart.setBorderSpacing(Tools.fromDpToPx(15))
-                .setAxisBorderValues(0, 20)
-                .setYLabels(AxisRenderer.LabelPosition.NONE)
+        mChart.setBorderSpacing(Tools.fromDpToPx(10))
+                .setAxisBorderValues(50, 100)
+                .setYLabels(AxisRenderer.LabelPosition.OUTSIDE)
                 .setLabelsColor(Color.parseColor("#6a84c3"))
                 .setXAxis(false)
                 .setYAxis(false);
 
-        Runnable chartAction = new Runnable() {
-            @Override
-            public void run() {
-                mTip.prepare(mChart.getEntriesArea(0).get(3), mValues[0][3]);
-                mChart.showTooltip(mTip, true);
-            }
-        };
-
-        Animation anim = new Animation().setEasing(new BounceEase()).setEndAction(chartAction);
-
-        mChart.show(anim);
-
-//        mChart.dismissAllTooltips();
-//        if (firstStage) {
-//            mChart.updateValues(0, mValues[1]);
-//            mChart.updateValues(1, mValues[1]);
-//        } else {
-//            mChart.updateValues(0, mValues[0]);
-//            mChart.updateValues(1, mValues[0]);
-//        }
-//        mChart.getChartAnimation().setEndAction(mBaseAction);
-//        mChart.notifyDataUpdate();
+        mChart.show();
     }
-
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -519,7 +464,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setLevel(){
-
         TextView levelText = (TextView) findViewById(R.id.levelText);
         ProgressBar bar = (ProgressBar) findViewById(R.id.levelProgress);
         TextView xp = (TextView) findViewById(R.id.xpProgress);
