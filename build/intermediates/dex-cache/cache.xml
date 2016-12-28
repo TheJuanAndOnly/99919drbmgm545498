@@ -129,6 +129,15 @@
     </item>
     <item
         is-multidex="true"
+        jar="C:\AndroidStudio\99919drbmgm545498\app\build\intermediates\exploded-aar\com.diogobernardino\williamchart\2.3.0\jars\classes.jar"
+        jumboMode="true"
+        optimize="true"
+        revision="25.0.0"
+        sha1="5277f2d52578bcea0a8ad44069b61b9fe6d07b2a">
+        <dex dex="C:\AndroidStudio\99919drbmgm545498\app\build\intermediates\transforms\dex\debug\folders\1000\10\com.diogobernardino-williamchart-2.3.0_3290dc14ced648f1401ec07459592567912d486b\classes.dex" />
+    </item>
+    <item
+        is-multidex="true"
         jar="C:\AndroidStudio\99919drbmgm545498\app\build\intermediates\exploded-aar\com.android.support\support-core-utils\25.0.1\jars\libs\internal_impl-25.0.1.jar"
         jumboMode="true"
         optimize="true"
@@ -268,7 +277,7 @@
         jumboMode="true"
         optimize="true"
         revision="25.0.0"
-        sha1="efa7fbb50555defb0b1029566ab4e3e137861777">
+        sha1="9952eed3adc08a1851837c243726c1515c4cd4ce">
         <dex dex="C:\AndroidStudio\99919drbmgm545498\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run_4d6f0d0211348ce6623ea39adb37d635b41374aa\classes.dex" />
     </item>
     <item
@@ -349,7 +358,7 @@
         jumboMode="true"
         optimize="true"
         revision="25.0.0"
-        sha1="5798cda163f694ec93c6a1fb6c5a58ca2db6ff73">
+        sha1="2c286db2460df64f6d48e77fe2dd34812c4affcb">
         <dex dex="C:\AndroidStudio\99919drbmgm545498\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_2f411ff288c3074a11e77274ee6ec9215ac762ff\classes.dex" />
     </item>
     <item

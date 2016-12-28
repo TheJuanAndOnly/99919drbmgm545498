@@ -36,6 +36,8 @@ public class SubjectData {
 
     SubjectData(Context context, SharedPreferences prefs){
 
+        average = prefs.getString("AvgGrade", "");
+
         String categories = prefs.getString("ListOfCategories", "Grades`");
         String percentages = prefs.getString("ListOfPercentages", "100`");
         arrayOfCategories = new ArrayList<>();
@@ -115,6 +117,8 @@ public class SubjectData {
         SharedPreferences.Editor editor = prefs.edit();
 
         if (allGrades == null) return;
+
+        editor.putString("AvgGrade", average);
 
         String categories = "";
         String percentages = "";

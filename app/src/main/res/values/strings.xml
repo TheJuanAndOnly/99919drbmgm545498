@@ -20,6 +20,8 @@
     <string name="no_way">There\'s no way homie</string>
     <string name="you_are_here">You are here</string>
     <string name="get_a_sum_of">"Get a sum between "</string>
+    <string name="name_the_category_first">Name the category first</string>
+    <string name="this_category_exists">This category already exists</string>
 
     <string-array name="quotes">
 

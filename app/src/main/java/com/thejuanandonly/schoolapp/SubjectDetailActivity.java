@@ -88,19 +88,14 @@ public class SubjectDetailActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
 
+        subjectData.save(getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE));
+
         menuButtonChange = 1;
 
         Button edit = (Button) findViewById(R.id.gradeEditButtonSingle);
         edit.setVisibility(View.GONE);
 
         super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        subjectData.save(getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE));
     }
 
     public void setAvgTv(){
@@ -574,7 +569,23 @@ public class SubjectDetailActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String newCategory = nameEditText.getText().toString();
+                if (newCategory.isEmpty()){
+                    Toast.makeText(getApplicationContext(), R.string.name_the_category_first, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                if (subjectData.getArrayOfCategories().contains(newCategory)){
+                    Toast.makeText(getApplicationContext(), R.string.this_category_exists, Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 String grades = gradeEditText.getText().toString();
+
+                List<String> arrayOfCategories = new ArrayList<>(subjectData.getArrayOfCategories());
+                List<Integer> arrayOfPercentages = new ArrayList<>(subjectData.getArrayOfPercentages());
+                arrayOfCategories.add(newCategory);
+                arrayOfPercentages.add(100 / (arrayOfPercentages.size() + 1));
+                subjectData.setArrayOfCategories(arrayOfCategories);
+                subjectData.setArrayOfPercentages(arrayOfPercentages);
 
                 saveCategory(newCategory, grades);
 
@@ -592,17 +603,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
     }
 
     public void saveCategory(String name, String gradesString){
-
-        List<String> arrayOfCategories = new ArrayList<>(subjectData.getArrayOfCategories());
-        List<Integer> arrayOfPercentages = new ArrayList<>(subjectData.getArrayOfPercentages());
-
-        if (!arrayOfCategories.contains(name)){
-            arrayOfCategories.add(name);
-            arrayOfPercentages.add(100 / (arrayOfPercentages.size() + 1));
-
-            subjectData.setArrayOfCategories(arrayOfCategories);
-            subjectData.setArrayOfPercentages(arrayOfPercentages);
-        }
 
         char[] chars = gradesString.toCharArray();
         List<String> arrayOfGrades = new ArrayList<>();
@@ -638,7 +638,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
                             if (chars[j] == '+' || chars[j] == '-') {
                                 string += String.valueOf(chars[j]);
                             }
-                        }catch (ArrayIndexOutOfBoundsException e){}
+                        }catch (ArrayIndexOutOfBoundsException ignored){}
 
                         arrayOfGrades.add(string);
                     }
@@ -784,7 +784,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 for (int j = 0; j < arrayOfGrades.size(); j++) {
                     grades = grades + arrayOfGrades.get(j) + ", ";
                 }
-
             }
 
             final Dialog dialog = new Dialog(this);
@@ -836,7 +835,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
             });
             dialog.show();
         }
-
         else {
 
             final View parentRow = (View) view.getParent();
@@ -888,7 +886,21 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     String newCategory = nameEditText.getText().toString();
+                    if (newCategory.isEmpty()){
+                        Toast.makeText(getApplicationContext(), R.string.name_the_category_first, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (subjectData.getArrayOfCategories().contains(newCategory) &&
+                            subjectData.getArrayOfCategories().indexOf(newCategory) != position){
+                        Toast.makeText(getApplicationContext(), R.string.this_category_exists, Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     String grades = gradeEditText.getText().toString();
+
+                    List<String> arrayOfCategories = new ArrayList<>(subjectData.getArrayOfCategories());
+                    arrayOfCategories.set(position, newCategory);
+                    subjectData.setArrayOfCategories(arrayOfCategories);
 
                     saveCategory(newCategory, grades);
 
