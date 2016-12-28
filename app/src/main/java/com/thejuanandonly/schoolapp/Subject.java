@@ -3,6 +3,7 @@ package com.thejuanandonly.schoolapp;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,25 +27,27 @@ public class Subject {
         this.average = average;
     }
 
-    public static ArrayList<Subject> getSubjects() {
-        ArrayList<Subject> subject = new ArrayList<Subject>();
+    public static ArrayList<Subject> getSubjects(Context context) {
+
+        ArrayList<Subject> subject = new ArrayList<>();
         String subjectName = "";
-        String average = "";
-        SharedPreferences preferences = getContext().getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
+        String average;
+        SharedPreferences preferences = context.getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
         JSONArray arrayOfSubjects;
         try {
             arrayOfSubjects = new JSONArray(preferences.getString("List", null));
-        }catch (Exception e){arrayOfSubjects = new JSONArray();}
+        }catch (Exception e){
+            arrayOfSubjects = new JSONArray();
+        }
+
         for (int i = 0; i < arrayOfSubjects.length(); i++){
             try {
                 subjectName = arrayOfSubjects.getString(i);
-            }catch (JSONException e) {}
+            }catch (JSONException ignored) {}
 
-            SharedPreferences prefs = getContext().getSharedPreferences("Subject" + subjectName, Context.MODE_PRIVATE);
+            SharedPreferences prefs = context.getSharedPreferences("Subject" + subjectName, Context.MODE_PRIVATE);
 
-            try {
-                average = prefs.getString("AvgGrade", null);
-            } catch (NullPointerException e) { average = ""; }
+            average = prefs.getString("AvgGrade", "");
 
             double doubleAvg;
             try {
@@ -58,7 +61,7 @@ public class Subject {
                 DecimalFormat df = new DecimalFormat("#");
                 try {
                     doubleAvg = Double.valueOf(df.format(doubleAvg));
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException ignored) {
                 }
             }else if (doubleAvg >= 10){
                 DecimalFormat df = new DecimalFormat("#.#");
@@ -92,8 +95,8 @@ public class Subject {
         return subject;
     }
 
-    public static Context getContext(){
-        return OverviewFragment.overviewFragmentContext;
+    @Override
+    public String toString(){
+        return subject + ": " + average;
     }
-
 }

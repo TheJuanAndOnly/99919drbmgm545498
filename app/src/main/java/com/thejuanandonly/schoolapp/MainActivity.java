@@ -37,6 +37,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -464,7 +465,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     public void levelTimer() {
         new CountDownTimer(300000, 3000) {
 
@@ -662,7 +662,7 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                     }
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
         }
@@ -734,7 +734,7 @@ public class MainActivity extends AppCompatActivity {
         JSONArray arrayOfSubjects = new JSONArray();
         try {
             arrayOfSubjects = new JSONArray(arrayPrefs.getString("List", null));
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         if (arrayOfSubjects.length() == 0) {
@@ -747,7 +747,7 @@ public class MainActivity extends AppCompatActivity {
             String currentSubj = "";
             try {
                 currentSubj = arrayOfSubjects.getString(i);
-            } catch (JSONException e) {
+            } catch (JSONException ignored) {
             }
 
             SharedPreferences prefs = getSharedPreferences("Subject" + currentSubj, Context.MODE_PRIVATE);
@@ -776,7 +776,7 @@ public class MainActivity extends AppCompatActivity {
                 String currentSubj = "";
                 try {
                     currentSubj = arrayOfSubjects.getString(i);
-                } catch (JSONException e) {
+                } catch (JSONException ignored) {
                 }
 
                 SharedPreferences prefs = getSharedPreferences("Subject" + currentSubj, Context.MODE_PRIVATE);
@@ -809,7 +809,7 @@ public class MainActivity extends AppCompatActivity {
                                 ovr += 5;
                                 ovrCnt++;
                             }
-                        } catch (Exception e) {
+                        } catch (Exception ignored) {
                         }
                     }
                 }
@@ -825,10 +825,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 overallTv.setText("Overall: " + s);
 
-                Log.d("debugC", ovr + ", " + ovrCnt + ", " + d);
-            } catch (ArithmeticException e) {
-                //overallTv.setText("");
-                Log.e("debug", e.toString());
+            } catch (ArithmeticException ignored) {
             }
 
         } else {
@@ -874,11 +871,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 overallTv.setText("Overall: " + s + " / 10");
-
-                Log.d("debugC", ovr + ", " + ovrCnt + ", " + d);
-            } catch (ArithmeticException e) {
-                //overallTv.setText("");
-                Log.e("debug", e.toString());
+            } catch (ArithmeticException ignored) {
             }
         }
     }
@@ -1033,6 +1026,7 @@ public class MainActivity extends AppCompatActivity {
     public void subjectDialog() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
         builder.setTitle("Add a subject");
 
         final EditText input = new EditText(this);
@@ -1040,6 +1034,7 @@ public class MainActivity extends AppCompatActivity {
         input.setPadding(50, 50, 50, 30);
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         builder.setView(input);
+
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
@@ -1060,24 +1055,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        builder.show();
+        AlertDialog dialog = builder.create();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+        dialog.show();
     }
 
     public void saveSubject(String subject) {
 
-        JSONArray set = new JSONArray();
+        JSONArray jsonArray = new JSONArray();
 
         SharedPreferences prefs = getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
         try {
-            set = new JSONArray(prefs.getString("List", null));
+            jsonArray = new JSONArray(prefs.getString("List", null));
 
         } catch (Exception e) {
         }
 
-        for (int i = 0; i < set.length(); i++) {
+        for (int i = 0; i < jsonArray.length(); i++) {
 
             try {
-                if (subject.equals(set.getString(i))) {
+                if (subject.equals(jsonArray.getString(i))) {
 
                     Toast.makeText(this, "This subject already exists", Toast.LENGTH_LONG).show();
                     subjectDialog();
@@ -1091,7 +1089,7 @@ public class MainActivity extends AppCompatActivity {
         if (subject != null && subject.length() > 0) {
 
             try {
-                set.put(subject);
+                jsonArray.put(subject);
             } catch (Exception e) {
             }
 
@@ -1109,7 +1107,7 @@ public class MainActivity extends AppCompatActivity {
         //Zoznam predmetov
         SharedPreferences arrayPrefs = getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
         SharedPreferences.Editor arrayPrefsEditor = arrayPrefs.edit();
-        arrayPrefsEditor.putString("List", set.toString()).apply();
+        arrayPrefsEditor.putString("List", jsonArray.toString()).apply();
 
 
         OverviewFragment.reset(this);
