@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
 
         lineChartView = (LineChartView) findViewById(R.id.lcv_nav_chart);
 
-        updateChart(lineChartView);
+        updateChart();
 
         checkStoragePermission();
         setLevel();
@@ -246,6 +246,8 @@ public class MainActivity extends AppCompatActivity {
             taskAdded = false;
         }
 
+        updateChart();
+
         super.onResume();
     }
 
@@ -311,53 +313,131 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void updateChart(final LineChartView mChart) {
+    public void updateChart() {
         String[] mLabels = getLabels();
         float[] mValues = getValues();
 
-//        LineSet dataset = new LineSet(mLabels, mValues);
-//        dataset.setColor(Color.parseColor("#758cbb"))
-//                .setFill(Color.parseColor("#2d374c"))
-//                .setDotsColor(Color.parseColor("#758cbb"))
-//                .setThickness(4)
-//                .setDashed(new float[]{10f, 10f})
-//                .beginAt(mValues.length - 2);
-//        mChart.addData(dataset);
-//
-//        dataset = new LineSet(mLabels, mValues);
-//        dataset.setColor(Color.parseColor("#b3b5bb"))
-//                .setFill(Color.parseColor("#2d374c"))
-//                .setDotsColor(Color.parseColor("#ffc755"))
-//                .setThickness(4)
-//                .endAt(mValues.length - 1);
-//        mChart.addData(dataset);
-//
-//        float max = mValues[0];
-//        float min = mValues[0];
-//        for (int i = 1; i < mValues.length; i++) {
-//            if (mValues[i] > max) {
-//                max = mValues[i];
-//            }
-//
-//            if (mValues[i] < min) {
-//                min = mValues[i];
-//            }
-//        }
-//
-//        max += 10;
-//        min -= 10;
-//
-//        if (max > 100) max = 100;
-//        if (min < 0) min = 0;
-//
-//        mChart.setBorderSpacing(Tools.fromDpToPx(10))
-//                .setAxisBorderValues((int) min, (int) max)
-//                .setYLabels(AxisRenderer.LabelPosition.OUTSIDE)
-//                .setLabelsColor(Color.parseColor("#6a84c3"))
-//                .setXAxis(false)
-//                .setYAxis(false);
-//
-//        mChart.show();
+        try {
+        lineChartView.reset();
+
+        if (mValues.length > 5) {
+            String[] actual = new String[mLabels.length];
+
+            for (int a = 0; a < mLabels.length; a++) {
+                actual[a] = mLabels[a];
+                for (int b = 0; b < a; b++) {
+                    if (actual[b].equals(actual[a])) {
+                        actual[a] = "";
+                        b = a;
+                    }
+                }
+            }
+
+            ArrayList<Integer> array = new ArrayList<>();
+            for (int a = 0; a < actual.length; a++) {
+                if (actual[a].length() > 1) {
+                    array.add(a);
+                }
+            }
+
+            Toast.makeText(this, array.toString()+"", Toast.LENGTH_SHORT).show();
+
+            if (array.size() > 5) {
+                float[] values = new float[array.size()];
+                String[] labels = new String[array.size()];
+                for (int a = 0; a < array.size(); a++) {
+                    float average = 0;
+                    int times = 0;
+                    int until;
+                    try {
+                        until = array.get(a+1);
+                    } catch (Exception e) {
+                        until = mValues.length - 1;
+                    }
+
+                    for (int b = array.get(a); b < until; b++) {
+                        average += mValues[b];
+                        times++;
+                    }
+                    average = average / times;
+                    values[a] = average;
+                    labels[a] = mLabels[array.get(a)];
+                }
+
+                mLabels = labels;
+                mValues = values;
+
+                Toast.makeText(this, values[0]+" rip", Toast.LENGTH_SHORT).show();
+            } else {
+                float[] values = new float[array.size()];
+                String[] labels = new String[array.size()];
+                for (int a = 0; a < array.size(); a++) {
+                    float average = 0;
+                    int times = 0;
+                    int until;
+                    try {
+                        until = array.get(a+1);
+                    } catch (Exception e) {
+                        until = mValues.length - 1;
+                    }
+
+                    for (int b = array.get(a); b < until; b++) {
+                        average += mValues[b];
+                        times++;
+                    }
+                    average = average / times;
+                    values[a] = average;
+                    labels[a] = mLabels[array.get(a)];
+
+                    Toast.makeText(this, values[0]+" "+values[1], Toast.LENGTH_SHORT).show();
+                }
+
+                mLabels = labels;
+                mValues = values;
+            }
+        }
+
+        LineSet dataset = new LineSet(mLabels, mValues);
+        dataset.setColor(Color.parseColor("#758cbb"))
+                .setFill(Color.parseColor("#2d374c"))
+                .setDotsColor(Color.parseColor("#758cbb"))
+                .setThickness(4)
+                .setDashed(new float[]{10f, 10f})
+                .beginAt(mValues.length - 1);
+        lineChartView.addData(dataset);
+
+        dataset = new LineSet(mLabels, mValues);
+        dataset.setColor(Color.parseColor("#b3b5bb"))
+                .setFill(Color.parseColor("#2d374c"))
+                .setDotsColor(Color.parseColor("#ffc755"))
+                .setThickness(4)
+                .endAt(mValues.length );
+        lineChartView.addData(dataset);
+
+        float min = mValues[0];
+        for (int i = 1; i < mValues.length; i++) {
+            if (mValues[i] < min) {
+                min = mValues[i];
+            }
+        }
+
+        min -= 0.5;
+
+        if (min < 0) min = 1;
+
+        lineChartView.setBorderSpacing(Tools.fromDpToPx(10))
+                .setAxisBorderValues((int) min, 5)
+                .setYLabels(AxisRenderer.LabelPosition.NONE)
+                .setLabelsColor(Color.parseColor("#6a84c3"))
+                .setXAxis(false)
+                .setYAxis(false);
+
+        if (mValues.length > 1) {
+            lineChartView.show();
+        }
+        } catch (Exception e) {
+            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private String[] getLabels() {
@@ -381,7 +461,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         long actual;
-        actual = System.currentTimeMillis();
+        if (setOverall().length() > 0) {
+            actual = System.currentTimeMillis();
+        } else {
+            return labels;
+        }
 
         labels[labels.length - 1] = actual+"";
         try {
@@ -391,8 +475,7 @@ public class MainActivity extends AppCompatActivity {
 
         prefs.edit().putString("labels", jsonArray.toString()).apply();
 
-        ///
-        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.");
         Calendar calendar = Calendar.getInstance();
 
         for (int a = 0; a < labels.length; a++) {
@@ -418,27 +501,26 @@ public class MainActivity extends AppCompatActivity {
 
         for (int a = 0; a < jsonArray.length(); a++) {
             try {
-                values[a] = jsonArray.getInt(a);
+                values[a] = Float.parseFloat(jsonArray.getString(a));
             } catch (Exception e) {
             }
         }
 
         float actual;
         try {
-            actual = Float.parseFloat(setOverall().substring(9, setOverall().indexOf("/") - 1));
+            actual = 6 - Float.parseFloat(setOverall().substring(9, setOverall().length()));
         } catch (Exception e) {
-            actual = Float.parseFloat(setOverall().substring(9, setOverall().length()));
+            return values;
         }
 
         values[values.length - 1] = actual;
         try {
-            jsonArray.put(actual);
+            jsonArray.put(actual+"");
         } catch (Exception e) {
         }
 
         prefs.edit().putString("values", jsonArray.toString()).apply();
 
-        Toast.makeText(this, values[0]+" "+setOverall(), Toast.LENGTH_SHORT).show();
         return values;
     }
 
@@ -870,18 +952,12 @@ public class MainActivity extends AppCompatActivity {
                 } catch (StringIndexOutOfBoundsException e) {
                     s = String.valueOf(d);
                 }
-<<<<<<< HEAD
                 Log.d("debugC", ovr + ", " + ovrCnt + ", " + d);
 
                 return ("Overall: " + s);
             } catch (ArithmeticException e) {
                 //overallTv.setText("");
                 Log.e("debug", e.toString());
-=======
-                overallTv.setText("Overall: " + s);
-
-            } catch (ArithmeticException ignored) {
->>>>>>> origin/master
             }
 
         } else {
@@ -926,17 +1002,12 @@ public class MainActivity extends AppCompatActivity {
                     s = String.valueOf(d);
                 }
 
-<<<<<<< HEAD
                 Log.d("debugC", ovr + ", " + ovrCnt + ", " + d);
 
                 return ("Overall: " + s + " / 10");
             } catch (ArithmeticException e) {
                 //overallTv.setText("");
                 Log.e("debug", e.toString());
-=======
-                overallTv.setText("Overall: " + s + " / 10");
-            } catch (ArithmeticException ignored) {
->>>>>>> origin/master
             }
         }
 
