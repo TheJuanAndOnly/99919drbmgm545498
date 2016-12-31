@@ -1,14 +1,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".MainActivity">
+    tools:context=".SubjectDetailActivity">
 
-
-
-    <item android:id="@+id/action_new_note_group"
-        android:icon="@drawable/add_notes_icon_padding"
+    <item android:id="@+id/action_schedule"
+        android:title="@string/action_schedule"
+        android:icon="@drawable/ic_event_white_24dp"
         android:orderInCategory="100"
-        app:showAsAction="always">
-    </item>
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_new_note_group"
+        android:icon="@drawable/add_notes_icon_padding"
+        android:title="addgroup"
+        android:orderInCategory="2"
+        app:showAsAction="always"/>
 
 </menu>
+
+
