@@ -916,11 +916,11 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
 
-        builder.setTitle("Reset All");
+        builder.setTitle("Reset App");
 
-        builder.setMessage("Are you sure you want to reset everything?")
+        builder.setMessage("All your saved data will be deleted, are you sure you want to reset the app?")
 
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setPositiveButton("RESET", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int arg0) {
 
                         clearApplicationData();
@@ -939,7 +939,7 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int arg0) {
                     }
                 });

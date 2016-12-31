@@ -6,18 +6,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.app.Dialog;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.AppCompatEditText;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -28,8 +28,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.EditText;
-import android.support.v7.widget.AppCompatEditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -118,7 +116,6 @@ public class NotesFragment extends Fragment {
 
         return rootView;
     }
-
 
 
     public void loadArrFromSP() {
@@ -272,62 +269,59 @@ public class NotesFragment extends Fragment {
 }
 
 
+class CustomDialog extends SaveSharedPreferences {
+
+    Dialog dialog;
+    Button positive, negative;
+    ImageView red, green, blue, purple, orange;
+    ViewGroup.LayoutParams params;
+
+    AppCompatEditText name, about;
+    String nameString, aboutString;
+    int color;
+
+    public boolean redBool, greenBool, orangeBool, purpleBool;
 
 
-    class CustomDialog extends SaveSharedPreferences {
+    public void showDialog(Activity activity, String positiveButton, String negativeButton) {
+        dialog = new Dialog(activity);
+        dialog.setCancelable(true);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.custom_dialog);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        Dialog dialog;
-        Button positive, negative;
-        ImageView red, green, blue, purple, orange;
-        ViewGroup.LayoutParams params;
+        positive = (Button) dialog.findViewById(R.id.dialogPositive);
+        negative = (Button) dialog.findViewById(R.id.dialogNegative);
 
-        AppCompatEditText name, about;
-        String nameString, aboutString;
-        int color;
-
-        public boolean redBool, greenBool, orangeBool, purpleBool;
-
-
-        public void showDialog(Activity activity, String positiveButton, String negativeButton) {
-            dialog = new Dialog(activity);
-            dialog.setCancelable(true);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setContentView(R.layout.custom_dialog);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-            positive = (Button) dialog.findViewById(R.id.dialogPositive);
-            negative = (Button) dialog.findViewById(R.id.dialogNegative);
-
-            negative.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.cancel();
-                }
-            });
+        negative.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.cancel();
+            }
+        });
 
 
-            name = (AppCompatEditText) dialog.findViewById(R.id.Notes_GroupName);
-            nameString = name.getText().toString();
-            about = (AppCompatEditText) dialog.findViewById(R.id.Notes_About);
-            aboutString = about.getText().toString();
+        name = (AppCompatEditText) dialog.findViewById(R.id.Notes_GroupName);
+        nameString = name.getText().toString();
+        about = (AppCompatEditText) dialog.findViewById(R.id.Notes_About);
+        aboutString = about.getText().toString();
 
 
-            DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
-            int width = metrics.widthPixels;
-            dialog.getWindow().setLayout((6 * width) / 7, LinearLayout.LayoutParams.WRAP_CONTENT);
+        DisplayMetrics metrics = activity.getResources().getDisplayMetrics();
+        int width = metrics.widthPixels;
+        dialog.getWindow().setLayout((6 * width) / 7, LinearLayout.LayoutParams.WRAP_CONTENT);
 
 
-            dialog.show();
+        dialog.show();
 
-            negative.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    dialog.dismiss();
-                }
-            });
-        }
+        negative.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
     }
-
+}
 
 
 class ListViewAdapter extends BaseAdapter {
@@ -569,9 +563,16 @@ class ListViewAdapter extends BaseAdapter {
 
                                     case "Share to Messenger":
 
+                                        Uri contentUri = null;
                                         String imageUri = arrayOfArrays.get(position).get(finalTempInt);
                                         String mimeType = "image/jpeg";
-                                        Uri contentUri = Uri.fromFile(new File(imageUri));
+                                        File file = new File(imageUri);
+
+                                        if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
+                                            Toast.makeText(context, "This feature is not yet available on android 7.1+ phones", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            contentUri = Uri.fromFile(new File(imageUri));
+                                        }
 
                                         // setting the image uri so that it can be sent
                                         ShareToMessengerParams shareToMessengerParams = ShareToMessengerParams.newBuilder(contentUri, mimeType).build();
@@ -658,7 +659,6 @@ class ListViewAdapter extends BaseAdapter {
 
                     case "Share":
 
-
 //                        Toast.makeText(context, "Comming soon", Toast.LENGTH_SHORT).show();
 
                         if (hasNetworkConnection()) {
@@ -667,7 +667,6 @@ class ListViewAdapter extends BaseAdapter {
                         } else {
                             Toast.makeText(context, "Comming soon", Toast.LENGTH_SHORT).show();
                         }
-
 
                 }
 

@@ -1,5 +1,7 @@
 package com.thejuanandonly.schoolapp;
 
+import android.*;
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +11,8 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import java.util.jar.*;
 
 import agency.tango.materialintroscreen.MaterialIntroActivity;
 import agency.tango.materialintroscreen.MessageButtonBehaviour;
@@ -46,6 +50,7 @@ public class TutikActivity extends MaterialIntroActivity {
                         .buttonsColor(R.color.sexyBlue)
                         .image(R.drawable.notes_image_tutik)
                         .title("Notes")
+                        .neededPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE})
                         .description("Make learning from notes much more efficient. Group relevant stuff together and perhaps even share it with friends!")
                         .build());
     addSlide(new SlideFragmentBuilder()
