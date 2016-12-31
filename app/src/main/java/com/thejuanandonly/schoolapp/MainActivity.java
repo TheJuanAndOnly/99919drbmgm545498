@@ -3,6 +3,7 @@ package com.thejuanandonly.schoolapp;
 import android.Manifest;
 import android.animation.PropertyValuesHolder;
 import android.app.AlarmManager;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -37,6 +38,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -59,7 +61,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -109,7 +114,9 @@ public class MainActivity extends AppCompatActivity {
         checkStoragePermission();
         setLevel();
         levelTimer();
-//        setOverall();
+
+        TextView overallTv = (TextView) findViewById(R.id.tv_overall);
+        overallTv.setText(setOverall()+"");
 
         Locale.setDefault(Locale.US);
 
@@ -137,8 +144,9 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 mDrawerLayout.closeDrawers();
 
-//                setLevel();
-//                setOverall();
+                setLevel();
+                TextView overallTv = (TextView) findViewById(R.id.tv_overall);
+                overallTv.setText(setOverall());
 
                 if (menuItem.getItemId() == R.id.nav_item_overview) {
                     mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_overview));
@@ -275,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setTasksCount() {
+    public void setTasksCount() {
         SharedPreferences prefs = getSharedPreferences("ListOfTasks", MODE_PRIVATE);
         JSONArray arrayName;
         try {
@@ -304,35 +312,134 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updateChart(final LineChartView mChart) {
-        String[] mLabels = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"};
-        float[] mValues = new float[]{100, 90, 85, 60, 95, 90, 100};
-        float[] mValuesFuture = new float[]{90, 90, 90, 60, 90, 85, 100};
+        String[] mLabels = getLabels();
+        float[] mValues = getValues();
 
-        LineSet dataset = new LineSet(mLabels, mValuesFuture);
-        dataset.setColor(Color.parseColor("#758cbb"))
-                .setFill(Color.parseColor("#2d374c"))
-                .setDotsColor(Color.parseColor("#758cbb"))
-                .setThickness(4)
-                .setDashed(new float[]{10f, 10f})
-                .beginAt(5);
-        mChart.addData(dataset);
+//        LineSet dataset = new LineSet(mLabels, mValues);
+//        dataset.setColor(Color.parseColor("#758cbb"))
+//                .setFill(Color.parseColor("#2d374c"))
+//                .setDotsColor(Color.parseColor("#758cbb"))
+//                .setThickness(4)
+//                .setDashed(new float[]{10f, 10f})
+//                .beginAt(mValues.length - 2);
+//        mChart.addData(dataset);
+//
+//        dataset = new LineSet(mLabels, mValues);
+//        dataset.setColor(Color.parseColor("#b3b5bb"))
+//                .setFill(Color.parseColor("#2d374c"))
+//                .setDotsColor(Color.parseColor("#ffc755"))
+//                .setThickness(4)
+//                .endAt(mValues.length - 1);
+//        mChart.addData(dataset);
+//
+//        float max = mValues[0];
+//        float min = mValues[0];
+//        for (int i = 1; i < mValues.length; i++) {
+//            if (mValues[i] > max) {
+//                max = mValues[i];
+//            }
+//
+//            if (mValues[i] < min) {
+//                min = mValues[i];
+//            }
+//        }
+//
+//        max += 10;
+//        min -= 10;
+//
+//        if (max > 100) max = 100;
+//        if (min < 0) min = 0;
+//
+//        mChart.setBorderSpacing(Tools.fromDpToPx(10))
+//                .setAxisBorderValues((int) min, (int) max)
+//                .setYLabels(AxisRenderer.LabelPosition.OUTSIDE)
+//                .setLabelsColor(Color.parseColor("#6a84c3"))
+//                .setXAxis(false)
+//                .setYAxis(false);
+//
+//        mChart.show();
+    }
 
-        dataset = new LineSet(mLabels, mValues);
-        dataset.setColor(Color.parseColor("#b3b5bb"))
-                .setFill(Color.parseColor("#2d374c"))
-                .setDotsColor(Color.parseColor("#ffc755"))
-                .setThickness(4)
-                .endAt(5);
-        mChart.addData(dataset);
+    private String[] getLabels() {
+        String[] labels;
 
-        mChart.setBorderSpacing(Tools.fromDpToPx(10))
-                .setAxisBorderValues(50, 100)
-                .setYLabels(AxisRenderer.LabelPosition.OUTSIDE)
-                .setLabelsColor(Color.parseColor("#6a84c3"))
-                .setXAxis(false)
-                .setYAxis(false);
+        SharedPreferences prefs = getSharedPreferences("navChart", MODE_PRIVATE);
+        JSONArray jsonArray;
+        try {
+            jsonArray = new JSONArray(prefs.getString("labels", null));
+        } catch (Exception e) {
+            jsonArray = new JSONArray();
+        }
 
-        mChart.show();
+        labels = new String[jsonArray.length() + 1];
+
+        for (int a = 0; a < jsonArray.length(); a++) {
+            try {
+                labels[a] = jsonArray.getString(a);
+            } catch (Exception e) {
+            }
+        }
+
+        long actual;
+        actual = System.currentTimeMillis();
+
+        labels[labels.length - 1] = actual+"";
+        try {
+            jsonArray.put(actual);
+        } catch (Exception e) {
+        }
+
+        prefs.edit().putString("labels", jsonArray.toString()).apply();
+
+        ///
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss.SSS");
+        Calendar calendar = Calendar.getInstance();
+
+        for (int a = 0; a < labels.length; a++) {
+            calendar.setTimeInMillis(Long.parseLong(labels[a]));
+            labels[a] = formatter.format(calendar.getTime());
+        }
+
+        return labels;
+    }
+
+    private float[] getValues() {
+        float[] values;
+
+        SharedPreferences prefs = getSharedPreferences("navChart", MODE_PRIVATE);
+        JSONArray jsonArray;
+        try {
+            jsonArray = new JSONArray(prefs.getString("values", null));
+        } catch (Exception e) {
+            jsonArray = new JSONArray();
+        }
+
+        values = new float[jsonArray.length() + 1];
+
+        for (int a = 0; a < jsonArray.length(); a++) {
+            try {
+                values[a] = jsonArray.getInt(a);
+            } catch (Exception e) {
+            }
+        }
+
+        float actual;
+        try {
+            actual = Float.parseFloat(setOverall().substring(9, setOverall().indexOf("/") - 1));
+        } catch (Exception e) {
+            actual = Float.parseFloat(setOverall().substring(9, setOverall().length()));
+        }
+
+        values[values.length - 1] = actual;
+        try {
+            jsonArray.put(actual);
+        } catch (Exception e) {
+        }
+
+        prefs.edit().putString("values", jsonArray.toString()).apply();
+
+        Toast.makeText(this, values[0]+" "+setOverall(), Toast.LENGTH_SHORT).show();
+        return values;
     }
 
     @Override
@@ -409,7 +516,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
-
 
     public void levelTimer() {
         new CountDownTimer(300000, 3000) {
@@ -607,7 +713,7 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                     }
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
         }
@@ -662,10 +768,7 @@ public class MainActivity extends AppCompatActivity {
         colors.recycle();
     }
 
-    public void setOverall() {
-
-        TextView overallTv = (TextView) findViewById(R.id.tv_overall);
-
+    public String setOverall() {
         int ovr = 0;
         int ovrCnt = 0;
         ArrayList<Integer> types = new ArrayList<>();
@@ -679,12 +782,11 @@ public class MainActivity extends AppCompatActivity {
         JSONArray arrayOfSubjects = new JSONArray();
         try {
             arrayOfSubjects = new JSONArray(arrayPrefs.getString("List", null));
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         if (arrayOfSubjects.length() == 0) {
-            overallTv.setText("");
-            return;
+            return "";
         }
 
         for (int i = 0; i < arrayOfSubjects.length(); i++) {
@@ -692,7 +794,7 @@ public class MainActivity extends AppCompatActivity {
             String currentSubj = "";
             try {
                 currentSubj = arrayOfSubjects.getString(i);
-            } catch (JSONException e) {
+            } catch (JSONException ignored) {
             }
 
             SharedPreferences prefs = getSharedPreferences("Subject" + currentSubj, Context.MODE_PRIVATE);
@@ -721,7 +823,7 @@ public class MainActivity extends AppCompatActivity {
                 String currentSubj = "";
                 try {
                     currentSubj = arrayOfSubjects.getString(i);
-                } catch (JSONException e) {
+                } catch (JSONException ignored) {
                 }
 
                 SharedPreferences prefs = getSharedPreferences("Subject" + currentSubj, Context.MODE_PRIVATE);
@@ -754,7 +856,7 @@ public class MainActivity extends AppCompatActivity {
                                 ovr += 5;
                                 ovrCnt++;
                             }
-                        } catch (Exception e) {
+                        } catch (Exception ignored) {
                         }
                     }
                 }
@@ -768,12 +870,18 @@ public class MainActivity extends AppCompatActivity {
                 } catch (StringIndexOutOfBoundsException e) {
                     s = String.valueOf(d);
                 }
-                overallTv.setText("Overall: " + s);
-
+<<<<<<< HEAD
                 Log.d("debugC", ovr + ", " + ovrCnt + ", " + d);
+
+                return ("Overall: " + s);
             } catch (ArithmeticException e) {
                 //overallTv.setText("");
                 Log.e("debug", e.toString());
+=======
+                overallTv.setText("Overall: " + s);
+
+            } catch (ArithmeticException ignored) {
+>>>>>>> origin/master
             }
 
         } else {
@@ -818,14 +926,21 @@ public class MainActivity extends AppCompatActivity {
                     s = String.valueOf(d);
                 }
 
-                overallTv.setText("Overall: " + s + " / 10");
-
+<<<<<<< HEAD
                 Log.d("debugC", ovr + ", " + ovrCnt + ", " + d);
+
+                return ("Overall: " + s + " / 10");
             } catch (ArithmeticException e) {
                 //overallTv.setText("");
                 Log.e("debug", e.toString());
+=======
+                overallTv.setText("Overall: " + s + " / 10");
+            } catch (ArithmeticException ignored) {
+>>>>>>> origin/master
             }
         }
+
+        return "";
     }
 
     public void notificationsClick(final View view) {
@@ -978,6 +1093,7 @@ public class MainActivity extends AppCompatActivity {
     public void subjectDialog() {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
         builder.setTitle("Add a subject");
 
         final EditText input = new EditText(this);
@@ -985,6 +1101,7 @@ public class MainActivity extends AppCompatActivity {
         input.setPadding(50, 50, 50, 30);
         input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS);
         builder.setView(input);
+
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
@@ -1005,24 +1122,27 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        builder.show();
+        AlertDialog dialog = builder.create();
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+        dialog.show();
     }
 
     public void saveSubject(String subject) {
 
-        JSONArray set = new JSONArray();
+        JSONArray jsonArray = new JSONArray();
 
         SharedPreferences prefs = getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
         try {
-            set = new JSONArray(prefs.getString("List", null));
+            jsonArray = new JSONArray(prefs.getString("List", null));
 
         } catch (Exception e) {
         }
 
-        for (int i = 0; i < set.length(); i++) {
+        for (int i = 0; i < jsonArray.length(); i++) {
 
             try {
-                if (subject.equals(set.getString(i))) {
+                if (subject.equals(jsonArray.getString(i))) {
 
                     Toast.makeText(this, "This subject already exists", Toast.LENGTH_LONG).show();
                     subjectDialog();
@@ -1036,7 +1156,7 @@ public class MainActivity extends AppCompatActivity {
         if (subject != null && subject.length() > 0) {
 
             try {
-                set.put(subject);
+                jsonArray.put(subject);
             } catch (Exception e) {
             }
 
@@ -1054,7 +1174,7 @@ public class MainActivity extends AppCompatActivity {
         //Zoznam predmetov
         SharedPreferences arrayPrefs = getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
         SharedPreferences.Editor arrayPrefsEditor = arrayPrefs.edit();
-        arrayPrefsEditor.putString("List", set.toString()).apply();
+        arrayPrefsEditor.putString("List", jsonArray.toString()).apply();
 
 
         OverviewFragment.reset(this);

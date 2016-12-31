@@ -76,21 +76,21 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
             PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
             Notification notification = null;
-            if (s == false && v == true) {
+            if (!s && !v) {
                 notification = new Notification.Builder(context)
                         .setContentTitle(name)
                         .setContentText(what)
                         .setVibrate(new long[]{500, 500, 500, 500})
                         .setSmallIcon(R.drawable.ic_event_available_white_24dp)
                         .setContentIntent(contentIntent).build();
-            } else if (v == false && s == true) {
+            } else if (!v && !s) {
                 notification = new Notification.Builder(context)
                         .setContentTitle(name)
                         .setContentText(what)
                         .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
                         .setSmallIcon(R.drawable.ic_event_available_white_24dp)
                         .setContentIntent(contentIntent).build();
-            } else if (s == false && v == false) {
+            } else if (!s && !v) {
                 notification = new Notification.Builder(context)
                         .setContentTitle(name)
                         .setContentText(what)

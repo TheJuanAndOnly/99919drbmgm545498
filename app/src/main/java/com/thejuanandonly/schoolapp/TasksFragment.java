@@ -205,30 +205,6 @@ public class TasksFragment extends Fragment {
                 }
             });
 
-            listView.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    Rect r = new Rect();
-                    getView().getWindowVisibleDisplayFrame(r);
-                    int screenHeight = getView().getRootView().getHeight();
-                    int keypadHeight = screenHeight - r.bottom;
-
-                    if (keypadHeight > screenHeight * 0.15) {
-                        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-                    }
-
-                    etName.setText("");
-                    etBody.setText("");
-                    btnTime.setText("time");
-                    btnDate.setText("date");
-                    time = new Date();
-
-                    initializeHeader(false, false, 0);
-                    return false;
-                }
-            });
-
             btnTime.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -488,6 +464,8 @@ public class TasksFragment extends Fragment {
 
         tasksListviewAdapter = new TasksListviewAdapter(getContext(), forAdapter, todo);
         listView.setAdapter(tasksListviewAdapter);
+
+        ((MainActivity) getActivity()).setTasksCount();
 
         alwaysOnScreen(getContext());
 

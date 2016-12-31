@@ -122,7 +122,7 @@ public class OverviewFragment extends Fragment {
     @Override
     public void onResume() {
 
-        ArrayList<Subject> arrayOfSubjects = Subject.getSubjects();
+        ArrayList<Subject> arrayOfSubjects = Subject.getSubjects(getContext());
 
         CustomSubjectAdapter adapter = new CustomSubjectAdapter(getContext(), arrayOfSubjects);
 
@@ -135,7 +135,7 @@ public class OverviewFragment extends Fragment {
     }
 
     public static void reset(Context context){
-        ArrayList<Subject> arrayOfSubjects = Subject.getSubjects();
+        ArrayList<Subject> arrayOfSubjects = Subject.getSubjects(context);
 
         CustomSubjectAdapter adapter = new CustomSubjectAdapter(context, arrayOfSubjects);
 
