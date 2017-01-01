@@ -38,6 +38,6 @@ public class TutikThirdSlide extends SlideFragment {
 
     @Override
     public String cantMoveFurtherErrorMessage() {
-        return "kappa";
+        return "";
     }
 }

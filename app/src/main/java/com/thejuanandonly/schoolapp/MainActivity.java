@@ -3,6 +3,7 @@ package com.thejuanandonly.schoolapp;
 import android.Manifest;
 import android.animation.PropertyValuesHolder;
 import android.app.AlarmManager;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -60,7 +61,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -105,12 +109,14 @@ public class MainActivity extends AppCompatActivity {
 
         lineChartView = (LineChartView) findViewById(R.id.lcv_nav_chart);
 
-        updateChart(lineChartView);
+        updateChart();
 
         checkStoragePermission();
         setLevel();
         levelTimer();
-//        setOverall();
+
+        TextView overallTv = (TextView) findViewById(R.id.tv_overall);
+        overallTv.setText(setOverall()+"");
 
         Locale.setDefault(Locale.US);
 
@@ -138,8 +144,9 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 mDrawerLayout.closeDrawers();
 
-//                setLevel();
-//                setOverall();
+                setLevel();
+                TextView overallTv = (TextView) findViewById(R.id.tv_overall);
+                overallTv.setText(setOverall());
 
                 if (menuItem.getItemId() == R.id.nav_item_overview) {
                     mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_overview));
@@ -239,6 +246,8 @@ public class MainActivity extends AppCompatActivity {
             taskAdded = false;
         }
 
+        updateChart();
+
         super.onResume();
     }
 
@@ -276,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setTasksCount() {
+    public void setTasksCount() {
         SharedPreferences prefs = getSharedPreferences("ListOfTasks", MODE_PRIVATE);
         JSONArray arrayName;
         try {
@@ -304,36 +313,215 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void updateChart(final LineChartView mChart) {
-        String[] mLabels = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul"};
-        float[] mValues = new float[]{100, 90, 85, 60, 95, 90, 100};
-        float[] mValuesFuture = new float[]{90, 90, 90, 60, 90, 85, 100};
+    public void updateChart() {
+        String[] mLabels = getLabels();
+        float[] mValues = getValues();
 
-        LineSet dataset = new LineSet(mLabels, mValuesFuture);
+        try {
+        lineChartView.reset();
+
+        if (mValues.length > 5) {
+            String[] actual = new String[mLabels.length];
+
+            for (int a = 0; a < mLabels.length; a++) {
+                actual[a] = mLabels[a];
+                for (int b = 0; b < a; b++) {
+                    if (actual[b].equals(actual[a])) {
+                        actual[a] = "";
+                        b = a;
+                    }
+                }
+            }
+
+            ArrayList<Integer> array = new ArrayList<>();
+            for (int a = 0; a < actual.length; a++) {
+                if (actual[a].length() > 1) {
+                    array.add(a);
+                }
+            }
+
+            Toast.makeText(this, array.toString()+"", Toast.LENGTH_SHORT).show();
+
+            if (array.size() > 5) {
+                float[] values = new float[array.size()];
+                String[] labels = new String[array.size()];
+                for (int a = 0; a < array.size(); a++) {
+                    float average = 0;
+                    int times = 0;
+                    int until;
+                    try {
+                        until = array.get(a+1);
+                    } catch (Exception e) {
+                        until = mValues.length - 1;
+                    }
+
+                    for (int b = array.get(a); b < until; b++) {
+                        average += mValues[b];
+                        times++;
+                    }
+                    average = average / times;
+                    values[a] = average;
+                    labels[a] = mLabels[array.get(a)];
+                }
+
+                mLabels = labels;
+                mValues = values;
+
+                Toast.makeText(this, values[0]+" rip", Toast.LENGTH_SHORT).show();
+            } else {
+                float[] values = new float[array.size()];
+                String[] labels = new String[array.size()];
+                for (int a = 0; a < array.size(); a++) {
+                    float average = 0;
+                    int times = 0;
+                    int until;
+                    try {
+                        until = array.get(a+1);
+                    } catch (Exception e) {
+                        until = mValues.length - 1;
+                    }
+
+                    for (int b = array.get(a); b < until; b++) {
+                        average += mValues[b];
+                        times++;
+                    }
+                    average = average / times;
+                    values[a] = average;
+                    labels[a] = mLabels[array.get(a)];
+
+                    Toast.makeText(this, values[0]+" "+values[1], Toast.LENGTH_SHORT).show();
+                }
+
+                mLabels = labels;
+                mValues = values;
+            }
+        }
+
+        LineSet dataset = new LineSet(mLabels, mValues);
         dataset.setColor(Color.parseColor("#758cbb"))
                 .setFill(Color.parseColor("#2d374c"))
                 .setDotsColor(Color.parseColor("#758cbb"))
                 .setThickness(4)
                 .setDashed(new float[]{10f, 10f})
-                .beginAt(5);
-        mChart.addData(dataset);
+                .beginAt(mValues.length - 1);
+        lineChartView.addData(dataset);
 
         dataset = new LineSet(mLabels, mValues);
         dataset.setColor(Color.parseColor("#b3b5bb"))
                 .setFill(Color.parseColor("#2d374c"))
                 .setDotsColor(Color.parseColor("#ffc755"))
                 .setThickness(4)
-                .endAt(5);
-        mChart.addData(dataset);
+                .endAt(mValues.length );
+        lineChartView.addData(dataset);
 
-        mChart.setBorderSpacing(Tools.fromDpToPx(10))
-                .setAxisBorderValues(50, 100)
-                .setYLabels(AxisRenderer.LabelPosition.OUTSIDE)
+        float min = mValues[0];
+        for (int i = 1; i < mValues.length; i++) {
+            if (mValues[i] < min) {
+                min = mValues[i];
+            }
+        }
+
+        min -= 0.5;
+
+        if (min < 0) min = 1;
+
+        lineChartView.setBorderSpacing(Tools.fromDpToPx(10))
+                .setAxisBorderValues((int) min, 5)
+                .setYLabels(AxisRenderer.LabelPosition.NONE)
                 .setLabelsColor(Color.parseColor("#6a84c3"))
                 .setXAxis(false)
                 .setYAxis(false);
 
-        mChart.show();
+        if (mValues.length > 1) {
+            lineChartView.show();
+        }
+        } catch (Exception e) {
+            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private String[] getLabels() {
+        String[] labels;
+
+        SharedPreferences prefs = getSharedPreferences("navChart", MODE_PRIVATE);
+        JSONArray jsonArray;
+        try {
+            jsonArray = new JSONArray(prefs.getString("labels", null));
+        } catch (Exception e) {
+            jsonArray = new JSONArray();
+        }
+
+        labels = new String[jsonArray.length() + 1];
+
+        for (int a = 0; a < jsonArray.length(); a++) {
+            try {
+                labels[a] = jsonArray.getString(a);
+            } catch (Exception e) {
+            }
+        }
+
+        long actual;
+        if (setOverall().length() > 0) {
+            actual = System.currentTimeMillis();
+        } else {
+            return labels;
+        }
+
+        labels[labels.length - 1] = actual+"";
+        try {
+            jsonArray.put(actual);
+        } catch (Exception e) {
+        }
+
+        prefs.edit().putString("labels", jsonArray.toString()).apply();
+
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.");
+        Calendar calendar = Calendar.getInstance();
+
+        for (int a = 0; a < labels.length; a++) {
+            calendar.setTimeInMillis(Long.parseLong(labels[a]));
+            labels[a] = formatter.format(calendar.getTime());
+        }
+
+        return labels;
+    }
+
+    private float[] getValues() {
+        float[] values;
+
+        SharedPreferences prefs = getSharedPreferences("navChart", MODE_PRIVATE);
+        JSONArray jsonArray;
+        try {
+            jsonArray = new JSONArray(prefs.getString("values", null));
+        } catch (Exception e) {
+            jsonArray = new JSONArray();
+        }
+
+        values = new float[jsonArray.length() + 1];
+
+        for (int a = 0; a < jsonArray.length(); a++) {
+            try {
+                values[a] = Float.parseFloat(jsonArray.getString(a));
+            } catch (Exception e) {
+            }
+        }
+
+        float actual;
+        try {
+            actual = 6 - Float.parseFloat(setOverall().substring(9, setOverall().length()));
+        } catch (Exception e) {
+            return values;
+        }
+
+        values[values.length - 1] = actual;
+        try {
+            jsonArray.put(actual+"");
+        } catch (Exception e) {
+        }
+
+        prefs.edit().putString("values", jsonArray.toString()).apply();
+
+        return values;
     }
 
     @Override
@@ -662,10 +850,7 @@ public class MainActivity extends AppCompatActivity {
         colors.recycle();
     }
 
-    public void setOverall() {
-
-        TextView overallTv = (TextView) findViewById(R.id.tv_overall);
-
+    public String setOverall() {
         int ovr = 0;
         int ovrCnt = 0;
         ArrayList<Integer> types = new ArrayList<>();
@@ -683,8 +868,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (arrayOfSubjects.length() == 0) {
-            overallTv.setText("");
-            return;
+            return "";
         }
 
         for (int i = 0; i < arrayOfSubjects.length(); i++) {
@@ -768,9 +952,12 @@ public class MainActivity extends AppCompatActivity {
                 } catch (StringIndexOutOfBoundsException e) {
                     s = String.valueOf(d);
                 }
-                overallTv.setText("Overall: " + s);
+                Log.d("debugC", ovr + ", " + ovrCnt + ", " + d);
 
-            } catch (ArithmeticException ignored) {
+                return ("Overall: " + s);
+            } catch (ArithmeticException e) {
+                //overallTv.setText("");
+                Log.e("debug", e.toString());
             }
 
         } else {
@@ -815,10 +1002,16 @@ public class MainActivity extends AppCompatActivity {
                     s = String.valueOf(d);
                 }
 
-                overallTv.setText("Overall: " + s + " / 10");
-            } catch (ArithmeticException ignored) {
+                Log.d("debugC", ovr + ", " + ovrCnt + ", " + d);
+
+                return ("Overall: " + s + " / 10");
+            } catch (ArithmeticException e) {
+                //overallTv.setText("");
+                Log.e("debug", e.toString());
             }
         }
+
+        return "";
     }
 
     public void notificationsClick(final View view) {
@@ -909,11 +1102,11 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
 
 
-        builder.setTitle("Reset All");
+        builder.setTitle("Reset App");
 
-        builder.setMessage("Are you sure you want to reset everything?")
+        builder.setMessage("All your saved data will be deleted, are you sure you want to reset the app?")
 
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                .setPositiveButton("RESET", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int arg0) {
 
                         clearApplicationData();
@@ -932,7 +1125,7 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int arg0) {
                     }
                 });

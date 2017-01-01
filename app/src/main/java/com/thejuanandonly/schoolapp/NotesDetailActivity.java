@@ -105,9 +105,6 @@ public class NotesDetailActivity extends AppCompatActivity {
         });
 
 
-
-
-
         for (int i = 0; i < arrayOfPictures.size(); i++) {
 
             final ImageView imageView = new ImageView(this.getApplicationContext());
