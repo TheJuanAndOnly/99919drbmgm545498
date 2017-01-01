@@ -1,6 +1,7 @@
 package com.thejuanandonly.schoolapp;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.LoginFilter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -153,14 +155,14 @@ public class OverviewFragment extends Fragment {
         if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.black));
     }
 
-    public void setQuote(View view){
+    public void setQuote(final View view){
         TextView quoteTv = (TextView) view.findViewById(R.id.quote);
         TextView authorTv = (TextView) view.findViewById(R.id.author);
 
-        String[] quotes = getResources().getStringArray(R.array.quotes);
-        String[] authors = getResources().getStringArray(R.array.authors);
+        final String[] quotes = getResources().getStringArray(R.array.quotes);
+        final String[] authors = getResources().getStringArray(R.array.authors);
 
-        int rnd = (int) (Math.random() * 26);
+        int rnd = (int) (Math.random() * 27);
 
         quoteTv.setText(quotes[rnd]);
         authorTv.setText(authors[rnd]);
@@ -173,5 +175,4 @@ public class OverviewFragment extends Fragment {
             authorTv.setTextSize(16);
         }
     }
-
 }
