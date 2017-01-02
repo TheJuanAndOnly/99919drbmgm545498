@@ -40,6 +40,8 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.messenger.MessengerUtils;
 import com.facebook.messenger.ShareToMessengerParams;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
 import org.json.JSONArray;
@@ -93,6 +95,12 @@ public class NotesFragment extends Fragment {
         v = rootView;
 
         loadArrFromSP();
+
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-4648715887566496~3996876969");
+
+        AdView mAdView = (AdView) rootView.findViewById(R.id.adViewBannerNotes);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         MobileAds.initialize(getApplicationContext(), "ca-app-pub-4648715887566496~3996876969");
 

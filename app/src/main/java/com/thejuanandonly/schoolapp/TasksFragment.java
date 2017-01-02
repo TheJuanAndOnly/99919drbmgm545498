@@ -13,6 +13,10 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.transitionseverywhere.TransitionManager;
 
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -43,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static android.content.Context.ALARM_SERVICE;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 public class TasksFragment extends Fragment {
@@ -77,6 +82,12 @@ public class TasksFragment extends Fragment {
         View rootView =  inflater.inflate(R.layout.tasks_layout, null);
 
         prefs = getActivity().getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-4648715887566496~3996876969");
+
+        AdView mAdView = (AdView) rootView.findViewById(R.id.adViewBanner);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         toolbarMain = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbarMain.setVisibility(View.GONE);
