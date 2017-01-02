@@ -1,92 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:fitsSystemWindows="true">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:background="@color/subjectDetailBG">
+
+    <android.support.v7.widget.Toolbar
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:id="@+id/subjectDetailToolbar"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:elevation="10dp"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/detailToolbarLayout">
+        android:id="@+id/subjectDetail_header">
 
-        <ImageView
+        <View
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:src="@drawable/knowledge"
-            android:scaleType="centerCrop"
-            android:id="@+id/overviewImg"/>
-
-        <android.support.v7.widget.Toolbar
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:id="@+id/subjectDetailToolbar"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            android:elevation="10dp"/>
+            android:layout_height="4dp"
+            android:background="@color/subjectDetailAccent"
+            android:layout_centerInParent="true"
+            android:elevation="2dp"/>
 
         <TextView
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="40dp"
             android:layout_centerInParent="true"
             android:background="@drawable/round"
             android:text="M"
             android:textColor="@color/white"
             android:gravity="center"
-            android:textSize="45dp"
-            android:id="@+id/firstLetterTv"/>
+            android:textSize="36dp"
+            android:id="@+id/firstLetterTv"
+            android:elevation="15dp"
+            android:onClick="onFirstLetterClick"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Subject"
-            android:id="@+id/subjectTv"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="135dp"
-            android:textColor="@color/white"
-            android:textSize="18sp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/greyText"
-            android:text="Average:"
-            android:id="@+id/averageTextView"
-            android:layout_below="@id/subjectTv"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="4dp"
-            style="@style/TextAppearance.AppCompat.Subhead"/>
 
     </RelativeLayout>
+
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:layout_below="@id/detailToolbarLayout">
+        android:layout_below="@id/subjectDetail_header"
+        android:layout_marginTop="-30dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:padding="8dp"
-            android:background="@color/darkbluebackground">
+            android:orientation="vertical">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:background="@color/darkbluebackground"
-
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-
-                android:id="@+id/grades_small_layout"
-                android:onClick="titleClick">
+                android:layout_height="40dp"
+                android:padding="8dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -94,27 +71,31 @@ android:fitsSystemWindows="true">
 
                     android:textColor="@color/greyText"
                     android:text="Grades"
-                    android:layout_marginBottom="4dp"
                     android:id="@+id/gradeTextView"
-                    style="@style/TextAppearance.AppCompat.Headline"/>
+                    android:textSize="20sp"
+                    android:layout_alignParentBottom="true"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:textColor="@color/greyText"
+                    android:text="Average: 2.0"
+                    android:id="@+id/averageTextView"
+                    android:textSize="15sp"
+
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"/>
 
                 <Button
-                    android:layout_width="32dp"
+                    android:layout_width="28dp"
                     android:layout_height="32dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentRight="true"
                     android:background="@drawable/ic_add_plus"
                     android:id="@+id/gradePlusButton"
-                    android:onClick="addGrade" />
-
-                <Button
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_alignParentBottom="true"
-                    android:background="@drawable/ic_arrow_drop_down_white_24dp"
-                    android:id="@+id/rollDownButton"
-                    android:onClick="titleClick"/>
+                    android:onClick="addGrade"
+                    android:layout_toRightOf="@id/gradeTextView"
+                    android:layout_marginLeft="12dp"
+                    android:layout_alignParentBottom="true"/>
 
             </RelativeLayout>
 
@@ -122,25 +103,30 @@ android:fitsSystemWindows="true">
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/grades_big_layout"
-                android:background="@color/darkbluebackground"
 
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="8dp"
+                android:layout_marginBottom="4dp"
 
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:id="@+id/lvLayoutGrade"
-                    android:background="@color/darkbluebackground">
+                    android:layout_marginTop="-4dp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp"
+                    android:clipToPadding="false">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/darkbluebackground">
+                        android:background="@color/subjectDetailItem"
+
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+
+                        android:elevation="2dp">
 
                         <TextView
                             android:layout_width="match_parent"
@@ -154,9 +140,9 @@ android:fitsSystemWindows="true">
                             android:textColor="@color/greyText"
                             android:background="@android:color/transparent"
                             android:textSize="16sp"
-                            android:textStyle="italic|bold"
+                            android:textStyle="bold"
                             android:id="@+id/gradeTextViewNoCat"
-                            android:visibility="visible" />
+                            android:visibility="visible"/>
 
                         <Button
                             android:layout_width="24dp"
@@ -172,17 +158,17 @@ android:fitsSystemWindows="true">
 
                     </RelativeLayout>
 
-
-
                     <ListView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
                         android:layout_marginBottom="5dp"
                         android:id="@+id/categoryListView"
-                        android:divider="@android:color/transparent"
-                        android:dividerHeight="0.5dp"
-                        android:visibility="visible">
+                        android:background="@color/subjectDetailItem"
+                        android:divider="@color/subjectDetailBG"
+                        android:dividerHeight="2dp"
+                        android:visibility="gone"
+                        android:elevation="2dp">
                     </ListView>
 
                 </LinearLayout>
@@ -204,46 +190,28 @@ android:fitsSystemWindows="true">
 
             </RelativeLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="@color/mainblue"/>
-
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:paddingLeft="16dp"
-                android:paddingBottom="8dp"
-                android:paddingTop="8dp"
+                android:layout_height="40dp"
+                android:padding="8dp"
+                android:layout_marginTop="4dp"
                 android:id="@+id/prediction_small_layout"
-                android:background="@color/darkbluebackground"
+                android:background="@color/subjectDetailBG"
                 android:onClick="titleClick">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Prediction"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginTop="8dp"
-                    android:id="@+id/predictionTextView"
-                    android:textColor="@color/greyText"
-                    android:textSize="20sp"
-                    style="@style/TextAppearance.AppCompat.Headline"
-                    />
 
-                <Button
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_alignParentBottom="true"
-                    android:background="@drawable/ic_arrow_drop_down_white_24dp"
-                    android:id="@+id/rollDownButton2"
-                    android:onClick="titleClick"/>
+                    android:textColor="@color/greyText"
+                    android:text="Predictions"
+                    android:id="@+id/predictionTextView"
+                    android:textSize="20sp"
+                    android:layout_alignParentBottom="true"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
                     android:layout_alignParentRight="true"
                     android:id="@+id/ttwLayout"
                     android:orientation="horizontal">
@@ -251,9 +219,6 @@ android:fitsSystemWindows="true">
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingLeft="12dp"
-                        android:paddingBottom="12dp"
-                        android:paddingTop="12dp"
                         android:gravity="center"
 
                         android:id="@+id/ttwSubtractLayout"
@@ -285,9 +250,6 @@ android:fitsSystemWindows="true">
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingRight="12dp"
-                        android:paddingBottom="12dp"
-                        android:paddingTop="12dp"
                         android:gravity="center"
 
                         android:id="@+id/ttwAddLayout"
@@ -311,12 +273,8 @@ android:fitsSystemWindows="true">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:paddingBottom="16dp"
                 android:id="@+id/prediction_big_layout"
-                android:background="@color/darkbluebackground"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <ProgressBar
                     android:id="@+id/prediction_loading"
@@ -324,33 +282,8 @@ android:fitsSystemWindows="true">
                     android:layout_height="wrap_content"
                     android:indeterminate="true"
                     android:layout_alignParentTop="true"
-                    android:layout_centerHorizontal="true"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/comingSoonLayout"
-                    android:orientation="vertical"
-                    android:gravity="center_horizontal"
-                    android:visibility="gone">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Coming Soon!"
-                        android:textSize="20sp"
-                        android:textColor="@color/white"
-                        android:layout_marginBottom="16dp"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Please be patient, predictions for 10 Grade grading system is being worked on."
-                        android:textSize="14sp"
-                        android:gravity="center"
-                        android:textColor="@color/white"/>
-
-                </LinearLayout>
+                    android:layout_centerHorizontal="true"
+                    android:visibility="gone"/>
 
                 <ListView
                     android:layout_width="match_parent"
@@ -358,17 +291,13 @@ android:fitsSystemWindows="true">
                     android:layout_marginTop="5dp"
                     android:layout_marginBottom="5dp"
                     android:id="@+id/predictionListView"
-                    android:divider="@android:color/transparent"
-                    android:dividerHeight="4dp"
+                    android:background="@color/subjectDetailItem"
+                    android:divider="@color/subjectDetailBG"
+                    android:dividerHeight="2dp"
                     android:layout_below="@id/prediction_loading">
                 </ListView>
 
             </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="@color/mainblue"/>
 
         </LinearLayout>
 

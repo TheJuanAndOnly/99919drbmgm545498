@@ -43,6 +43,10 @@
     <color name="blueT">#05a3bc</color>
     <color name="blueTy">#06899e</color>
 
+    <color name="subjectDetailBG">#2D3E52</color>
+    <color name="subjectDetailItem">#385165</color>
+    <color name="subjectDetailAccent">#2395F2</color>
+
     <color name="dotRed">#fa5353</color>
     <color name="dotYellow">#faf053</color>
     <color name="dotBlue">#5373fa</color>

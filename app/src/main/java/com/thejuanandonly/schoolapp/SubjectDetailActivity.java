@@ -3,14 +3,21 @@ package com.thejuanandonly.schoolapp;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.ShapeDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -36,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Robo on 10/22/2015.
@@ -79,10 +87,29 @@ public class SubjectDetailActivity extends AppCompatActivity {
         TextView firstLetter = (TextView) findViewById(R.id.firstLetterTv);
         firstLetter.setText(String.valueOf(subjectData.getSubject().charAt(0)));
 
-        TextView subjectName = (TextView) findViewById(R.id.subjectTv);
-        subjectName.setText(subjectData.getSubject());
+        //TextView subjectName = (TextView) findViewById(R.id.subjectTv);
+        //subjectName.setText(subjectData.getSubject());
 
         setAvgTv();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        setListView();
+
+        initEasterEgg();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        GradientDrawable background = (GradientDrawable) findViewById(R.id.firstLetterTv).getBackground();
+        background.setColor(getResources().getColor(R.color.subjectDetailAccent));
+
+        findViewById(R.id.firstLetterTv).setBackground(background);
     }
 
     @Override
@@ -156,12 +183,12 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 }
 
                 RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.grades_big_layout);
-                Button rollDownButton = (Button) findViewById(R.id.rollDownButton);
+                //Button rollDownButton = (Button) findViewById(R.id.rollDownButton);
 
                 int visibility = relativeLayout.getVisibility();
                 if (visibility == 8) {
                     relativeLayout.setVisibility(View.VISIBLE);
-                    rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_white_24dp);
+                    //rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_white_24dp);
                 }
 
             }else {
@@ -388,12 +415,12 @@ public class SubjectDetailActivity extends AppCompatActivity {
             bottomPlus.setVisibility(View.VISIBLE);
 
             RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.grades_big_layout);
-            Button rollDownButton = (Button) findViewById(R.id.rollDownButton);
+            //Button rollDownButton = (Button) findViewById(R.id.rollDownButton);
 
             int visibility = relativeLayout.getVisibility();
             if (visibility == 8) {
                 relativeLayout.setVisibility(View.VISIBLE);
-                rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_black_24dp);
+                //rollDownButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_black_24dp);
             }
         }
     }
@@ -1234,7 +1261,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
 //////////////////////////////////////////////////////////////////////////
     public void titleClick(View view) {
 
-        RelativeLayout gradesBigLayout = (RelativeLayout) findViewById(R.id.grades_big_layout);
+        /*RelativeLayout gradesBigLayout = (RelativeLayout) findViewById(R.id.grades_big_layout);
         RelativeLayout predictionBigLayout = (RelativeLayout) findViewById(R.id.prediction_big_layout);
 
         Button gradesButton = (Button) findViewById(R.id.rollDownButton);
@@ -1265,7 +1292,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
             }
         }
 
-        setListView();
+        setListView();*/
     }
 
     public void testsToWriteBtn(View view) {
@@ -1307,5 +1334,65 @@ public class SubjectDetailActivity extends AppCompatActivity {
         }
         predictionThread = new Thread(new PredictionListViewImplementor(this, subjectData, listView));
         predictionThread.start();
+    }
+
+    public void initEasterEgg(){
+
+        final View firstLetterTv = findViewById(R.id.firstLetterTv);
+
+        final View parent = (View) firstLetterTv.getParent();  // button: the view you want to enlarge hit area
+        parent.post( new Runnable() {
+            public void run() {
+                final Rect rect = new Rect();
+                firstLetterTv.getHitRect(rect);
+                rect.top -= 50;    // increase top hit area
+                rect.left -= 50;   // increase left hit area
+                rect.bottom += 50; // increase bottom hit area
+                rect.right += 50;  // increase right hit area
+                parent.setTouchDelegate(new TouchDelegate(rect, firstLetterTv));
+            }
+        });
+
+        final int[] sexyColors = new int[]{
+                getResources().getColor(R.color.sexyBlue),
+                getResources().getColor(R.color.sexyGreen),
+                getResources().getColor(R.color.sexyOrange),
+                getResources().getColor(R.color.sexyPurple),
+                getResources().getColor(R.color.sexyRed),
+                getResources().getColor(R.color.sexyTurqiousee),
+        };
+
+        findViewById(R.id.firstLetterTv).setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(final View view) {
+                new CountDownTimer(6000, 75){
+                    @Override
+                    public void onTick(long l) {
+                        int randomColor;
+                        try {
+                            randomColor = sexyColors[(int) Math.floor((Math.random() * sexyColors.length) - 0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) ];
+                        } catch (IndexOutOfBoundsException e){ return; }
+
+                        GradientDrawable background = (GradientDrawable) view.getBackground();
+                        background.setColor(randomColor);
+
+                        view.setBackground(background);
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        GradientDrawable background = (GradientDrawable) view.getBackground();
+                        background.setColor(getResources().getColor(R.color.subjectDetailAccent));
+
+                        view.setBackground(background);
+                    }
+                }.start();
+                return true;
+            }
+        });
+    }
+
+    public void onFirstLetterClick(View view) {
+        Toast.makeText(this, subjectData.getSubject(), Toast.LENGTH_SHORT).show();
     }
 }

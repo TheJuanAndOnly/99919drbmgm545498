@@ -5,7 +5,7 @@
     android:layout_height="20dp"
     android:id="@+id/Linear2"
     android:gravity="center_vertical"
-    android:background="@color/darkbluebackground">
+    android:background="@color/subjectDetailItem">
 
     <TextView
         android:layout_width="wrap_content"
