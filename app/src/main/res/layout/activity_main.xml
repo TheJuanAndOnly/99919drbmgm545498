@@ -120,7 +120,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/lcv_nav_chart"
-                android:layout_margin="12dp"
+                android:layout_margin="8dp"
                 android:gravity="center"
                 android:layout_weight="1"/>
 
