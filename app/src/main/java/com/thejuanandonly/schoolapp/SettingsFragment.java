@@ -253,7 +253,7 @@ public class SettingsFragment extends Fragment {
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
         if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-            window.setStatusBarColor(getResources().getColor(R.color.mainblue800));
+            window.setStatusBarColor(getResources().getColor(R.color.toolbar));
     }
 
 }

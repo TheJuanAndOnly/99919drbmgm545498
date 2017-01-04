@@ -3,7 +3,8 @@
 
     <color name="dark">#395165</color>
     <color name="darker">#2c3e50</color>
-    
+    <color name="toolbar">#212e3b</color>
+
     <color name="sexyRed">#e74c3c</color>
     <color name="sexyOrange">#e67e22</color>
     <color name="sexyPurple">#9b59b6</color>

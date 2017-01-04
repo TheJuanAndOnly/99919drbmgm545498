@@ -40,6 +40,5 @@ apply plugin: 'com.android.application'
         compile 'com.diogobernardino:williamchart:2.3.0'
     }
 
-apply plugin: 'com.google.gms.google-services'
 
 

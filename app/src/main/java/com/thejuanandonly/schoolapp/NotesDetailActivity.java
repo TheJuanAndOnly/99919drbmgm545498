@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
@@ -24,6 +26,8 @@ import java.util.ArrayList;
 
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
+
+import static java.security.AccessController.getContext;
 
 /**
  * Created by Daniel on 10/31/2015.
@@ -133,6 +137,7 @@ public class NotesDetailActivity extends AppCompatActivity {
         }
 
     }
+
 
 
     public void loadBitmap(String uri, ImageView imageView, Boolean resize) {
