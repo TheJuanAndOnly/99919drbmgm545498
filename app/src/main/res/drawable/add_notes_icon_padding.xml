@@ -5,6 +5,4 @@
         <bitmap android:src="@drawable/add_notes_icon"/>
 
     </item>
-
-
 </layer-list>

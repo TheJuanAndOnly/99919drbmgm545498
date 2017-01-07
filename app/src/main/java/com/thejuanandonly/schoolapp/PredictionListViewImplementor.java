@@ -2,7 +2,9 @@ package com.thejuanandonly.schoolapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.test.mock.MockContext;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,178 +66,20 @@ class PredictionListViewImplementor implements Runnable {
             return;
         }
 
-        final int gradeType = subjectData.getGradeType();
+        Pair<List<String>, List<List<List<String>>>> result;
 
-        if (gradeType == SubjectData.PERCENTAGE && subjectData.getTestsToWrite() > 1){
-            compactDisplay(gradesInCategories);
+        if (subjectData.getGradeType() == SubjectData.PERCENTAGE && subjectData.getTestsToWrite() > 1){
+            result = compactDisplay(gradesInCategories);
+        }
+        else {
+            result = regularDisplay(gradesInCategories);
+        }
+
+        if (result == null) {
             return;
         }
 
-        List<String> gradesToAdapter;
-        List<String> gradesToPredict;
-        switch (gradeType){
-            default:
-                gradesToAdapter = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5"));
-                gradesToPredict = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5"));
-                break;
-
-            case SubjectData.PERCENTAGE:
-                gradesToAdapter = new ArrayList<>(
-                        Arrays.asList(
-                                subjectData.getPercentageConversion().get(0).toString(),
-                                subjectData.getPercentageConversion().get(1).toString(),
-                                subjectData.getPercentageConversion().get(2).toString(),
-                                subjectData.getPercentageConversion().get(3).toString(),
-                                subjectData.getPercentageConversion().get(4).toString()
-                        )
-                );
-
-                gradesToPredict = new ArrayList<>(101);
-                for (int i = 0; i < 101; i++){
-                    gradesToPredict.add(String.valueOf(i));
-                }
-
-                break;
-
-            case SubjectData.ALPHABETIC:
-                gradesToAdapter = new ArrayList<>(Arrays.asList("4", "3", "2", "1", "0"));
-
-                gradesToPredict = new ArrayList<>(13);
-                for (int i = 433; i >= 0;){
-                    gradesToPredict.add(SubjectData.numberToLetter(((double) i) / 100.0));
-
-                    if (i == 67) {
-                        i = 0;
-                    } else if (String.valueOf(i).endsWith("67")) {
-                        i -= 34;
-                    } else {
-                        i -= 33;
-                    }
-                }
-
-                break;
-
-            case SubjectData.TEN_GRADE:
-                gradesToAdapter = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"));
-                gradesToPredict = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"));
-                break;
-        }
-
-        List<List<String>> gradesToBeAdded = new ArrayList<>(
-                        combine(gradesToPredict, subjectData.getTestsToWrite(), new ArrayList<String>(), 0, new ArrayList<List<String>>())
-        );
-
-        if (Thread.interrupted()){
-            Log.i(TAG, "Thread interrupted");
-            return;
-        }
-
-        List<List<List<List<String>>>> prediction = new ArrayList<>(gradesToAdapter.size());
-        List<List<List<String>>> output = new ArrayList<>(gradesToAdapter.size());
-        for (int i = 0; i < gradesToAdapter.size(); i++){
-            prediction.add(new ArrayList<List<List<String>>>());
-        }
-
-        //counting averages
-        for (int i = 0; i < gradesInCategories.size(); i++){
-            for (int j = 0; j < gradesToBeAdded.size(); j++){
-                gradesInCategories.get(i).addAll(gradesToBeAdded.get(j));
-
-                double avgAfter = countAverage(gradesInCategories);
-
-                for (int k = 0; k < gradesInCategories.get(i).size(); k++){
-                    gradesInCategories.get(i).remove(gradesInCategories.get(i).size() - 1);
-                }
-
-                int gradeAfter = indexToGrade(avgAfter);
-
-                try {
-                    prediction.get(gradeAfter - 1).get(i).add(gradesToBeAdded.get(j));
-                } catch (IndexOutOfBoundsException e){
-                    prediction.get(gradeAfter - 1).add(new ArrayList<List<String>>());
-                    prediction.get(gradeAfter - 1).get(i).add(gradesToBeAdded.get(j));
-                }
-            }
-        }
-
-        Log.d(TAG, prediction.toString());
-
-        //saving into the array passed to adapter
-        for (int gradeIndex = 0; gradeIndex < prediction.size(); gradeIndex++){
-            output.add(new ArrayList<List<String>>());
-
-            for (int catIndex = 0; catIndex < prediction.get(gradeIndex).size(); catIndex++){
-
-                List<List<String>> contractedGrades = new ArrayList<>(contract(prediction.get(gradeIndex).get(catIndex)));
-                Log.d(TAG, contractedGrades.toString());
-
-                for (int optionIndex = 0, contractedGradesSize = contractedGrades.size(); optionIndex < contractedGradesSize; optionIndex++) {
-                    output.get(gradeIndex).add(new ArrayList<String>());
-
-                    if (prediction.get(gradeIndex).get(catIndex).size() == 0){
-                        output.get(gradeIndex).set(0, Arrays.asList("", "", "There's no way", ""));
-                        break;
-                    }
-
-                    if (catIndex == 0) {
-                        output.get(gradeIndex).get(catIndex + optionIndex).add(context.getString(R.string.get));
-                    }
-                    else {
-                        output.get(gradeIndex).get(catIndex + optionIndex).add(context.getString(R.string.or));
-                    }
-
-                    List<String> grades = contractedGrades.get(optionIndex);
-                    String outputGrades = "";
-                    for (int i = 0; i < grades.size(); i++) {
-
-                        if (grades.size() == subjectData.getTestsToWrite()){
-                            outputGrades += grades.get(i);
-
-                            if (i != grades.size() - 1){
-                                outputGrades += ", ";
-                            }
-
-                            continue;
-                        }
-
-                        if (i < subjectData.getTestsToWrite() - 1){
-                            outputGrades += grades.get(i) + ", ";
-                            continue;
-                        }
-
-                        outputGrades += grades.get(i);
-
-                        outputGrades +=
-                                subjectData.getGradeType() == SubjectData.ALPHABETIC ?
-                                        " to " : " - ";
-
-                        outputGrades += grades.get(grades.size() - 1);
-                        break;
-                    }
-
-                    output.get(gradeIndex).get(catIndex + optionIndex).add(outputGrades);
-
-                    if (subjectData.isUseCategories()){
-                        output.get(gradeIndex).get(catIndex + optionIndex).add(context.getString(R.string.from));
-                        output.get(gradeIndex).get(catIndex + optionIndex).add(subjectData.getArrayOfCategories().get(catIndex));
-                    }
-                    else {
-                        output.get(gradeIndex).get(catIndex + optionIndex).add("");
-                        output.get(gradeIndex).get(catIndex + optionIndex).add("");
-                    }
-
-                }
-            }
-        }
-
-        Log.d(TAG, output.toString());
-
-        if (Thread.interrupted()){
-            Log.i(TAG, "Thread interrupted");
-            return;
-        }
-
-        setAdapter(gradesToAdapter, output);
+        setAdapter(result.first, result.second);
     }
 
     private double countAverage(List<List<String>> gradesInCategories) {
@@ -338,14 +182,176 @@ class PredictionListViewImplementor implements Runnable {
         return result;
     }
 
-    private void compactDisplay(List<List<String>> gradesInCategories){
+    Pair<List<String>, List<List<List<String>>>> regularDisplay(List<List<String>> gradesInCategories){
+        List<String> gradesToAdapter;
+        List<String> gradesToPredict;
+        switch (subjectData.getGradeType()){
+            default:
+                gradesToAdapter = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5"));
+                gradesToPredict = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5"));
+                break;
+
+            case SubjectData.PERCENTAGE:
+                gradesToAdapter = new ArrayList<>(
+                        Arrays.asList(
+                                subjectData.getPercentageConversion().get(0).toString(),
+                                subjectData.getPercentageConversion().get(1).toString(),
+                                subjectData.getPercentageConversion().get(2).toString(),
+                                subjectData.getPercentageConversion().get(3).toString(),
+                                subjectData.getPercentageConversion().get(4).toString()
+                        )
+                );
+
+                gradesToPredict = new ArrayList<>(101);
+                for (int i = 0; i < 101; i++){
+                    gradesToPredict.add(String.valueOf(i));
+                }
+
+                break;
+
+            case SubjectData.ALPHABETIC:
+                gradesToAdapter = new ArrayList<>(Arrays.asList("4", "3", "2", "1", "0"));
+
+                gradesToPredict = new ArrayList<>(13);
+                for (int i = 433; i >= 0;){
+                    gradesToPredict.add(SubjectData.numberToLetter(((double) i) / 100.0));
+
+                    if (i == 67) {
+                        i = 0;
+                    } else if (String.valueOf(i).endsWith("67")) {
+                        i -= 34;
+                    } else {
+                        i -= 33;
+                    }
+                }
+
+                break;
+
+            case SubjectData.TEN_GRADE:
+                gradesToAdapter = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"));
+                gradesToPredict = new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10"));
+                break;
+        }
+
+        List<List<String>> gradesToBeAdded = new ArrayList<>(
+                combine(gradesToPredict, subjectData.getTestsToWrite(), new ArrayList<String>(), 0, new ArrayList<List<String>>())
+        );
+
+        if (Thread.interrupted()){
+            Log.i(TAG, "Thread interrupted");
+            return null;
+        }
+
+        List<List<List<List<String>>>> prediction = new ArrayList<>(gradesToAdapter.size());
+        List<List<List<String>>> output = new ArrayList<>(gradesToAdapter.size());
+        for (int i = 0; i < gradesToAdapter.size(); i++){
+            prediction.add(new ArrayList<List<List<String>>>());
+        }
+
+        //counting averages
+        for (int i = 0; i < gradesInCategories.size(); i++){
+            for (int j = 0; j < gradesToBeAdded.size(); j++){
+                gradesInCategories.get(i).addAll(gradesToBeAdded.get(j));
+
+                double avgAfter = countAverage(gradesInCategories);
+
+                for (int k = 0; k < gradesInCategories.get(i).size(); k++){
+                    gradesInCategories.get(i).remove(gradesInCategories.get(i).size() - 1);
+                }
+
+                int gradeAfter = indexToGrade(avgAfter);
+
+                try {
+                    prediction.get(gradeAfter - 1).get(i).add(gradesToBeAdded.get(j));
+                } catch (IndexOutOfBoundsException e){
+                    prediction.get(gradeAfter - 1).add(new ArrayList<List<String>>());
+                    prediction.get(gradeAfter - 1).get(i).add(gradesToBeAdded.get(j));
+                }
+            }
+        }
+
+        //saving into the array passed to adapter
+        for (int gradeIndex = 0; gradeIndex < prediction.size(); gradeIndex++){
+            output.add(new ArrayList<List<String>>());
+
+            for (int catIndex = 0; catIndex < prediction.get(gradeIndex).size(); catIndex++){
+
+                List<List<String>> contractedGrades = new ArrayList<>(contract(prediction.get(gradeIndex).get(catIndex)));
+
+                for (int optionIndex = 0, contractedGradesSize = contractedGrades.size(); optionIndex < contractedGradesSize; optionIndex++) {
+                    output.get(gradeIndex).add(new ArrayList<String>());
+
+                    if (prediction.get(gradeIndex).get(catIndex).size() == 0){
+                        output.get(gradeIndex).set(0, Arrays.asList("", "", "There's no way", ""));
+                        break;
+                    }
+
+                    if (catIndex == 0) {
+                        output.get(gradeIndex).get(catIndex + optionIndex).add(context.getString(R.string.get));
+                    }
+                    else {
+                        output.get(gradeIndex).get(catIndex + optionIndex).add(context.getString(R.string.or));
+                    }
+
+                    List<String> grades = contractedGrades.get(optionIndex);
+                    String outputGrades = "";
+                    for (int i = 0; i < grades.size(); i++) {
+
+                        if (grades.size() == subjectData.getTestsToWrite()){
+                            outputGrades += grades.get(i);
+
+                            if (i != grades.size() - 1){
+                                outputGrades += ", ";
+                            }
+
+                            continue;
+                        }
+
+                        if (i < subjectData.getTestsToWrite() - 1){
+                            outputGrades += grades.get(i) + ", ";
+                            continue;
+                        }
+
+                        outputGrades += grades.get(i);
+
+                        outputGrades +=
+                                subjectData.getGradeType() == SubjectData.ALPHABETIC ?
+                                        " to " : " - ";
+
+                        outputGrades += grades.get(grades.size() - 1);
+                        break;
+                    }
+
+                    output.get(gradeIndex).get(catIndex + optionIndex).add(outputGrades);
+
+                    if (subjectData.isUseCategories()){
+                        output.get(gradeIndex).get(catIndex + optionIndex).add(context.getString(R.string.from));
+                        output.get(gradeIndex).get(catIndex + optionIndex).add(subjectData.getArrayOfCategories().get(catIndex));
+                    }
+                    else {
+                        output.get(gradeIndex).get(catIndex + optionIndex).add("");
+                        output.get(gradeIndex).get(catIndex + optionIndex).add("");
+                    }
+
+                }
+            }
+        }
+
+
+        if (Thread.interrupted()){
+            Log.i(TAG, "Thread interrupted");
+            return null;
+        }
+
+        return new Pair<>(gradesToAdapter, output);
+    }
+
+    Pair<List<String>, List<List<List<String>>>> compactDisplay(List<List<String>> gradesInCategories){
         List<List<String>> ranges = new ArrayList<>(5);
 
         int min = 0;
         final int max = subjectData.getTestsToWrite() * 100;
         int previous = max;
-
-        Log.d(TAG, subjectData.getPercentageConversion().toString());
 
         for (int i = 0; i < subjectData.getPercentageConversion().size() - 1; i++) {
             ranges.add(new ArrayList<String>());
@@ -427,6 +433,11 @@ class PredictionListViewImplementor implements Runnable {
 
         List<List<List<String>>> output = new ArrayList<>(subjectData.getPercentageConversion().size());
 
+        if (Thread.interrupted()){
+            Log.i(TAG, "Thread interrupted");
+            return null;
+        }
+
         //saving into the array passed to adapter
         for (int gradeIndex = 0; gradeIndex < ranges.size(); gradeIndex++){
             output.add(new ArrayList<List<String>>());
@@ -455,9 +466,14 @@ class PredictionListViewImplementor implements Runnable {
             }
         }
 
+        if (Thread.interrupted()){
+            Log.i(TAG, "Thread interrupted");
+            return null;
+        }
+
         Log.d(TAG, output.toString());
 
-        setAdapter(gradesToAdapter, output);
+        return new Pair<>(gradesToAdapter, output);
     }
 
     private int indexToGrade(double index){

@@ -15,6 +15,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.TouchDelegate;
@@ -44,6 +45,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * Created by Robo on 10/22/2015.
@@ -87,6 +89,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
         TextView firstLetter = (TextView) findViewById(R.id.firstLetterTv);
         firstLetter.setText(String.valueOf(subjectData.getSubject().charAt(0)));
 
+        findViewById(R.id.subjectDetail_header).bringToFront();
+
         //TextView subjectName = (TextView) findViewById(R.id.subjectTv);
         //subjectName.setText(subjectData.getSubject());
 
@@ -100,6 +104,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
         setListView();
 
         initEasterEgg();
+
+        predictionTest();
     }
 
     @Override
@@ -1259,41 +1265,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
         finish();
     }
 //////////////////////////////////////////////////////////////////////////
-    public void titleClick(View view) {
-
-        /*RelativeLayout gradesBigLayout = (RelativeLayout) findViewById(R.id.grades_big_layout);
-        RelativeLayout predictionBigLayout = (RelativeLayout) findViewById(R.id.prediction_big_layout);
-
-        Button gradesButton = (Button) findViewById(R.id.rollDownButton);
-        Button predictionButton = (Button) findViewById(R.id.rollDownButton2);
-
-        if (view == gradesButton || view == findViewById(R.id.grades_small_layout)) {
-            if (gradesBigLayout.getVisibility() == View.VISIBLE){
-                gradesBigLayout.setVisibility(View.GONE);
-                gradesButton.setBackgroundResource(R.drawable.ic_arrow_drop_down_white_24dp);
-            } else {
-                gradesBigLayout.setVisibility(View.VISIBLE);
-                gradesButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_white_24dp);
-
-                predictionBigLayout.setVisibility(View.GONE);
-                predictionButton.setBackgroundResource(R.drawable.ic_arrow_drop_down_white_24dp);
-            }
-        }
-        else {
-            if (predictionBigLayout.getVisibility() == View.VISIBLE){
-                predictionBigLayout.setVisibility(View.GONE);
-                predictionButton.setBackgroundResource(R.drawable.ic_arrow_drop_down_white_24dp);
-            } else {
-                predictionBigLayout.setVisibility(View.VISIBLE);
-                predictionButton.setBackgroundResource(R.drawable.ic_arrow_drop_up_white_24dp);
-
-                gradesBigLayout.setVisibility(View.GONE);
-                gradesButton.setBackgroundResource(R.drawable.ic_arrow_drop_down_white_24dp);
-            }
-        }
-
-        setListView();*/
-    }
 
     public void testsToWriteBtn(View view) {
         TextView textView = (TextView) findViewById(R.id.testsToWriteEditText);
@@ -1365,7 +1336,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         findViewById(R.id.firstLetterTv).setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(final View view) {
-                new CountDownTimer(6000, 75){
+                new CountDownTimer(3000, 75){
                     @Override
                     public void onTick(long l) {
                         int randomColor;
@@ -1394,5 +1365,65 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
     public void onFirstLetterClick(View view) {
         Toast.makeText(this, subjectData.getSubject(), Toast.LENGTH_SHORT).show();
+    }
+
+    public void predictionTest(){
+        /*SubjectData subjectData = new SubjectData(SubjectData.NUMERIC, 1, false, false, Arrays.asList("1", "2"));
+
+        PredictionListViewImplementor predictionListViewImplementor = new PredictionListViewImplementor(this, subjectData, null);
+
+        final List<List<String>> gradesInCategories;
+
+        if (subjectData.isUseCategories()){
+            gradesInCategories = subjectData.getGrades();
+        }
+        else {
+            gradesInCategories = new ArrayList<>(1);
+            gradesInCategories.add(new ArrayList<String>());
+            List<List<String>> temp = subjectData.getGrades();
+
+            for (List<String> list : temp){
+                for (String s : list){
+                    gradesInCategories.get(0).add(s);
+                }
+            }
+        }
+
+        Pair<List<String>, List<List<List<String>>>> result;
+
+        if (subjectData.getGradeType() == SubjectData.PERCENTAGE && subjectData.getTestsToWrite() > 1){
+            result = predictionListViewImplementor.compactDisplay(gradesInCategories);
+        }
+        else {
+            result = predictionListViewImplementor.regularDisplay(gradesInCategories);
+        }
+
+        if (result == null) {
+            return;
+        }
+
+        final Scanner scanner = new Scanner(System.in);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    try {
+                        while (scanner.hasNextLine()){
+                            Log.d(TAG, scanner.nextLine());
+                        }
+
+                        Thread.sleep(500);
+
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+        }).start();
+
+
+        System.out.println(result.toString());*/
     }
 }

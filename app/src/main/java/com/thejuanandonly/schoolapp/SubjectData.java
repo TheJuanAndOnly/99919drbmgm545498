@@ -8,6 +8,7 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -161,6 +162,22 @@ public class SubjectData {
         editor.clear().apply();
 
         allGrades = null;
+    }
+
+    @SafeVarargs
+    SubjectData(int gradeType, int testsToWrite, boolean useCategories, boolean usePercentages, List<String>... allGrades) {
+        this.gradeType = gradeType;
+        this.testsToWrite = testsToWrite;
+        this.useCategories = useCategories;
+        this.usePercentages = usePercentages;
+
+        this.allGrades = new ArrayList<>(allGrades.length);
+        for (int i = 0; i < SubjectData.GRADE_TYPE_COUNT; i++){
+            this.allGrades.add(new ArrayList<List<String>>());
+            if (i == gradeType){
+                Collections.addAll(this.allGrades.get(gradeType), allGrades);
+            }
+        }
     }
 
     public String getSubject() {
