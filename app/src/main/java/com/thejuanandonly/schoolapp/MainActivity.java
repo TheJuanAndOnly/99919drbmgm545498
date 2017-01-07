@@ -203,6 +203,10 @@ public class MainActivity extends AppCompatActivity {
         mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_overview));
         mNavigationView.setCheckedItem(R.id.nav_item_overview);
         setTasksCount();
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
     }
 
     @Override
@@ -463,7 +467,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int a = 1; a < 6; a++) {
                             float average = 0;
                             int count = 0;
-                            int period = 6;
+                            int period = array.size() / 5;
 
                             for (int b = (a - 1) * period; b < a * period; b++) {
                                 average += mValues[b];
