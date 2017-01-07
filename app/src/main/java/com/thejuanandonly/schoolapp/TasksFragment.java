@@ -1,5 +1,6 @@
 package com.thejuanandonly.schoolapp;
 
+import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.Notification;
@@ -11,8 +12,15 @@ import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.transitionseverywhere.TransitionManager;
 
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -25,6 +33,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -43,6 +52,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static android.content.Context.ALARM_SERVICE;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 public class TasksFragment extends Fragment {
@@ -76,7 +86,20 @@ public class TasksFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView =  inflater.inflate(R.layout.tasks_layout, null);
 
+        theme();
+
         prefs = getActivity().getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-4648715887566496~3996876969");
+        AdView mAdView = (AdView) rootView.findViewById(R.id.adViewBanner);
+
+        if(hasNetworkConnection()) {
+            mAdView.setVisibility(View.VISIBLE);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        } else {
+            mAdView.setVisibility(View.GONE);
+        }
 
         toolbarMain = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbarMain.setVisibility(View.GONE);
@@ -142,6 +165,23 @@ public class TasksFragment extends Fragment {
         updateTasks(true);
 
         return rootView;
+    }
+
+    private boolean hasNetworkConnection() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
     }
 
     @Override
@@ -743,5 +783,17 @@ public class TasksFragment extends Fragment {
             notificationManager.cancel(0);
         }
     }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void theme() {
+
+        Window window = getActivity().getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
+            window.setStatusBarColor(getResources().getColor(R.color.toolbar));
+    }
+
 }
 

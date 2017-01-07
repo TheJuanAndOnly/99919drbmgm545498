@@ -6,10 +6,6 @@
         android:title="Add Pictures"/>
 
     <item
-        android:id="@+id/ShareNote"
-        android:title="Share"/>
-
-    <item
         android:id="@+id/deleteNote"
         android:title="Delete"/>
 

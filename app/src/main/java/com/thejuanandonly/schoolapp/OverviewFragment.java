@@ -1,41 +1,36 @@
 package com.thejuanandonly.schoolapp;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.LoginFilter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class OverviewFragment extends Fragment {
 
@@ -53,6 +48,16 @@ public class OverviewFragment extends Fragment {
         v = rootView;
         overviewFragmentContext = getContext();
 
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-4648715887566496~3996876969");
+        AdView mAdView = (AdView) rootView.findViewById(R.id.adViewBannerOverview);
+
+        if (hasNetworkConnection()) {
+            mAdView.setVisibility(View.VISIBLE);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        } else {
+            mAdView.setVisibility(View.GONE);
+        }
 
         toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setVisibility(View.GONE);
@@ -107,6 +112,23 @@ public class OverviewFragment extends Fragment {
         return rootView;
     }
 
+    private boolean hasNetworkConnection() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
+    }
+
     @Override
     public void onDestroy() {
         toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
@@ -136,7 +158,7 @@ public class OverviewFragment extends Fragment {
         super.onResume();
     }
 
-    public static void reset(Context context){
+    public static void reset(Context context) {
         ArrayList<Subject> arrayOfSubjects = Subject.getSubjects(context);
 
         CustomSubjectAdapter adapter = new CustomSubjectAdapter(context, arrayOfSubjects);
@@ -152,10 +174,11 @@ public class OverviewFragment extends Fragment {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 
-        if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.black));
+        if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
+            window.setStatusBarColor(getResources().getColor(R.color.black));
     }
 
-    public void setQuote(final View view){
+    public void setQuote(final View view) {
         TextView quoteTv = (TextView) view.findViewById(R.id.quote);
         TextView authorTv = (TextView) view.findViewById(R.id.author);
 
@@ -167,10 +190,10 @@ public class OverviewFragment extends Fragment {
         quoteTv.setText(quotes[rnd]);
         authorTv.setText(authors[rnd]);
 
-        if (quotes[rnd].length() >= 120){
+        if (quotes[rnd].length() >= 120) {
             quoteTv.setTextSize(16);
             authorTv.setTextSize(14);
-        }else {
+        } else {
             quoteTv.setTextSize(18);
             authorTv.setTextSize(16);
         }

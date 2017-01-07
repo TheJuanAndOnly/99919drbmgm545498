@@ -1,10 +1,7 @@
 package com.thejuanandonly.schoolapp;
 
 import android.Manifest;
-import android.animation.PropertyValuesHolder;
 import android.app.AlarmManager;
-import android.provider.Settings;
-import android.support.v7.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -17,7 +14,6 @@ import android.content.res.TypedArray;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -29,8 +25,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.SwitchCompat;
 import android.text.InputType;
 import android.util.DisplayMetrics;
@@ -48,11 +44,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.db.chart.Tools;
-import com.db.chart.animation.Animation;
-import com.db.chart.animation.easing.BounceEase;
 import com.db.chart.model.LineSet;
 import com.db.chart.renderer.AxisRenderer;
-import com.db.chart.tooltip.Tooltip;
 import com.db.chart.view.LineChartView;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
@@ -63,7 +56,6 @@ import org.json.JSONException;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -116,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
         levelTimer();
 
         TextView overallTv = (TextView) findViewById(R.id.tv_overall);
-        overallTv.setText(setOverall()+"");
+        overallTv.setText(setOverall() + "");
 
         Locale.setDefault(Locale.US);
 
@@ -211,6 +203,10 @@ public class MainActivity extends AppCompatActivity {
         mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_overview));
         mNavigationView.setCheckedItem(R.id.nav_item_overview);
         setTasksCount();
+
+        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+        PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
     }
 
     @Override
@@ -318,123 +314,221 @@ public class MainActivity extends AppCompatActivity {
         float[] mValues = getValues();
 
         try {
-        lineChartView.reset();
+            lineChartView.reset();
 
-        if (mValues.length > 5) {
-            String[] actual = new String[mLabels.length];
+            if (mValues.length > 5) {
+                String[] actual = new String[mLabels.length];
 
-            for (int a = 0; a < mLabels.length; a++) {
-                actual[a] = mLabels[a];
-                for (int b = 0; b < a; b++) {
-                    if (actual[b].equals(actual[a])) {
-                        actual[a] = "";
-                        b = a;
+                for (int a = 0; a < mLabels.length; a++) {
+                    actual[a] = mLabels[a];
+                    for (int b = 0; b < a; b++) {
+                        if (actual[b].equals(actual[a])) {
+                            actual[a] = "";
+                            b = a;
+                        }
                     }
                 }
-            }
 
-            ArrayList<Integer> array = new ArrayList<>();
-            for (int a = 0; a < actual.length; a++) {
-                if (actual[a].length() > 1) {
-                    array.add(a);
+                ArrayList<Integer> array = new ArrayList<>();
+                for (int a = 0; a < actual.length; a++) {
+                    if (actual[a].length() > 1) {
+                        array.add(a);
+                    }
                 }
-            }
 
-            Toast.makeText(this, array.toString()+"", Toast.LENGTH_SHORT).show();
+                //removing duplicates from each day
+                SharedPreferences prefs = getSharedPreferences("navChart", MODE_PRIVATE);
+                JSONArray jsonLabels, jsonValues, savedLabels;
+                try {
+                    savedLabels = new JSONArray(prefs.getString("labels", null));
+                } catch (Exception e) {
+                    savedLabels = new JSONArray();
+                }
+                jsonLabels = new JSONArray();
+                jsonValues = new JSONArray();
 
-            if (array.size() > 5) {
-                float[] values = new float[array.size()];
-                String[] labels = new String[array.size()];
                 for (int a = 0; a < array.size(); a++) {
-                    float average = 0;
-                    int times = 0;
                     int until;
                     try {
-                        until = array.get(a+1);
+                        until = array.get(a + 1) - 1;
                     } catch (Exception e) {
                         until = mValues.length - 1;
                     }
 
-                    for (int b = array.get(a); b < until; b++) {
-                        average += mValues[b];
-                        times++;
+                    try {
+                        jsonLabels.put(savedLabels.get(until));
+                    } catch (Exception e) {
                     }
-                    average = average / times;
-                    values[a] = average;
-                    labels[a] = mLabels[array.get(a)];
+                    jsonValues.put(mValues[until] + "");
                 }
 
-                mLabels = labels;
-                mValues = values;
+                prefs.edit().putString("labels", jsonLabels.toString()).apply();
+                prefs.edit().putString("values", jsonValues.toString()).apply();
 
-                Toast.makeText(this, values[0]+" rip", Toast.LENGTH_SHORT).show();
+                if (array.size() > 30) {
+                    int months = 1;
+                    for (int a = 1; a < mLabels.length; a++) {
+                        if (!mLabels[a].substring(3, 11).equals(mLabels[a - 1].substring(3, 11)))
+                            months++;
+                    }
+
+                    if (months > 5) {
+                        float[] values = new float[5];
+                        String[] labels = new String[5];
+
+                        for (int a = 1; a < 6; a++) {
+                            float average = 0;
+                            int count = 0;
+                            int period = months / 5;
+
+                            for (int b = (a - 1) * period; b < a * period; b++) {
+                                average += mValues[b];
+                                count++;
+                            }
+
+                            values[a - 1] = average / count;
+                            labels[a - 1] = "";
+                        }
+                        labels[1] = "Last " + months + " months";
+
+                        mLabels = labels;
+                        mValues = values;
+                    } else if (months > 2 && months < 6) {
+                        float[] values = new float[months];
+                        String[] labels = new String[months];
+
+                        for (int a = 0; a < months; a++) {
+                            float average = 0;
+                            int count = 0;
+                            int month = 0;
+
+                            for (int b = 1; b < mValues.length; b++) {
+                                if (!mLabels[b].substring(3, 11).equals(mLabels[b - 1].substring(3, 11))) {
+                                    average += mValues[b - 1];
+                                    month = Integer.parseInt(mLabels[b - 1].substring(3, 5));
+                                    break;
+                                } else average += mValues[b - 1];
+
+                                count++;
+                            }
+
+                            values[a] = average / count;
+                            labels[a] = month + "";
+                        }
+
+                        mLabels = labels;
+                        mValues = values;
+                    } else {
+                        int period = mValues.length / 5;
+                        float[] values = new float[5];
+                        String[] labels = new String[5];
+
+                        for (int a = 1; a < 6; a++) {
+                            float average = 0;
+                            int count = 0;
+                            for (int b = (a - 1) * period; b < a * period; b++) {
+                                average += mValues[b];
+                                count++;
+                            }
+
+                            values[a - 1] = average / count;
+                            labels[a - 1] = "";
+                        }
+                        labels[1] = "Last 60 days";
+
+                        mLabels = labels;
+                        mValues = values;
+                    }
+                } else if (array.size() > 1 && array.size() < 31) {
+                    float[] values = new float[array.size()];
+                    String[] labels = new String[array.size()];
+
+                    for (int a = 0; a < array.size(); a++) {
+                        int until;
+                        try {
+                            until = array.get(a + 1) - 1;
+                        } catch (Exception e) {
+                            until = mValues.length - 1;
+                        }
+
+                        values[a] = mValues[until];
+
+                        if (array.size() > 1 && array.size() < 5)
+                            labels[a] = mLabels[array.get(a)].substring(0, 6);
+                        else labels[a] = mLabels[array.get(a)];
+                    }
+
+                    mLabels = labels;
+                    mValues = values;
+
+                    values = new float[5];
+                    labels = new String[5];
+                    if (array.size() > 5) {
+                        for (int a = 1; a < 6; a++) {
+                            float average = 0;
+                            int count = 0;
+                            int period = array.size() / 5;
+
+                            for (int b = (a - 1) * period; b < a * period; b++) {
+                                average += mValues[b];
+                                count++;
+                            }
+
+                            values[a - 1] = average / count;
+                            labels[a - 1] = "";
+                        }
+                        labels[1] = "Last 30 days";
+
+                        mLabels = labels;
+                        mValues = values;
+                    }
+                } else {
+                    return;
+                }
             } else {
-                float[] values = new float[array.size()];
-                String[] labels = new String[array.size()];
-                for (int a = 0; a < array.size(); a++) {
-                    float average = 0;
-                    int times = 0;
-                    int until;
-                    try {
-                        until = array.get(a+1);
-                    } catch (Exception e) {
-                        until = mValues.length - 1;
-                    }
-
-                    for (int b = array.get(a); b < until; b++) {
-                        average += mValues[b];
-                        times++;
-                    }
-                    average = average / times;
-                    values[a] = average;
-                    labels[a] = mLabels[array.get(a)];
-
-                    Toast.makeText(this, values[0]+" "+values[1], Toast.LENGTH_SHORT).show();
+                for (int a = 0; a < mLabels.length; a++) {
+                    mLabels[a] = mLabels[a].substring(0, 6);
                 }
-
-                mLabels = labels;
-                mValues = values;
             }
-        }
 
-        LineSet dataset = new LineSet(mLabels, mValues);
-        dataset.setColor(Color.parseColor("#758cbb"))
-                .setFill(Color.parseColor("#2d374c"))
-                .setDotsColor(Color.parseColor("#758cbb"))
-                .setThickness(4)
-                .setDashed(new float[]{10f, 10f})
-                .beginAt(mValues.length - 1);
-        lineChartView.addData(dataset);
+            LineSet dataset = new LineSet(mLabels, mValues);
+            dataset.setColor(Color.parseColor("#758cbb"))
+                    .setFill(Color.parseColor("#2d374c"))
+                    .setDotsColor(Color.parseColor("#758cbb"))
+                    .setThickness(4)
+                    .setDashed(new float[]{10f, 10f})
+                    .beginAt(mValues.length - 1);
+            lineChartView.addData(dataset);
 
-        dataset = new LineSet(mLabels, mValues);
-        dataset.setColor(Color.parseColor("#b3b5bb"))
-                .setFill(Color.parseColor("#2d374c"))
-                .setDotsColor(Color.parseColor("#ffc755"))
-                .setThickness(4)
-                .endAt(mValues.length );
-        lineChartView.addData(dataset);
+            dataset = new LineSet(mLabels, mValues);
+            dataset.setColor(Color.parseColor("#b3b5bb"))
+                    .setFill(Color.parseColor("#2d374c"))
+                    .setDotsColor(Color.parseColor("#ffc755"))
+                    .setThickness(4)
+                    .endAt(mValues.length);
+            lineChartView.addData(dataset);
 
-        float min = mValues[0];
-        for (int i = 1; i < mValues.length; i++) {
-            if (mValues[i] < min) {
-                min = mValues[i];
+            float min = mValues[0];
+            for (int i = 1; i < mValues.length; i++) {
+                if (mValues[i] < min) {
+                    min = mValues[i];
+                }
             }
-        }
 
-        min -= 0.5;
+            min -= 0.5;
 
-        if (min < 0) min = 1;
+            if (min < 1) min = 1;
 
-        lineChartView.setBorderSpacing(Tools.fromDpToPx(10))
-                .setAxisBorderValues((int) min, 5)
-                .setYLabels(AxisRenderer.LabelPosition.NONE)
-                .setLabelsColor(Color.parseColor("#6a84c3"))
-                .setXAxis(false)
-                .setYAxis(false);
+            lineChartView.setBorderSpacing(Tools.fromDpToPx(10))
+                    .setAxisBorderValues((int) min, 5)
+                    .setYLabels(AxisRenderer.LabelPosition.NONE)
+                    .setLabelsColor(Color.parseColor("#6a84c3"))
+                    .setXAxis(false)
+                    .setYAxis(false);
 
-        if (mValues.length > 1) {
-            lineChartView.show();
-        }
+            if (mValues.length > 1) {
+                lineChartView.show();
+            }
         } catch (Exception e) {
             Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
         }
@@ -467,15 +561,12 @@ public class MainActivity extends AppCompatActivity {
             return labels;
         }
 
-        labels[labels.length - 1] = actual+"";
-        try {
-            jsonArray.put(actual);
-        } catch (Exception e) {
-        }
+        labels[labels.length - 1] = actual + "";
+        jsonArray.put(actual);
 
         prefs.edit().putString("labels", jsonArray.toString()).apply();
 
-        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.");
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM. yyyy");
         Calendar calendar = Calendar.getInstance();
 
         for (int a = 0; a < labels.length; a++) {
@@ -514,10 +605,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         values[values.length - 1] = actual;
-        try {
-            jsonArray.put(actual+"");
-        } catch (Exception e) {
-        }
+        jsonArray.put(actual + "");
 
         prefs.edit().putString("values", jsonArray.toString()).apply();
 

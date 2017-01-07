@@ -1,8 +1,10 @@
 package com.thejuanandonly.schoolapp;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -17,6 +19,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatEditText;
 import android.util.DisplayMetrics;
 import android.view.Display;
@@ -40,6 +43,8 @@ import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.facebook.messenger.MessengerUtils;
 import com.facebook.messenger.ShareToMessengerParams;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
 import org.json.JSONArray;
@@ -92,7 +97,19 @@ public class NotesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.notes_layout, null);
         v = rootView;
 
+        theme();
         loadArrFromSP();
+
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-4648715887566496~3996876969");
+        AdView mAdView = (AdView) rootView.findViewById(R.id.adViewBannerNotes);
+
+        if(hasNetworkConnection()) {
+            mAdView.setVisibility(View.VISIBLE);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        } else  {
+            mAdView.setVisibility(View.GONE);
+        }
 
         MobileAds.initialize(getApplicationContext(), "ca-app-pub-4648715887566496~3996876969");
 
@@ -117,6 +134,23 @@ public class NotesFragment extends Fragment {
         return rootView;
     }
 
+
+    private boolean hasNetworkConnection() {
+        boolean haveConnectedWifi = false;
+        boolean haveConnectedMobile = false;
+
+        ConnectivityManager cm = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo[] netInfo = cm.getAllNetworkInfo();
+        for (NetworkInfo ni : netInfo) {
+            if (ni.getTypeName().equalsIgnoreCase("WIFI"))
+                if (ni.isConnected())
+                    haveConnectedWifi = true;
+            if (ni.getTypeName().equalsIgnoreCase("MOBILE"))
+                if (ni.isConnected())
+                    haveConnectedMobile = true;
+        }
+        return haveConnectedWifi || haveConnectedMobile;
+    }
 
     public void loadArrFromSP() {
 
@@ -264,6 +298,18 @@ public class NotesFragment extends Fragment {
         listView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
+    }
+
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void theme() {
+
+        Window window = getActivity().getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
+            window.setStatusBarColor(getResources().getColor(R.color.toolbar));
     }
 
 }
@@ -572,12 +618,11 @@ class ListViewAdapter extends BaseAdapter {
                                             Toast.makeText(context, "This feature is not yet available on android 7.1+ phones", Toast.LENGTH_SHORT).show();
                                         } else {
                                             contentUri = Uri.fromFile(new File(imageUri));
+                                            // setting the image uri so that it can be sent
+                                            ShareToMessengerParams shareToMessengerParams = ShareToMessengerParams.newBuilder(contentUri, mimeType).build();
+                                            // sending
+                                            MessengerUtils.shareToMessenger((Activity) context, 1, shareToMessengerParams);
                                         }
-
-                                        // setting the image uri so that it can be sent
-                                        ShareToMessengerParams shareToMessengerParams = ShareToMessengerParams.newBuilder(contentUri, mimeType).build();
-                                        // sending
-                                        MessengerUtils.shareToMessenger((Activity) context, 1, shareToMessengerParams);
 
                                         break;
                                 }
@@ -616,45 +661,66 @@ class ListViewAdapter extends BaseAdapter {
                         break;
 
                     case "Delete":
-                        aboutArraylist = new ArrayList<String>();
-                        aboutArraylist.addAll(Arrays.asList(aboutArray));
-                        namesArrayList = new ArrayList<String>();
-                        namesArrayList.addAll(Arrays.asList(namesArray));
-                        colorsArrayList = new ArrayList<Integer>();
-                        colorsArrayList.addAll(Arrays.asList(colorsArray));
 
-                        aboutArraylist.remove(position);
-                        namesArrayList.remove(position);
-                        colorsArrayList.remove(position);
+                        final AlertDialog.Builder builder = new AlertDialog.Builder((Activity) context)
+                                .setTitle("Delete Group")
+                                .setMessage("Are you sure you want to delete this group?")
+                                .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
 
-                        aboutArray = new String[aboutArraylist.size()];
-                        aboutArray = aboutArraylist.toArray(aboutArray);
+                                    }
+                                })
+                                .setPositiveButton("DELETE", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
 
-                        namesArray = new String[namesArrayList.size()];
-                        namesArray = namesArrayList.toArray(namesArray);
+                                        aboutArraylist = new ArrayList<String>();
+                                        aboutArraylist.addAll(Arrays.asList(aboutArray));
+                                        namesArrayList = new ArrayList<String>();
+                                        namesArrayList.addAll(Arrays.asList(namesArray));
+                                        colorsArrayList = new ArrayList<Integer>();
+                                        colorsArrayList.addAll(Arrays.asList(colorsArray));
 
-                        colorsArray = new Integer[colorsArrayList.size()];
-                        colorsArray = colorsArrayList.toArray(colorsArray);
+                                        aboutArraylist.remove(position);
+                                        namesArrayList.remove(position);
+                                        colorsArrayList.remove(position);
 
-                        try {
-                            arrayOfArrays.remove(position);
-                        } catch (IndexOutOfBoundsException e) {
+                                        aboutArray = new String[aboutArraylist.size()];
+                                        aboutArray = aboutArraylist.toArray(aboutArray);
 
-                        }
+                                        namesArray = new String[namesArrayList.size()];
+                                        namesArray = namesArrayList.toArray(namesArray);
 
-                        String save = "";
-                        for (int i = 0; i < arrayOfArrays.size(); i++) {
-                            for (int j = 0; j < arrayOfArrays.get(i).size(); j++) {
-                                save += arrayOfArrays.get(i).get(j) + "`";
-                            }
-                            save += "~";
-                        }
+                                        colorsArray = new Integer[colorsArrayList.size()];
+                                        colorsArray = colorsArrayList.toArray(colorsArray);
 
-                        saveToSP.saveToSharedPreferences(((Activity) context), "NOTES ARRAY", "arrayofarrays", save);
+                                        try {
+                                            arrayOfArrays.remove(position);
+                                        } catch (IndexOutOfBoundsException e) {
 
-                        FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
-                        NotesFragment fragment = (NotesFragment) fm.findFragmentByTag("NotesFragment");
-                        fragment.deleteGroup(aboutArray, namesArray, colorsArray);
+                                        }
+
+                                        String save = "";
+                                        for (int a = 0; a < arrayOfArrays.size(); a++) {
+                                            for (int j = 0; j < arrayOfArrays.get(a).size(); j++) {
+                                                save += arrayOfArrays.get(a).get(j) + "`";
+                                            }
+                                            save += "~";
+                                        }
+
+                                        saveToSP.saveToSharedPreferences(((Activity) context), "NOTES ARRAY", "arrayofarrays", save);
+
+                                        FragmentManager fm = ((FragmentActivity) context).getSupportFragmentManager();
+                                        NotesFragment fragment = (NotesFragment) fm.findFragmentByTag("NotesFragment");
+                                        fragment.deleteGroup(aboutArray, namesArray, colorsArray);
+
+                                    }
+                                });
+                        builder.show();
+
+
+
                         break;
 
                     case "Share":
