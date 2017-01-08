@@ -1,5 +1,6 @@
 package com.thejuanandonly.schoolapp;
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.provider.Settings;
@@ -63,33 +65,7 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
             }
         }
 
-        new runInBackground().execute();
-    }
-
-    final Handler handler = new Handler();
-    private class runInBackground extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-        }
-
-
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(final Void unused) {
-            handler.postDelayed(new Runnable() {
-
-                public void run() {
-                    onReceive(context, intent);
-                }
-            }, 30000);
-
-            this.cancel(false);
-        }
+        registerAlarm(context);
     }
 
     public void notifyUser(Context context, String name, String what) {
@@ -129,5 +105,16 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
             screenLock.acquire();
             screenLock.release();
         }
+    }
+
+    public static void registerAlarm(Context context) {
+        Intent i = new Intent(context, NotificationRecieverActivity.class);
+
+        PendingIntent sender = PendingIntent.getBroadcast(context, 0, i, 0);
+
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) am.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, sender);
+        else am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, sender);
     }
 }

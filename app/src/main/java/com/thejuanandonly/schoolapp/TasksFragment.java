@@ -508,10 +508,10 @@ public class TasksFragment extends Fragment {
         ((MainActivity) getActivity()).setTasksCount();
 
         alwaysOnScreen(getContext());
-
-        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
-        PendingIntent mAlarmSender = PendingIntent.getBroadcast(getContext(), 0, new Intent(getContext(), NotificationRecieverActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
+//
+//        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
+//        PendingIntent mAlarmSender = PendingIntent.getBroadcast(getContext(), 0, new Intent(getContext(), NotificationRecieverActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+//        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
     }
 
     Dialog dialog;
