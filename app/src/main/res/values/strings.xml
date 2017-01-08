@@ -23,6 +23,7 @@
     <string name="get_a_sum_of">"Get a sum between "</string>
     <string name="name_the_category_first">Name the category first</string>
     <string name="this_category_exists">This category already exists</string>
+    <string name="hello_word">Hello World</string>
 
     <string-array name="quotes">
 
