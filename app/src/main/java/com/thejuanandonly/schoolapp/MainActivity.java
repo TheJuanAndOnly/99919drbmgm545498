@@ -2,6 +2,7 @@ package com.thejuanandonly.schoolapp;
 
 import android.Manifest;
 import android.app.AlarmManager;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -24,6 +25,7 @@ import android.os.SystemClock;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -40,9 +42,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -211,6 +215,24 @@ public class MainActivity extends AppCompatActivity {
         mNavigationView.setItemBackground(getResources().getDrawable(R.drawable.nav_overview));
         mNavigationView.setCheckedItem(R.id.nav_item_overview);
         setTasksCount();
+
+        View parentLayout = findViewById(R.id.containerView);
+        final SharedPreferences prefs = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        String deviceMan = android.os.Build.MANUFACTURER;
+        if (deviceMan.toLowerCase().equals("huawei") && !prefs.getBoolean("huaweiUnlock", false)) {
+            Snackbar snackbar = Snackbar.make(parentLayout, "Allow running in background please", Snackbar.LENGTH_LONG);
+            snackbar.setAction("fix", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    prefs.edit().putBoolean("huaweiUnlock", true).apply();
+
+                    Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    intent.setData(Uri.parse("package:" + getPackageName()));
+                    startActivity(intent);
+                }
+            });
+            snackbar.show();
+        }
 
         registerAlarm(getApplicationContext());
     }
