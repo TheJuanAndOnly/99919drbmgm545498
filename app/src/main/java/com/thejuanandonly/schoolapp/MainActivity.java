@@ -2,6 +2,7 @@ package com.thejuanandonly.schoolapp;
 
 import android.Manifest;
 import android.app.AlarmManager;
+import android.app.Dialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,16 +13,23 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.os.PowerManager;
+import android.os.SystemClock;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -34,9 +42,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -59,6 +69,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
     DrawerLayout mDrawerLayout;
@@ -204,9 +216,20 @@ public class MainActivity extends AppCompatActivity {
         mNavigationView.setCheckedItem(R.id.nav_item_overview);
         setTasksCount();
 
-        AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
+        alwaysOnScreen();
+
+        registerAlarm(getApplicationContext());
+    }
+
+    public static void registerAlarm(Context context) {
+        Intent i = new Intent(context, NotificationRecieverActivity.class);
+
+        PendingIntent sender = PendingIntent.getBroadcast(context, 0, i, 0);
+
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) am.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, sender);
+        else am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, sender);
     }
 
     @Override
@@ -610,6 +633,60 @@ public class MainActivity extends AppCompatActivity {
         prefs.edit().putString("values", jsonArray.toString()).apply();
 
         return values;
+    }
+
+    public void alwaysOnScreen() {
+        JSONArray arrayName;
+        SharedPreferences preferences = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+
+        try {
+            arrayName = new JSONArray(preferences.getString("TaskName", null));
+        } catch (Exception e) {
+            arrayName = new JSONArray();
+        }
+
+        int numberOfTask = arrayName.length();
+
+
+        SharedPreferences prefs = getSharedPreferences("settings", Context.MODE_PRIVATE);
+
+        boolean a = prefs.getBoolean("active", true);
+
+        if (a == true && numberOfTask > 0) {
+            String nameForAlways = null;
+            if (numberOfTask == 1) {
+                nameForAlways = " active task";
+            } else if (numberOfTask > 1) {
+                nameForAlways = " active tasks";
+            }
+
+            ArrayList<String> listNamez = new ArrayList<String>();
+            for (int i = 0; i < arrayName.length(); i++){
+                try {
+                    listNamez.add(arrayName.getString(i));
+                } catch (Exception e) {
+                }
+            }
+
+            String childWithNames = listNamez.toString();
+
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("fromNotification", true);
+            PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+            Notification notification = new Notification.Builder(this)
+                    .setContentTitle(numberOfTask + nameForAlways)
+                    .setContentText(childWithNames.substring(1, childWithNames.length()-1))
+                    .setSmallIcon(R.drawable.ic_active_white)
+                    .setContentIntent(contentIntent).build();
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            notification.flags |= Notification.FLAG_NO_CLEAR;
+            notificationManager.notify(0, notification);
+        } else {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(0);
+        }
     }
 
     @Override
