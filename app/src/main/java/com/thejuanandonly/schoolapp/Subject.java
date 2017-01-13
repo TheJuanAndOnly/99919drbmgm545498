@@ -79,7 +79,7 @@ public class Subject {
 
             average = String.valueOf(doubleAvg);
 
-            if (average.length() == 3){
+            if (average.length() == 3 && !average.equals("NaN")){
                 average += "0";
             } else if (average.length() > 4) {
                 average = average.substring(0, 4);

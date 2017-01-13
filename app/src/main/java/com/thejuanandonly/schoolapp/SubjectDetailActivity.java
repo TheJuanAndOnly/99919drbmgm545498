@@ -104,8 +104,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
         setListView();
 
         initEasterEgg();
-
-        predictionTest();
     }
 
     @Override
@@ -226,6 +224,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
         ListView listView = (ListView) findViewById(R.id.categoryListView);
         TextView gradeTv = (TextView) findViewById(R.id.gradeTextViewNoCat);
 
+        boolean isError = false;
+
         if (!subjectData.isUseCategories()){
 
             listView.setVisibility(View.GONE);
@@ -260,7 +260,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
                 int count = 0;
                 boolean isNonZeroCategory = false,
-                        isIgnoredCategory = false;
+                        isIgnoredCategory = false,
+                        isEmptyCategory = false;
 
                 for (int percentage : subjectData.getArrayOfPercentages()) {
                     count += percentage;
@@ -274,7 +275,9 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
                     int percentage = subjectData.getArrayOfPercentages().get(i);
 
-                    if (arrayOfGrades.size() == 0 && percentage != 0) {
+                    if (arrayOfGrades.size() == 0){
+                        isEmptyCategory = true;
+                    } else if (arrayOfGrades.size() == 0 && percentage != 0) {
                         isNonZeroCategory = true;
                     } else if (arrayOfGrades.size() != 0 && percentage == 0) {
                         isIgnoredCategory = true;
@@ -282,8 +285,9 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 }
 
                 if (subjectData.isUsePercentages() && count != 100 && count != 0) {
+                    isError = true;
 
-                    final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "The total must equal 100!", Snackbar.LENGTH_INDEFINITE);
+                    final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.weight_must_be_100, Snackbar.LENGTH_INDEFINITE);
                     snackbar.show();
                     snackbar.setAction("Settings", new View.OnClickListener() {
                         @Override
@@ -295,9 +299,15 @@ public class SubjectDetailActivity extends AppCompatActivity {
                         }
                     });
 
-                } else if (subjectData.isUsePercentages() && isNonZeroCategory) {
+                } else if (!subjectData.isUsePercentages() && isEmptyCategory) {
+                    isError = true;
 
-                    final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "In order for all empty categories to be ignored, set their values to 0", Snackbar.LENGTH_INDEFINITE);
+                    Toast.makeText(this, R.string.empty_cat, Toast.LENGTH_LONG).show();
+
+                } else if (subjectData.isUsePercentages() && isNonZeroCategory) {
+                    isError = true;
+
+                    final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.non_zero_cat, Snackbar.LENGTH_INDEFINITE);
                     snackbar.show();
                     snackbar.setAction("Settings", new View.OnClickListener() {
                         @Override
@@ -310,8 +320,9 @@ public class SubjectDetailActivity extends AppCompatActivity {
                     });
 
                 } else if (isIgnoredCategory) {
+                    isError = true;
 
-                    final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), "Some categories containing grades are ignored. Set their values", Snackbar.LENGTH_INDEFINITE);
+                    final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.ignored_cat, Snackbar.LENGTH_INDEFINITE);
                     snackbar.show();
                     snackbar.setAction("Settings", new View.OnClickListener() {
                         @Override
@@ -330,7 +341,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
             }
         }
 
-        if (findViewById(R.id.prediction_big_layout).getVisibility() == View.VISIBLE) {
+        if (!isError) {
             setPredictionListView();
         }
     }
@@ -1365,65 +1376,5 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
     public void onFirstLetterClick(View view) {
         Toast.makeText(this, subjectData.getSubject(), Toast.LENGTH_SHORT).show();
-    }
-
-    public void predictionTest(){
-        /*SubjectData subjectData = new SubjectData(SubjectData.NUMERIC, 1, false, false, Arrays.asList("1", "2"));
-
-        PredictionListViewImplementor predictionListViewImplementor = new PredictionListViewImplementor(this, subjectData, null);
-
-        final List<List<String>> gradesInCategories;
-
-        if (subjectData.isUseCategories()){
-            gradesInCategories = subjectData.getGrades();
-        }
-        else {
-            gradesInCategories = new ArrayList<>(1);
-            gradesInCategories.add(new ArrayList<String>());
-            List<List<String>> temp = subjectData.getGrades();
-
-            for (List<String> list : temp){
-                for (String s : list){
-                    gradesInCategories.get(0).add(s);
-                }
-            }
-        }
-
-        Pair<List<String>, List<List<List<String>>>> result;
-
-        if (subjectData.getGradeType() == SubjectData.PERCENTAGE && subjectData.getTestsToWrite() > 1){
-            result = predictionListViewImplementor.compactDisplay(gradesInCategories);
-        }
-        else {
-            result = predictionListViewImplementor.regularDisplay(gradesInCategories);
-        }
-
-        if (result == null) {
-            return;
-        }
-
-        final Scanner scanner = new Scanner(System.in);
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (true){
-                    try {
-                        while (scanner.hasNextLine()){
-                            Log.d(TAG, scanner.nextLine());
-                        }
-
-                        Thread.sleep(500);
-
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        }).start();
-
-
-        System.out.println(result.toString());*/
     }
 }

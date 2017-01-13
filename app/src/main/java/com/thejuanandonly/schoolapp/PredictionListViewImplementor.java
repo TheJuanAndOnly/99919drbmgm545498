@@ -88,6 +88,7 @@ class PredictionListViewImplementor implements Runnable {
 
         for (int i = 0; i < gradesInCategories.size(); i++) {
             List<String> grades = gradesInCategories.get(i);
+            averages.add(0.0);
 
             for (String grade : grades) {
                 if (subjectData.getGradeType() == SubjectData.ALPHABETIC) {
@@ -105,7 +106,9 @@ class PredictionListViewImplementor implements Runnable {
                 }catch (IndexOutOfBoundsException e){
                     try{
                         averages.add(Double.parseDouble(grade));
-                    }catch (NumberFormatException ignored){}
+                    }catch (NumberFormatException e1){
+                        e1.printStackTrace();
+                    }
                 }catch (NumberFormatException ignored){}
             }
             averages.set(i, averages.get(i) / (double) grades.size());
@@ -246,6 +249,10 @@ class PredictionListViewImplementor implements Runnable {
         List<List<List<String>>> output = new ArrayList<>(gradesToAdapter.size());
         for (int i = 0; i < gradesToAdapter.size(); i++){
             prediction.add(new ArrayList<List<List<String>>>());
+
+            for (int j = 0; j < subjectData.getArrayOfCategories().size(); j++){
+                prediction.get(i).add(new ArrayList<List<String>>());
+            }
         }
 
         //counting averages
@@ -255,7 +262,9 @@ class PredictionListViewImplementor implements Runnable {
 
                 double avgAfter = countAverage(gradesInCategories);
 
-                for (int k = 0; k < gradesInCategories.get(i).size(); k++){
+                Log.d(TAG, gradesToBeAdded.get(j) + "\n" + avgAfter);
+
+                for (int k = 0; k < gradesToBeAdded.get(j).size(); k++){
                     gradesInCategories.get(i).remove(gradesInCategories.get(i).size() - 1);
                 }
 

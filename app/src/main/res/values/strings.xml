@@ -24,6 +24,10 @@
     <string name="name_the_category_first">Name the category first</string>
     <string name="this_category_exists">This category already exists</string>
     <string name="hello_word">Hello World</string>
+    <string name="weight_must_be_100">The weight total must equal 100!</string>
+    <string name="empty_cat">Can\'t use predictions, because some categories are empty</string>
+    <string name="non_zero_cat">In order for all empty categories to be ignored, set their values to 0</string>
+    <string name="ignored_cat">Some categories containing grades are ignored. Set their values</string>
 
     <string-array name="quotes">
 
