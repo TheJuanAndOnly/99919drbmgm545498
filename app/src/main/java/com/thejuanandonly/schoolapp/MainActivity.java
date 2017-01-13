@@ -216,23 +216,7 @@ public class MainActivity extends AppCompatActivity {
         mNavigationView.setCheckedItem(R.id.nav_item_overview);
         setTasksCount();
 
-        View parentLayout = findViewById(R.id.containerView);
-        final SharedPreferences prefs = getSharedPreferences("settings", Context.MODE_PRIVATE);
-        String deviceMan = android.os.Build.MANUFACTURER;
-        if (deviceMan.toLowerCase().equals("huawei") && !prefs.getBoolean("huaweiUnlock", false)) {
-            Snackbar snackbar = Snackbar.make(parentLayout, "Allow running in background please", Snackbar.LENGTH_LONG);
-            snackbar.setAction("fix", new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    prefs.edit().putBoolean("huaweiUnlock", true).apply();
-
-                    Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    intent.setData(Uri.parse("package:" + getPackageName()));
-                    startActivity(intent);
-                }
-            });
-            snackbar.show();
-        }
+        alwaysOnScreen();
 
         registerAlarm(getApplicationContext());
     }
@@ -649,6 +633,60 @@ public class MainActivity extends AppCompatActivity {
         prefs.edit().putString("values", jsonArray.toString()).apply();
 
         return values;
+    }
+
+    public void alwaysOnScreen() {
+        JSONArray arrayName;
+        SharedPreferences preferences = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+
+        try {
+            arrayName = new JSONArray(preferences.getString("TaskName", null));
+        } catch (Exception e) {
+            arrayName = new JSONArray();
+        }
+
+        int numberOfTask = arrayName.length();
+
+
+        SharedPreferences prefs = getSharedPreferences("settings", Context.MODE_PRIVATE);
+
+        boolean a = prefs.getBoolean("active", true);
+
+        if (a == true && numberOfTask > 0) {
+            String nameForAlways = null;
+            if (numberOfTask == 1) {
+                nameForAlways = " active task";
+            } else if (numberOfTask > 1) {
+                nameForAlways = " active tasks";
+            }
+
+            ArrayList<String> listNamez = new ArrayList<String>();
+            for (int i = 0; i < arrayName.length(); i++){
+                try {
+                    listNamez.add(arrayName.getString(i));
+                } catch (Exception e) {
+                }
+            }
+
+            String childWithNames = listNamez.toString();
+
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.putExtra("fromNotification", true);
+            PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
+
+            Notification notification = new Notification.Builder(this)
+                    .setContentTitle(numberOfTask + nameForAlways)
+                    .setContentText(childWithNames.substring(1, childWithNames.length()-1))
+                    .setSmallIcon(R.drawable.ic_active_white)
+                    .setContentIntent(contentIntent).build();
+
+            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+            notification.flags |= Notification.FLAG_NO_CLEAR;
+            notificationManager.notify(0, notification);
+        } else {
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(0);
+        }
     }
 
     @Override

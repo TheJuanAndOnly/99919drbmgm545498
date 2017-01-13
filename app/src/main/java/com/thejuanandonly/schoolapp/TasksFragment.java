@@ -506,8 +506,7 @@ public class TasksFragment extends Fragment {
         listView.setAdapter(tasksListviewAdapter);
 
         ((MainActivity) getActivity()).setTasksCount();
-
-        alwaysOnScreen(getContext());
+        ((MainActivity) getActivity()).alwaysOnScreen();
 //
 //        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
 //        PendingIntent mAlarmSender = PendingIntent.getBroadcast(getContext(), 0, new Intent(getContext(), NotificationRecieverActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
@@ -728,60 +727,6 @@ public class TasksFragment extends Fragment {
         editor.putString("TaskWhat", arrayWhat.toString());
         editor.putString("TaskTime", arrayTime.toString());
         editor.apply();
-    }
-
-    public void alwaysOnScreen(Context context) {
-        JSONArray arrayName;
-        SharedPreferences preferences = context.getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
-
-        try {
-            arrayName = new JSONArray(preferences.getString("TaskName", null));
-        } catch (Exception e) {
-            arrayName = new JSONArray();
-        }
-
-        int numberOfTask = arrayName.length();
-
-
-        SharedPreferences prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
-
-        boolean a = prefs.getBoolean("active", true);
-
-        if (a == true && numberOfTask > 0) {
-            String nameForAlways = null;
-            if (numberOfTask == 1) {
-                nameForAlways = " active task";
-            } else if (numberOfTask > 1) {
-                nameForAlways = " active tasks";
-            }
-
-            ArrayList<String> listNamez = new ArrayList<String>();
-            for (int i = 0; i < arrayName.length(); i++){
-                try {
-                    listNamez.add(arrayName.getString(i));
-                } catch (Exception e) {
-                }
-            }
-
-            String childWithNames = listNamez.toString();
-
-            Intent intent = new Intent(context, MainActivity.class);
-            intent.putExtra("fromNotification", true);
-            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
-            Notification notification = new Notification.Builder(context)
-                    .setContentTitle(numberOfTask + nameForAlways)
-                    .setContentText(childWithNames.substring(1, childWithNames.length()-1))
-                    .setSmallIcon(R.drawable.ic_active_tasks)
-                    .setContentIntent(contentIntent).build();
-
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(context.NOTIFICATION_SERVICE);
-            notification.flags |= Notification.FLAG_NO_CLEAR;
-            notificationManager.notify(0, notification);
-        } else {
-            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            notificationManager.cancel(0);
-        }
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

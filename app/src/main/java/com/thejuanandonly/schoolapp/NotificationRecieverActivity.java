@@ -84,7 +84,6 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
             builder.setContentTitle(name);
             builder.setContentText(what);
-            builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.mipmap.ic_pls));
             builder.setSmallIcon(R.drawable.ic_event_available_white_24dp);
             builder.setContentIntent(contentIntent);
 
