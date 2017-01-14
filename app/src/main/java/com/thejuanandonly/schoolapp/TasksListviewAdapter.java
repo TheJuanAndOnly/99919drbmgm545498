@@ -141,7 +141,16 @@ public class TasksListviewAdapter extends BaseAdapter {
                 }
             });
         } else {
-            ibInfo.setBackgroundResource(R.drawable.ic_done_white_24dp);
+            ibInfo.setBackgroundResource(R.drawable.ic_done_task_remove);
+            ibInfo.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    FragmentManager fm = ((MainActivity) context).getSupportFragmentManager();
+                    TasksFragment fragment = (TasksFragment) fm.findFragmentById(R.id.containerView);
+                    fragment.removeTask(fragment.indexArray.get(position));
+                    fragment.updateTasks(false);
+                }
+            });
         }
 
 //        rlItem.setOnClickListener(new View.OnClickListener() {

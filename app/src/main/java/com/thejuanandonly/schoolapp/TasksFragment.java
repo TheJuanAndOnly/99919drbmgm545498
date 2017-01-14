@@ -63,6 +63,8 @@ public class TasksFragment extends Fragment {
     public ListView listView;
     private TasksListviewAdapter tasksListviewAdapter;
 
+    public ArrayList<Integer> indexArray;
+
     public EditText etName, etBody;
     private TextView tvTodo, tvDone;
     public Button btnTime, btnDate, btnSave;
@@ -421,6 +423,7 @@ public class TasksFragment extends Fragment {
 
     public void updateTasks(boolean todo) {
         ArrayList<String> listViewItems = new ArrayList<>();
+        indexArray = new ArrayList<>();
 
         JSONArray arrayName, arrayWhat, arrayTime;
         if (todo) {
@@ -466,6 +469,7 @@ public class TasksFragment extends Fragment {
 
         ArrayList<String> listItemsSorted = new ArrayList<>();
         ArrayList<Date> datez = new ArrayList<>();
+        ArrayList<Date> temp = new ArrayList<>(dates);
 
         int length = listViewItems.size();
         for (int a = 0; a < length; a++) {
@@ -481,6 +485,10 @@ public class TasksFragment extends Fragment {
 
             listViewItems.remove(earliest);
             dates.remove(earliest);
+        }
+
+        for (int a = 0; a < datez.size(); a++) {
+            indexArray.add(temp.indexOf(datez.get(a)));
         }
 
         long previousTime = 0;
@@ -667,9 +675,9 @@ public class TasksFragment extends Fragment {
         JSONArray arrayName, arrayWhat, arrayTime;
 
         try {
-            arrayName = new JSONArray(prefs.getString("TaskName", null));
-            arrayWhat = new JSONArray(prefs.getString("TaskWhat", null));
-            arrayTime = new JSONArray(prefs.getString("TaskTime", null));
+            arrayName = new JSONArray(prefs.getString("DoneTaskName", null));
+            arrayWhat = new JSONArray(prefs.getString("DoneTaskWhat", null));
+            arrayTime = new JSONArray(prefs.getString("DoneTaskTime", null));
         } catch (Exception e) {
             arrayName = new JSONArray();
             arrayWhat = new JSONArray();
@@ -701,9 +709,9 @@ public class TasksFragment extends Fragment {
             }
         }
 
-        editor.putString("TaskName", arrayName.toString());
-        editor.putString("TaskWhat", arrayWhat.toString());
-        editor.putString("TaskTime", arrayTime.toString());
+        editor.putString("DoneTaskName", arrayName.toString());
+        editor.putString("DoneTaskWhat", arrayWhat.toString());
+        editor.putString("DoneTaskTime", arrayTime.toString());
         editor.apply();
     }
 
