@@ -553,7 +553,6 @@ public class MainActivity extends AppCompatActivity {
                 lineChartView.show();
             }
         } catch (Exception e) {
-            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -44,6 +44,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 
 import org.json.JSONArray;
@@ -463,23 +464,22 @@ public class TasksFragment extends Fragment {
             listViewItems.add(item);
         }
 
+        ArrayList<String> listItemsSorted = new ArrayList<>();
         ArrayList<Date> datez = new ArrayList<>();
-        for (int a = 0; a < listViewItems.size(); a++) {
+
+        int length = listViewItems.size();
+        for (int a = 0; a < length; a++) {
             int earliest = 0;
             for (int b = 0; b < dates.size(); b++) {
                 if (dates.get(b).getTime() < dates.get(earliest).getTime()) {
                     earliest = b;
                 }
             }
-            listViewItems.add(a, listViewItems.get(earliest+a));
+
+            listItemsSorted.add(listViewItems.get(earliest));
             datez.add(dates.get(earliest));
 
-            if (a <= earliest) {
-                listViewItems.remove(earliest+1+a);
-            } else {
-                listViewItems.remove(earliest+a);
-            }
-
+            listViewItems.remove(earliest);
             dates.remove(earliest);
         }
 
@@ -493,13 +493,13 @@ public class TasksFragment extends Fragment {
             } else {
                 previousTime = loadedDate.getTime();
 
-                listViewItems.set(a, listViewItems.get(a)+"@new");
+                listItemsSorted.set(a, listItemsSorted.get(a)+"@new");
             }
         }
 
-        String[] forAdapter = new String[listViewItems.size()];
-        for (int a = 0; a < listViewItems.size(); a++) {
-            forAdapter[a] = listViewItems.get(a);
+        String[] forAdapter = new String[listItemsSorted.size()];
+        for (int a = 0; a < listItemsSorted.size(); a++) {
+            forAdapter[a] = listItemsSorted.get(a);
         }
 
         tasksListviewAdapter = new TasksListviewAdapter(getContext(), forAdapter, todo);
@@ -507,29 +507,7 @@ public class TasksFragment extends Fragment {
 
         ((MainActivity) getActivity()).setTasksCount();
         ((MainActivity) getActivity()).alwaysOnScreen();
-//
-//        AlarmManager alarmManager = (AlarmManager) getActivity().getSystemService(ALARM_SERVICE);
-//        PendingIntent mAlarmSender = PendingIntent.getBroadcast(getContext(), 0, new Intent(getContext(), NotificationRecieverActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-//        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
     }
-
-    Dialog dialog;
-
-//    private void startTransition(View view, Element element) {
-//        Intent i = new Intent(getContext(), dialog.getClass());
-//        i.putExtra("ITEM_ID", element.getId());
-//
-//        Pair<View, String>[] transitionPairs = new Pair[4];
-//        transitionPairs[0] = Pair.create(getView().findViewById(R.id.toolbar), "toolbar"); // Transition the Toolbar
-//        transitionPairs[1] = Pair.create(view, "content_area"); // Transition the content_area (This will be the content area on the detail screen)
-//
-//        // We also want to transition the status and navigation bar barckground. Otherwise they will flicker
-//        transitionPairs[2] = Pair.create(getView().findViewById(android.R.id.statusBarBackground), Window.STATUS_BAR_BACKGROUND_TRANSITION_NAME);
-//        transitionPairs[3] = Pair.create(getView().findViewById(android.R.id.navigationBarBackground), Window.NAVIGATION_BAR_BACKGROUND_TRANSITION_NAME);
-//        Bundle b = ActivityOptionsCompat.makeSceneTransitionAnimation(dialog.getOwnerActivity(), transitionPairs).toBundle();
-//
-//        ActivityCompat.startActivity(dialog.getOwnerActivity(), i, b);
-//    }
 
     public void addTask(boolean edit, int position) {
         SharedPreferences prefs = getActivity().getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
