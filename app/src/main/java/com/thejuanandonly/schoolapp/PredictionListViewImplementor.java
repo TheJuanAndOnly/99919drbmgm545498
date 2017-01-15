@@ -2,6 +2,7 @@ package com.thejuanandonly.schoolapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.test.mock.MockContext;
 import android.util.Log;
 import android.util.Pair;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,14 +32,14 @@ class PredictionListViewImplementor implements Runnable {
     private SubjectData subjectData;
     private ListView listView;
 
-    private ProgressBar progress;
+    private TextView progress;
 
     PredictionListViewImplementor(Context context, SubjectData subjectData, ListView listView) {
         this.context = context;
         this.subjectData = subjectData;
         this.listView = listView;
 
-        progress = (ProgressBar) ((Activity) context).findViewById(R.id.prediction_loading);
+        progress = (TextView) ((Activity) context).findViewById(R.id.prediction_loading);
     }
 
     @Override
@@ -78,6 +80,8 @@ class PredictionListViewImplementor implements Runnable {
         if (result == null) {
             return;
         }
+
+        Log.d(TAG, result.first.toString() + "\n" + result.second.toString());
 
         setAdapter(result.first, result.second);
     }
@@ -163,6 +167,7 @@ class PredictionListViewImplementor implements Runnable {
     private List<List<String>> contract(List<List<String>> prediction){
 
         List<List<String>> result = new ArrayList<>();
+
         result.add(new ArrayList<>(prediction.get(0)));
 
         for (int i = 1, predictionSize = prediction.size(); i < predictionSize; i++) {
@@ -185,7 +190,7 @@ class PredictionListViewImplementor implements Runnable {
         return result;
     }
 
-    Pair<List<String>, List<List<List<String>>>> regularDisplay(List<List<String>> gradesInCategories){
+    private Pair<List<String>, List<List<List<String>>>> regularDisplay(List<List<String>> gradesInCategories){
         List<String> gradesToAdapter;
         List<String> gradesToPredict;
         switch (subjectData.getGradeType()){
@@ -262,8 +267,6 @@ class PredictionListViewImplementor implements Runnable {
 
                 double avgAfter = countAverage(gradesInCategories);
 
-                Log.d(TAG, gradesToBeAdded.get(j) + "\n" + avgAfter);
-
                 for (int k = 0; k < gradesToBeAdded.get(j).size(); k++){
                     gradesInCategories.get(i).remove(gradesInCategories.get(i).size() - 1);
                 }
@@ -285,15 +288,14 @@ class PredictionListViewImplementor implements Runnable {
 
             for (int catIndex = 0; catIndex < prediction.get(gradeIndex).size(); catIndex++){
 
+                if (prediction.get(gradeIndex).get(catIndex).size() == 0){
+                    continue;
+                }
+
                 List<List<String>> contractedGrades = new ArrayList<>(contract(prediction.get(gradeIndex).get(catIndex)));
 
                 for (int optionIndex = 0, contractedGradesSize = contractedGrades.size(); optionIndex < contractedGradesSize; optionIndex++) {
                     output.get(gradeIndex).add(new ArrayList<String>());
-
-                    if (prediction.get(gradeIndex).get(catIndex).size() == 0){
-                        output.get(gradeIndex).set(0, Arrays.asList("", "", "There's no way", ""));
-                        break;
-                    }
 
                     if (catIndex == 0) {
                         output.get(gradeIndex).get(catIndex + optionIndex).add(context.getString(R.string.get));
@@ -344,6 +346,14 @@ class PredictionListViewImplementor implements Runnable {
 
                 }
             }
+
+            if (output.get(gradeIndex).isEmpty()){
+                try{
+                    output.get(gradeIndex).set(0, Arrays.asList(" ", " ", "There's no way", " "));
+                }catch (IndexOutOfBoundsException e){
+                    output.get(gradeIndex).add(Arrays.asList(" ", " ", "There's no way", " "));
+                }
+            }
         }
 
 
@@ -355,7 +365,7 @@ class PredictionListViewImplementor implements Runnable {
         return new Pair<>(gradesToAdapter, output);
     }
 
-    Pair<List<String>, List<List<List<String>>>> compactDisplay(List<List<String>> gradesInCategories){
+    private Pair<List<String>, List<List<List<String>>>> compactDisplay(List<List<String>> gradesInCategories){
         List<List<String>> ranges = new ArrayList<>(5);
 
         int min = 0;
@@ -456,7 +466,7 @@ class PredictionListViewImplementor implements Runnable {
                 output.get(gradeIndex).add(new ArrayList<String>());
 
                 if (ranges.get(gradeIndex).get(catIndex).isEmpty()){
-                    output.get(gradeIndex).set(0, Arrays.asList("", "", "There's no way", ""));
+                    output.get(gradeIndex).set(0, Arrays.asList(" ", " ", "There's no way", " "));
                     break;
                 }
 
@@ -492,7 +502,7 @@ class PredictionListViewImplementor implements Runnable {
 
             case SubjectData.PERCENTAGE:
                 for (int i = 0; i < subjectData.getPercentageConversion().size(); i++){
-                    if (index >= subjectData.getPercentageConversion().get(i)) {
+                    if ((int) Math.round(index) >= subjectData.getPercentageConversion().get(i)) {
                         return i + 1;
                     }
                 }
@@ -574,8 +584,9 @@ class PredictionListViewImplementor implements Runnable {
             this.output = output;
         }
 
+        @NonNull
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.prediction_listview, parent, false);
             }
@@ -592,6 +603,8 @@ class PredictionListViewImplementor implements Runnable {
 
             LayoutInflater inflater = LayoutInflater.from(getContext());
             layout.removeAllViews();
+
+            Log.d(TAG, output.toString());
 
             for (int i = 0; i < output.get(position).size(); i++){
 

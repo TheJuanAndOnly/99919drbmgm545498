@@ -280,14 +280,16 @@
                 android:id="@+id/prediction_big_layout"
                 android:visibility="visible">
 
-                <ProgressBar
+                <TextView
                     android:id="@+id/prediction_loading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:indeterminate="true"
+                    android:text="@string/loading"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
-                    android:visibility="gone"/>
+                    android:visibility="gone"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"/>
 
                 <ListView
                     android:layout_width="match_parent"

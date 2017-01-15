@@ -101,14 +101,15 @@ public class SubjectData {
                     .getSharedPreferences("Global", Context.MODE_PRIVATE)
                     .getString("conversion", null));
 
-            this.percentageConversion = new ArrayList<>(4);
+            this.percentageConversion = new ArrayList<>(5);
 
             for (int i = 0; i < percentageConversion.length(); i++){
                 this.percentageConversion.add(percentageConversion.getInt(i));
             }
+            this.percentageConversion.add(0);
 
         } catch (Exception e) {
-            this.percentageConversion = new ArrayList<>(Arrays.asList(90, 75, 50, 30));
+            this.percentageConversion = new ArrayList<>(Arrays.asList(90, 75, 50, 30, 0));
         }
 
         Log.d(TAG, this.toString());
