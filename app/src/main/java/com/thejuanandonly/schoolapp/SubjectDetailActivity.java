@@ -727,6 +727,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         int gradeType = subjectData.getGradeType();
         switch (gradeType){
             case SubjectData.PERCENTAGE:
+                if (chars.length == 0) break;
 
                 int percentage = 0;
                 for (char aChar1 : chars) {
