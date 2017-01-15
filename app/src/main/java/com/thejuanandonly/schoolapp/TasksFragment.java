@@ -156,6 +156,20 @@ public class TasksFragment extends Fragment {
             }
         });
 
+        tvTodo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (switchCurrent.isChecked()) switchCurrent.performClick();
+            }
+        });
+
+        tvDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!switchCurrent.isChecked()) switchCurrent.performClick();
+            }
+        });
+
         rlTime = (RelativeLayout) head.findViewById(R.id.rl_time);
 
         rlSwitch = (RelativeLayout) head.findViewById(R.id.rl_switch);
@@ -304,7 +318,6 @@ public class TasksFragment extends Fragment {
             etBody.setVisibility(View.VISIBLE);
             rlTime.setVisibility(View.VISIBLE);
             btnSave.setVisibility(View.VISIBLE);
-
         } else {
             etName.setOnTouchListener(new View.OnTouchListener() {
                 @Override
@@ -350,6 +363,7 @@ public class TasksFragment extends Fragment {
             etName.setHint("Add new task");
             rlSwitch.setVisibility(View.VISIBLE);
 
+            switchCurrent.setChecked(false);
         }
     }
 

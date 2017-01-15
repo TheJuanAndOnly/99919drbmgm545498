@@ -964,14 +964,22 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        SharedPreferences prefsToDo = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
-        int numberOfTasks = prefsToDo.getInt("NumberOfTask", 0);
+        SharedPreferences prefsTasks = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+        JSONArray arrayName, arrayNameDone;
+        try {
+            arrayName = new JSONArray(prefsTasks.getString("TaskName", null));
+            arrayNameDone = new JSONArray(prefsTasks.getString("DoneTaskName", null));
+        } catch (Exception e) {
+            arrayName = new JSONArray();
+            arrayNameDone = new JSONArray();
+        }
+
+        int numberOfTasks = arrayName.length();
+        int numberOfDoneTask = arrayNameDone.length();
 
         points += numberOfTasks * array[6];
         Log.d("debug", String.valueOf(numberOfTasks * array[6]));
 
-        SharedPreferences prefsDone = getSharedPreferences("ListOfDoneTasks", Context.MODE_PRIVATE);
-        int numberOfDoneTask = prefsDone.getInt("NumberOfDoneTask", 0);
 
         points += numberOfDoneTask * array[7];
         Log.d("debug", String.valueOf(numberOfDoneTask * array[7]));
