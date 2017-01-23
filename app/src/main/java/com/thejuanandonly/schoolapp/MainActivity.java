@@ -557,81 +557,89 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String[] getLabels() {
-        String[] labels;
-
-        SharedPreferences prefs = getSharedPreferences("navChart", MODE_PRIVATE);
-        JSONArray jsonArray;
         try {
-            jsonArray = new JSONArray(prefs.getString("labels", null));
-        } catch (Exception e) {
-            jsonArray = new JSONArray();
-        }
+            String[] labels;
 
-        labels = new String[jsonArray.length() + 1];
-
-        for (int a = 0; a < jsonArray.length(); a++) {
+            SharedPreferences prefs = getSharedPreferences("navChart", MODE_PRIVATE);
+            JSONArray jsonArray;
             try {
-                labels[a] = jsonArray.getString(a);
+                jsonArray = new JSONArray(prefs.getString("labels", null));
             } catch (Exception e) {
+                jsonArray = new JSONArray();
             }
-        }
 
-        long actual;
-        if (setOverall().length() > 0) {
-            actual = System.currentTimeMillis();
-        } else {
+            labels = new String[jsonArray.length() + 1];
+
+            for (int a = 0; a < jsonArray.length(); a++) {
+                try {
+                    labels[a] = jsonArray.getString(a);
+                } catch (Exception e) {
+                }
+            }
+
+            long actual;
+            if (setOverall().length() > 0) {
+                actual = System.currentTimeMillis();
+            } else {
+                return labels;
+            }
+
+            labels[labels.length - 1] = actual + "";
+            jsonArray.put(actual);
+
+            prefs.edit().putString("labels", jsonArray.toString()).apply();
+
+            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM. yyyy");
+            Calendar calendar = Calendar.getInstance();
+
+            for (int a = 0; a < labels.length; a++) {
+                calendar.setTimeInMillis(Long.parseLong(labels[a]));
+                labels[a] = formatter.format(calendar.getTime());
+            }
+
             return labels;
+        } catch (Exception e) {
+            return null;
         }
-
-        labels[labels.length - 1] = actual + "";
-        jsonArray.put(actual);
-
-        prefs.edit().putString("labels", jsonArray.toString()).apply();
-
-        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM. yyyy");
-        Calendar calendar = Calendar.getInstance();
-
-        for (int a = 0; a < labels.length; a++) {
-            calendar.setTimeInMillis(Long.parseLong(labels[a]));
-            labels[a] = formatter.format(calendar.getTime());
-        }
-
-        return labels;
     }
 
     private float[] getValues() {
-        float[] values;
-
-        SharedPreferences prefs = getSharedPreferences("navChart", MODE_PRIVATE);
-        JSONArray jsonArray;
         try {
-            jsonArray = new JSONArray(prefs.getString("values", null));
-        } catch (Exception e) {
-            jsonArray = new JSONArray();
-        }
+            float[] values;
 
-        values = new float[jsonArray.length() + 1];
-
-        for (int a = 0; a < jsonArray.length(); a++) {
+            SharedPreferences prefs = getSharedPreferences("navChart", MODE_PRIVATE);
+            JSONArray jsonArray;
             try {
-                values[a] = Float.parseFloat(jsonArray.getString(a));
+                jsonArray = new JSONArray(prefs.getString("values", null));
             } catch (Exception e) {
+                jsonArray = new JSONArray();
             }
-        }
 
-        float actual;
-        try {
-            actual = 6 - Float.parseFloat(setOverall().substring(9, setOverall().length()));
-        } catch (Exception e) {
+            values = new float[jsonArray.length() + 1];
+
+            for (int a = 0; a < jsonArray.length(); a++) {
+                try {
+                    values[a] = Float.parseFloat(jsonArray.getString(a));
+                } catch (Exception e) {
+                }
+            }
+
+            float actual;
+            try {
+                actual = 6 - Float.parseFloat(setOverall().substring(9, setOverall().length()));
+            } catch (Exception e) {
+                return values;
+            }
+
+            values[values.length - 1] = actual;
+            jsonArray.put(actual + "");
+
+            prefs.edit().putString("values", jsonArray.toString()).apply();
+
             return values;
+        } catch (Exception e) {
+            return null;
         }
-
-        values[values.length - 1] = actual;
-        jsonArray.put(actual + "");
-
-        prefs.edit().putString("values", jsonArray.toString()).apply();
-
-        return values;
     }
 
     public void alwaysOnScreen() {
