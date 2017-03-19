@@ -11,8 +11,11 @@ import android.graphics.drawable.ShapeDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.util.Log;
 import android.util.Pair;
@@ -85,16 +88,12 @@ public class SubjectDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-        TextView firstLetter = (TextView) findViewById(R.id.firstLetterTv);
-        firstLetter.setText(String.valueOf(subjectData.getSubject().charAt(0)));
-
-        findViewById(R.id.subjectDetail_header).bringToFront();
-
         //TextView subjectName = (TextView) findViewById(R.id.subjectTv);
         //subjectName.setText(subjectData.getSubject());
 
         setAvgTv();
+
+        Toast.makeText(this, String.valueOf(getGulickaPercentage()), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -102,18 +101,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
         super.onStart();
 
         setListView();
-
-        initEasterEgg();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        GradientDrawable background = (GradientDrawable) findViewById(R.id.firstLetterTv).getBackground();
-        background.setColor(getResources().getColor(R.color.subjectDetailAccent));
-
-        findViewById(R.id.firstLetterTv).setBackground(background);
     }
 
     @Override
@@ -155,6 +142,22 @@ public class SubjectDetailActivity extends AppCompatActivity {
         }else {
             ttwLayout.setVisibility(View.GONE);
             subjectData.setTestsToWrite(1);
+        }
+    }
+
+    public float getGulickaPercentage(){
+        switch (subjectData.getGradeType()){
+            case SubjectData.PERCENTAGE:
+                return Float.parseFloat(subjectData.getAverage()) / ((float) 100);
+
+            case SubjectData.ALPHABETIC:
+                return Float.parseFloat(subjectData.getAverage()) / ((float) 4.33);
+
+            case SubjectData.TEN_GRADE:
+                return ((float) 10 - Float.parseFloat(subjectData.getAverage())) / ((float) 9);
+
+            default:
+                return ((float) 5 - Float.parseFloat(subjectData.getAverage())) / ((float) 4);
         }
     }
 
@@ -277,14 +280,21 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
                     if (arrayOfGrades.size() == 0){
                         isEmptyCategory = true;
-                    } else if (arrayOfGrades.size() == 0 && percentage != 0) {
+                    }
+                    if (arrayOfGrades.size() == 0 && percentage != 0) {
                         isNonZeroCategory = true;
-                    } else if (arrayOfGrades.size() != 0 && percentage == 0) {
+                    }
+                    if (arrayOfGrades.size() != 0 && percentage == 0) {
                         isIgnoredCategory = true;
                     }
                 }
 
-                if (subjectData.isUsePercentages() && count != 100 && count != 0) {
+                if (!subjectData.isUsePercentages() && isEmptyCategory) {
+                    isError = true;
+
+                    Toast.makeText(this, R.string.empty_cat, Toast.LENGTH_LONG).show();
+
+                } else if (subjectData.isUsePercentages() && count != 100 && count != 0) {
                     isError = true;
 
                     final Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.weight_must_be_100, Snackbar.LENGTH_INDEFINITE);
@@ -298,11 +308,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
                             snackbar.dismiss();
                         }
                     });
-
-                } else if (!subjectData.isUsePercentages() && isEmptyCategory) {
-                    isError = true;
-
-                    Toast.makeText(this, R.string.empty_cat, Toast.LENGTH_LONG).show();
 
                 } else if (subjectData.isUsePercentages() && isNonZeroCategory) {
                     isError = true;
@@ -1310,72 +1315,54 @@ public class SubjectDetailActivity extends AppCompatActivity {
     }
 
     public void setPredictionListView(){
+        /*final RecyclerView gradeToGetRecycler = (RecyclerView) findViewById(R.id.grade_to_get_recycler);
+        gradeToGetRecycler.setHasFixedSize(true);
+
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        gradeToGetRecycler.setLayoutManager(layoutManager);*/
+
         final ListView listView = (ListView) findViewById(R.id.predictionListView);
 
         if (predictionThread != null && predictionThread.isAlive()) {
             predictionThread.interrupt();
         }
-        predictionThread = new Thread(new PredictionListViewImplementor(this, subjectData, listView));
+        final PredictionListViewImplementor predictionListViewImplementor = new PredictionListViewImplementor(this, subjectData, listView);
+        predictionThread = new Thread(predictionListViewImplementor);
         predictionThread.start();
-    }
 
-    public void initEasterEgg(){
+        LinearLayout gradeToGetLayout = (LinearLayout) findViewById(R.id.grade_to_get_layout);
+        gradeToGetLayout.removeAllViews();
 
-        final View firstLetterTv = findViewById(R.id.firstLetterTv);
+        for (int i = 0; i < (subjectData.getGradeType() == SubjectData.TEN_GRADE ? 10 : 5); i++){
+            final int gradeToGet = i;
 
-        final View parent = (View) firstLetterTv.getParent();  // button: the view you want to enlarge hit area
-        parent.post( new Runnable() {
-            public void run() {
-                final Rect rect = new Rect();
-                firstLetterTv.getHitRect(rect);
-                rect.top -= 50;    // increase top hit area
-                rect.left -= 50;   // increase left hit area
-                rect.bottom += 50; // increase bottom hit area
-                rect.right += 50;  // increase right hit area
-                parent.setTouchDelegate(new TouchDelegate(rect, firstLetterTv));
-            }
-        });
+            View child = View.inflate(this, R.layout.grade_to_get_item, null);
+            ((TextView) child.findViewById(R.id.grade_to_get_text_view)).setText(String.valueOf(i+1));
 
-        final int[] sexyColors = new int[]{
-                getResources().getColor(R.color.sexyBlue),
-                getResources().getColor(R.color.sexyGreen),
-                getResources().getColor(R.color.sexyOrange),
-                getResources().getColor(R.color.sexyPurple),
-                getResources().getColor(R.color.sexyRed),
-                getResources().getColor(R.color.sexyTurqiousee),
-        };
+            child.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            while (true) {
+                                try {
+                                    if (predictionListViewImplementor.isDoneLoading()){
+                                        predictionListViewImplementor.display(gradeToGet);
+                                        break;
+                                    }
 
-        findViewById(R.id.firstLetterTv).setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(final View view) {
-                new CountDownTimer(3000, 75){
-                    @Override
-                    public void onTick(long l) {
-                        int randomColor;
-                        try {
-                            randomColor = sexyColors[(int) Math.floor((Math.random() * sexyColors.length) - 0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001) ];
-                        } catch (IndexOutOfBoundsException e){ return; }
+                                    Thread.sleep(500);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }).start();
+                }
+            });
 
-                        GradientDrawable background = (GradientDrawable) view.getBackground();
-                        background.setColor(randomColor);
-
-                        view.setBackground(background);
-                    }
-
-                    @Override
-                    public void onFinish() {
-                        GradientDrawable background = (GradientDrawable) view.getBackground();
-                        background.setColor(getResources().getColor(R.color.subjectDetailAccent));
-
-                        view.setBackground(background);
-                    }
-                }.start();
-                return true;
-            }
-        });
-    }
-
-    public void onFirstLetterClick(View view) {
-        Toast.makeText(this, subjectData.getSubject(), Toast.LENGTH_SHORT).show();
+            gradeToGetLayout.addView(child);
+        }
     }
 }

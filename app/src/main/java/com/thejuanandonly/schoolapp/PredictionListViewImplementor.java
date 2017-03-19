@@ -2,8 +2,6 @@ package com.thejuanandonly.schoolapp;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.annotation.NonNull;
-import android.test.mock.MockContext;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -15,9 +13,11 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,6 +27,9 @@ import java.util.List;
 class PredictionListViewImplementor implements Runnable {
 
     private static final String TAG = "GD PredictionListView";
+    private List<List<List<String>>> prediction;
+    private boolean isDoneLoading;
+    private PredictionAdapter predictionAdapter;
 
     private Context context;
     private SubjectData subjectData;
@@ -42,9 +45,38 @@ class PredictionListViewImplementor implements Runnable {
         progress = (TextView) ((Activity) context).findViewById(R.id.prediction_loading);
     }
 
+    public boolean isDoneLoading() {
+        return isDoneLoading;
+    }
+
+    public void display(final int index){
+
+        List<String> strings = new ArrayList<>(prediction.get(index).size());
+        for (int i = 0; i < prediction.get(index).size(); i++) {
+            strings.add("");
+        }
+
+        ((Activity) context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                listView.setVisibility(View.VISIBLE);
+            }
+        });
+
+        setAdapter(strings, prediction.get(index));
+    }
+
     @Override
     public void run() {
+        isDoneLoading = false;
         showLoading();
+
+        ((Activity) context).runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                listView.setVisibility(View.GONE);
+            }
+        });
 
         final List<List<String>> gradesInCategories;
 
@@ -81,9 +113,11 @@ class PredictionListViewImplementor implements Runnable {
             return;
         }
 
-        Log.d(TAG, result.first.toString() + "\n" + result.second.toString());
+        prediction = result.second;
 
-        setAdapter(result.first, result.second);
+        display(0);
+
+        isDoneLoading = true;
     }
 
     private double countAverage(List<List<String>> gradesInCategories) {
@@ -282,13 +316,28 @@ class PredictionListViewImplementor implements Runnable {
             }
         }
 
+        String log = "";
+        for (int i = 0; i < prediction.size(); i++){
+            log += "1:" + "\n        ";
+            for (int j = 0; j < prediction.get(i).size(); j++){
+                log += "2:" + "\n                ";
+                for (int k = 0; k < prediction.get(i).get(j).size(); k++){
+                    log += "3:";
+                    for (int l = 0; l < prediction.get(i).get(j).get(k).size(); l++){
+                        log += "[" + prediction.get(i).get(j).get(k).get(l) + "]";
+                    }
+                }
+            }
+        }
+        Log.d(TAG, log);
+
         //saving into the array passed to adapter
         for (int gradeIndex = 0; gradeIndex < prediction.size(); gradeIndex++){
             output.add(new ArrayList<List<String>>());
 
             for (int catIndex = 0; catIndex < prediction.get(gradeIndex).size(); catIndex++){
-
                 if (prediction.get(gradeIndex).get(catIndex).size() == 0){
+                    output.get(gradeIndex).add(new ArrayList<String>());
                     continue;
                 }
 
@@ -297,7 +346,7 @@ class PredictionListViewImplementor implements Runnable {
                 for (int optionIndex = 0, contractedGradesSize = contractedGrades.size(); optionIndex < contractedGradesSize; optionIndex++) {
                     output.get(gradeIndex).add(new ArrayList<String>());
 
-                    if (catIndex == 0) {
+                    if (optionIndex == 0) {
                         output.get(gradeIndex).get(catIndex + optionIndex).add(context.getString(R.string.get));
                     }
                     else {
@@ -347,15 +396,15 @@ class PredictionListViewImplementor implements Runnable {
                 }
             }
 
-            if (output.get(gradeIndex).isEmpty()){
-                try{
-                    output.get(gradeIndex).set(0, Arrays.asList(" ", " ", "There's no way", " "));
-                }catch (IndexOutOfBoundsException e){
-                    output.get(gradeIndex).add(Arrays.asList(" ", " ", "There's no way", " "));
+            for (int catIndex = 0; catIndex < output.get(gradeIndex).size(); catIndex++){
+                if (output.get(gradeIndex).isEmpty()){
+                    output.get(gradeIndex).remove(catIndex);
                 }
             }
+            if (output.get(gradeIndex).isEmpty()){
+                output.get(gradeIndex).add(Arrays.asList("", "", "There's no way!", ""));
+            }
         }
-
 
         if (Thread.interrupted()){
             Log.i(TAG, "Thread interrupted");
@@ -516,18 +565,31 @@ class PredictionListViewImplementor implements Runnable {
         }
     }
 
-    private void setAdapter(final List<String> gradesToAdapter, final List<List<List<String>>> prediction){
+    private void setAdapter(final List<String> gradesToAdapter, final List<List<String>> prediction){
 
-        final PredictionAdapter predictionAdapter = new PredictionAdapter(context, gradesToAdapter, prediction);
+        if (predictionAdapter == null){
+            predictionAdapter = new PredictionAdapter(context, gradesToAdapter, prediction);
 
-        ((Activity) context).runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                listView.setAdapter(predictionAdapter);
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    listView.setAdapter(predictionAdapter);
 
-                setTotalHeightOfListView(listView);
-            }
-        });
+                    setTotalHeightOfListView(listView);
+                }
+            });
+        }
+        else {
+            ((Activity) context).runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    predictionAdapter.clear();
+                    predictionAdapter.addAll(gradesToAdapter, prediction);
+
+                    predictionAdapter.notifyDataSetChanged();
+                }
+            });
+        }
     }
 
     private void showLoading(){
@@ -574,60 +636,48 @@ class PredictionListViewImplementor implements Runnable {
 
     private class PredictionAdapter extends ArrayAdapter<String> {
 
-        private List<String> resources;
-        private List<List<List<String>>> output;
+        private List<List<String>> output;
 
-        PredictionAdapter(Context context, List<String> resource, List<List<List<String>>> output) {
+        PredictionAdapter(Context context, List<String> resource, List<List<String>> output) {
             super(context, 0, resource);
 
-            this.resources = resource;
             this.output = output;
         }
 
-        @NonNull
         @Override
-        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+        public View getView(int position, View convertView, ViewGroup parent) {
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.prediction_listview, parent, false);
             }
 
-            ((TextView) convertView.findViewById(R.id.grade_text_view)).setText(resources.get(position));
+            TextView getOrTv = (TextView) convertView.findViewById(R.id.getOr_text_view);
+            TextView gradeToGetTv = (TextView) convertView.findViewById(R.id.grade_to_get_text_view);
+            TextView fromTv = (TextView) convertView.findViewById(R.id.from_text_view);
+            TextView gradeCategoryTv = (TextView) convertView.findViewById(R.id.grade_category_text_view);
 
-            if (subjectData.getGradeType() == SubjectData.PERCENTAGE){
-                convertView.findViewById(R.id.grade_plus_text_view).setVisibility(View.VISIBLE);
-            } else {
-                convertView.findViewById(R.id.grade_plus_text_view).setVisibility(View.GONE);
-            }
+            List<String> strings = output.get(position);
 
-            LinearLayout layout = (LinearLayout) convertView.findViewById(R.id.Linear1);
-
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-            layout.removeAllViews();
-
-            Log.d(TAG, output.toString());
-
-            for (int i = 0; i < output.get(position).size(); i++){
-
-                View child = inflater.inflate(R.layout.prediction_lv_item, null);
-                layout.addView(child);
-
-                TextView getOrTv = (TextView) child.findViewById(R.id.getOr_text_view);
-                TextView gradeToGetTv = (TextView) child.findViewById(R.id.grade_to_get_text_view);
-                TextView fromTv = (TextView) child.findViewById(R.id.from_text_view);
-                TextView gradeCategoryTv = (TextView) child.findViewById(R.id.grade_category_text_view);
-
-
-                List<String> strings = output.get(position).get(i);
-
+            try {
                 getOrTv.setText(strings.get(0));
                 gradeToGetTv.setText(strings.get(1));
                 fromTv.setText(strings.get(2));
                 gradeCategoryTv.setText(strings.get(3));
+            } catch (IndexOutOfBoundsException e){
+                getOrTv.setText(R.string.theres_no_way);
+                gradeToGetTv.setText("");
+                fromTv.setText("");
+                gradeCategoryTv.setText("");
             }
 
             hideLoading();
 
             return convertView;
+        }
+
+        public void addAll(List<String> resource, List<List<String>> output){
+            super.addAll(resource);
+
+            this.output = output;
         }
     }
 }

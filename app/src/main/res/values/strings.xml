@@ -29,6 +29,7 @@
     <string name="non_zero_cat">In order for all empty categories to be ignored, set their values to 0</string>
     <string name="ignored_cat">Some categories containing grades are ignored. Set their values</string>
     <string name="loading">Loading</string>
+    <string name="theres_no_way">There\'s no way!</string>
 
     <string-array name="quotes">
 

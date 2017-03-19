@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="0dp"
+    android:layout_height="50dp"
+    android:gravity="center"
+    android:padding="4dp"
+    android:layout_weight="1">
+
+    <TextView
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/circle_blue"
+        android:text="1"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:id="@+id/grade_to_get_text_view" />
+
+</LinearLayout>

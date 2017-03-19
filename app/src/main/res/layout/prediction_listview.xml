@@ -3,69 +3,67 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/subjectDetailItem"
+    android:background="@color/transparent"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:paddingTop="8dp"
     android:paddingBottom="8dp"
     android:elevation="2dp">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tvlayout"
-        android:visibility="visible">
-
         <TextView
             android:layout_width="wrap_content"
-            android:minWidth="20dp"
+            android:minWidth="29.5dp"
             android:layout_height="wrap_content"
-            android:id="@+id/grade_text_view"
+            android:id="@+id/getOr_text_view"
             android:textAppearance="?android:attr/textAppearanceListItemSmall"
-            android:text="10"
-            android:gravity="end"
-            android:background="@android:color/transparent"
-            android:minHeight="5dp"
-            android:textStyle="bold"
-            android:textColor="@color/greyText"
-            android:textSize="16sp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/grade_plus_text_view"
-            android:textAppearance="?android:attr/textAppearanceListItemSmall"
-            android:paddingRight="4dp"
-            android:text="+"
-            android:background="@android:color/transparent"
-            android:minHeight="5dp"
-            android:textStyle="bold"
-            android:textColor="@color/greyText"
-            android:textSize="16sp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/dash_text_view"
-            android:textAppearance="?android:attr/textAppearanceListItemSmall"
-            android:paddingRight="4dp"
             android:paddingLeft="4dp"
-            android:text=" - "
+            android:paddingRight="2dp"
+            android:gravity="right"
+            android:text="@string/get"
             android:background="@android:color/transparent"
             android:minHeight="5dp"
             android:textColor="@color/greyText"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/grade_to_get_text_view"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:paddingRight="2dp"
+            android:paddingLeft="2dp"
+            android:text="0"
+            android:background="@android:color/transparent"
+            android:minHeight="5dp"
+            android:textStyle="bold"
+            android:textColor="@color/greyText"
             android:textSize="16sp"/>
 
-    </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/from_text_view"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:paddingRight="2dp"
+            android:paddingLeft="2dp"
+            android:text="@string/from"
+            android:background="@android:color/transparent"
+            android:minHeight="5dp"
+            android:textColor="@color/greyText"
+            android:textSize="14sp"/>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/Linear1"
-        android:orientation="vertical">
-
-        <!-- sem sa pridavaju z javy itemy -->
-
-    </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/grade_category_text_view"
+            android:textAppearance="?android:attr/textAppearanceListItemSmall"
+            android:paddingRight="2dp"
+            android:paddingLeft="2dp"
+            android:text="Cat"
+            android:background="@android:color/transparent"
+            android:minHeight="5dp"
+            android:textStyle="italic"
+            android:textColor="@color/greyText"
+            android:textSize="14sp"/>
 
 </LinearLayout>
