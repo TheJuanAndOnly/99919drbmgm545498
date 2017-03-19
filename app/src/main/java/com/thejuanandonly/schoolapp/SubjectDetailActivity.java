@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -64,6 +65,9 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
     private static final String TAG = "GradeDay SubjectDetail";
 
+    //WaveProgress
+    WaveView waveProgress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +79,13 @@ public class SubjectDetailActivity extends AppCompatActivity {
         subjectData.setSubject(getIntent().getExtras().getString("subject", ""));
 
         Log.d(TAG, subjectData.toString());
+
+        //WaveProgress initialization
+        waveProgress = (WaveView) findViewById(R.id.waveProgress);
+        waveProgress.setBackgroundColor(getResources().getColor(R.color.subjectDetailItem));
+        waveProgress.setMaxProgress(100);
+        waveProgress.setProgress((int)(100 * getGulickaPercentage()));
+
 
         Window window = this.getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -119,6 +130,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
     public void setAvgTv(){
 
         subjectData.setAverage(String.valueOf(countAverage()));
+        waveProgress.setProgress((int)(100 * getGulickaPercentage()));
+        Toast.makeText(this, "progress " + (int)(100 * getGulickaPercentage()), Toast.LENGTH_SHORT).show();
 
         TextView averageTV = (TextView) findViewById(R.id.averageTextView);
         String avg = subjectData.getAverage();
@@ -127,9 +140,9 @@ public class SubjectDetailActivity extends AppCompatActivity {
             avg = avg.substring(0, 6);
         }
         if (subjectData.getGradeType() == 2){
-            averageTV.setText("GPA: " + avg);
+            averageTV.setText("GPA\n" + avg);
         }else {
-            averageTV.setText("Average: " + avg);
+            averageTV.setText("Average\n" + avg);
         }
 
         TextView textView = (TextView) findViewById(R.id.testsToWriteEditText);
@@ -304,8 +317,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
                         public void onClick(View v) {
 
                             settingsDialog();
-
                             snackbar.dismiss();
+
                         }
                     });
 

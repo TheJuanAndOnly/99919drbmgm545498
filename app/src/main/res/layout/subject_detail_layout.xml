@@ -35,21 +35,39 @@
             android:textSize="24sp"/>
 
         <!-- TODO: gulicka -->
-        <View
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:background="@drawable/circle_red"
-            android:layout_marginTop="12dp"/>
+        <FrameLayout
+            android:layout_width="150dp"
+            android:layout_marginTop="10dp"
+            android:layout_height="150dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            <com.thejuanandonly.schoolapp.WaveView
+                android:id="@+id/waveProgress"
+                android:background="@color/subjectDetailItem"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-            android:textColor="@color/greyText"
-            android:text="Average: 2.0"
-            android:id="@+id/averageTextView"
-            android:textSize="15sp"/>
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/wave_circle_background"/>
 
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/circle_white"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:textColor="@color/greyText"
+                android:textAlignment="center"
+                android:text="Average\n2.0"
+                android:id="@+id/averageTextView"
+                android:textSize="15sp"/>
+
+
+        </FrameLayout>
 
     </LinearLayout>
 
@@ -66,12 +84,12 @@
             android:orientation="vertical">
 
             <View
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:background="@color/red"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/arrow_triangle"
                 android:layout_gravity="center"
-                android:layout_marginBottom="-16dp"
-                android:layout_marginTop="6dp"/>
+                android:layout_marginBottom="-17dp"
+                android:layout_marginTop="-6dp"/>
 
             <RelativeLayout
                 android:layout_width="match_parent"
