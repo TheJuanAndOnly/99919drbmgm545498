@@ -544,7 +544,7 @@ public class MainActivity extends AppCompatActivity {
 
             lineChartView.setBorderSpacing(Tools.fromDpToPx(10))
                     .setAxisBorderValues((int) min, 5)
-                    .setYLabels(AxisRenderer.LabelPosition.NONE)
+                    .setYLabels(AxisRenderer.LabelPosition.OUTSIDE)
                     .setLabelsColor(Color.parseColor("#6a84c3"))
                     .setXAxis(false)
                     .setYAxis(false);
@@ -557,81 +557,89 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String[] getLabels() {
-        String[] labels;
-
-        SharedPreferences prefs = getSharedPreferences("navChart", MODE_PRIVATE);
-        JSONArray jsonArray;
         try {
-            jsonArray = new JSONArray(prefs.getString("labels", null));
-        } catch (Exception e) {
-            jsonArray = new JSONArray();
-        }
+            String[] labels;
 
-        labels = new String[jsonArray.length() + 1];
-
-        for (int a = 0; a < jsonArray.length(); a++) {
+            SharedPreferences prefs = getSharedPreferences("navChart", MODE_PRIVATE);
+            JSONArray jsonArray;
             try {
-                labels[a] = jsonArray.getString(a);
+                jsonArray = new JSONArray(prefs.getString("labels", null));
             } catch (Exception e) {
+                jsonArray = new JSONArray();
             }
-        }
 
-        long actual;
-        if (setOverall().length() > 0) {
-            actual = System.currentTimeMillis();
-        } else {
+            labels = new String[jsonArray.length() + 1];
+
+            for (int a = 0; a < jsonArray.length(); a++) {
+                try {
+                    labels[a] = jsonArray.getString(a);
+                } catch (Exception e) {
+                }
+            }
+
+            long actual;
+            if (setOverall().length() > 0) {
+                actual = System.currentTimeMillis();
+            } else {
+                return labels;
+            }
+
+            labels[labels.length - 1] = actual + "";
+            jsonArray.put(actual);
+
+            prefs.edit().putString("labels", jsonArray.toString()).apply();
+
+            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM. yyyy");
+            Calendar calendar = Calendar.getInstance();
+
+            for (int a = 0; a < labels.length; a++) {
+                calendar.setTimeInMillis(Long.parseLong(labels[a]));
+                labels[a] = formatter.format(calendar.getTime());
+            }
+
             return labels;
+        } catch (Exception e) {
+            return null;
         }
-
-        labels[labels.length - 1] = actual + "";
-        jsonArray.put(actual);
-
-        prefs.edit().putString("labels", jsonArray.toString()).apply();
-
-        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM. yyyy");
-        Calendar calendar = Calendar.getInstance();
-
-        for (int a = 0; a < labels.length; a++) {
-            calendar.setTimeInMillis(Long.parseLong(labels[a]));
-            labels[a] = formatter.format(calendar.getTime());
-        }
-
-        return labels;
     }
 
     private float[] getValues() {
-        float[] values;
-
-        SharedPreferences prefs = getSharedPreferences("navChart", MODE_PRIVATE);
-        JSONArray jsonArray;
         try {
-            jsonArray = new JSONArray(prefs.getString("values", null));
-        } catch (Exception e) {
-            jsonArray = new JSONArray();
-        }
+            float[] values;
 
-        values = new float[jsonArray.length() + 1];
-
-        for (int a = 0; a < jsonArray.length(); a++) {
+            SharedPreferences prefs = getSharedPreferences("navChart", MODE_PRIVATE);
+            JSONArray jsonArray;
             try {
-                values[a] = Float.parseFloat(jsonArray.getString(a));
+                jsonArray = new JSONArray(prefs.getString("values", null));
             } catch (Exception e) {
+                jsonArray = new JSONArray();
             }
-        }
 
-        float actual;
-        try {
-            actual = 6 - Float.parseFloat(setOverall().substring(9, setOverall().length()));
-        } catch (Exception e) {
+            values = new float[jsonArray.length() + 1];
+
+            for (int a = 0; a < jsonArray.length(); a++) {
+                try {
+                    values[a] = Float.parseFloat(jsonArray.getString(a));
+                } catch (Exception e) {
+                }
+            }
+
+            float actual;
+            try {
+                actual = 6 - Float.parseFloat(setOverall().substring(9, setOverall().length()));
+            } catch (Exception e) {
+                return values;
+            }
+
+            values[values.length - 1] = actual;
+            jsonArray.put(actual + "");
+
+            prefs.edit().putString("values", jsonArray.toString()).apply();
+
             return values;
+        } catch (Exception e) {
+            return null;
         }
-
-        values[values.length - 1] = actual;
-        jsonArray.put(actual + "");
-
-        prefs.edit().putString("values", jsonArray.toString()).apply();
-
-        return values;
     }
 
     public void alwaysOnScreen() {
@@ -673,11 +681,18 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("fromNotification", true);
             PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
 
-            Notification notification = new Notification.Builder(this)
+            Notification.Builder builder = new Notification.Builder(this)
                     .setContentTitle(numberOfTask + nameForAlways)
                     .setContentText(childWithNames.substring(1, childWithNames.length()-1))
-                    .setSmallIcon(R.drawable.ic_active_white)
-                    .setContentIntent(contentIntent).build();
+                    .setSmallIcon(R.drawable.ic_active_tasks)
+                    .setContentIntent(contentIntent);
+
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder.setSmallIcon(R.drawable.ic_active_white);
+                builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_active_white));
+            }
+
+            Notification notification = builder.build();
 
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             notification.flags |= Notification.FLAG_NO_CLEAR;
@@ -964,14 +979,22 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        SharedPreferences prefsToDo = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
-        int numberOfTasks = prefsToDo.getInt("NumberOfTask", 0);
+        SharedPreferences prefsTasks = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+        JSONArray arrayName, arrayNameDone;
+        try {
+            arrayName = new JSONArray(prefsTasks.getString("TaskName", null));
+            arrayNameDone = new JSONArray(prefsTasks.getString("DoneTaskName", null));
+        } catch (Exception e) {
+            arrayName = new JSONArray();
+            arrayNameDone = new JSONArray();
+        }
+
+        int numberOfTasks = arrayName.length();
+        int numberOfDoneTask = arrayNameDone.length();
 
         points += numberOfTasks * array[6];
         Log.d("debug", String.valueOf(numberOfTasks * array[6]));
 
-        SharedPreferences prefsDone = getSharedPreferences("ListOfDoneTasks", Context.MODE_PRIVATE);
-        int numberOfDoneTask = prefsDone.getInt("NumberOfDoneTask", 0);
 
         points += numberOfDoneTask * array[7];
         Log.d("debug", String.valueOf(numberOfDoneTask * array[7]));
@@ -1250,7 +1273,7 @@ public class MainActivity extends AppCompatActivity {
         prefs.edit().putBoolean("active", a).apply();
         prefs.edit().commit();
 
-        updateNotification();
+        alwaysOnScreen();
     }
 
     public void setTheme(View view) {
@@ -1435,61 +1458,6 @@ public class MainActivity extends AppCompatActivity {
 
                 ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
             }
-        }
-    }
-
-    public void updateNotification() {
-        SharedPreferences prefss = getSharedPreferences("settings", Context.MODE_PRIVATE);
-        SharedPreferences prefsss = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
-
-        boolean a = prefss.getBoolean("active", true);
-        int numberOfTasks = prefsss.getInt("NumberOfTask", 0);
-
-        if (a == true && numberOfTasks > 0) {
-            SharedPreferences prefs = getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
-            JSONArray arrayName;
-            int numberOfTask = prefs.getInt("NumberOfTask", 0);
-            try {
-                arrayName = new JSONArray(prefs.getString("TaskName", null));
-            } catch (Exception e) {
-                arrayName = new JSONArray();
-            }
-
-            ArrayList<String> listNamez = new ArrayList<String>();
-            for (int i = 0; i < arrayName.length(); i++) {
-                try {
-                    listNamez.add(arrayName.getString(i));
-                } catch (Exception e) {
-                }
-            }
-
-            String childWithNames = listNamez.toString();
-
-            if (numberOfTask > 0) {
-                String nameForAlways = null;
-                if (numberOfTask == 1) {
-                    nameForAlways = " active task";
-                } else if (numberOfTask > 1) {
-                    nameForAlways = " active tasks";
-                }
-
-                Intent intent = new Intent(this, MainActivity.class);
-                intent.putExtra("fromNotification", true);
-                PendingIntent contentIntent = PendingIntent.getActivity(this, 0, intent, 0);
-
-                Notification notification = new Notification.Builder(this)
-                        .setContentTitle(numberOfTask + nameForAlways)
-                        .setContentText(childWithNames.substring(1, childWithNames.length() - 1))
-                        .setSmallIcon(R.drawable.ic_active_tasks)
-                        .setContentIntent(contentIntent).build();
-
-                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                notification.flags |= Notification.FLAG_NO_CLEAR;
-                notificationManager.notify(0, notification);
-            }
-        } else {
-            NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            notificationManager.cancel(0);
         }
     }
 }

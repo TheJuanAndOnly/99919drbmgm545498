@@ -8,7 +8,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Icon;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
@@ -65,6 +67,8 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
             }
         }
 
+        alwaysOnScreen();
+
         registerAlarm(context);
     }
 
@@ -115,5 +119,66 @@ public class NotificationRecieverActivity extends BroadcastReceiver {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) am.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, sender);
         else am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, sender);
+    }
+
+    public void alwaysOnScreen() {
+        JSONArray arrayName;
+        SharedPreferences preferences = context.getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
+
+        try {
+            arrayName = new JSONArray(preferences.getString("TaskName", null));
+        } catch (Exception e) {
+            arrayName = new JSONArray();
+        }
+
+        int numberOfTask = arrayName.length();
+
+
+        SharedPreferences prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE);
+
+        boolean a = prefs.getBoolean("active", true);
+
+        if (a == true && numberOfTask > 0) {
+            String nameForAlways = null;
+            if (numberOfTask == 1) {
+                nameForAlways = " active task";
+            } else if (numberOfTask > 1) {
+                nameForAlways = " active tasks";
+            }
+
+            ArrayList<String> listNamez = new ArrayList<String>();
+            for (int i = 0; i < arrayName.length(); i++){
+                try {
+                    listNamez.add(arrayName.getString(i));
+                } catch (Exception e) {
+                }
+            }
+
+            String childWithNames = listNamez.toString();
+
+            Intent intent = new Intent(context, MainActivity.class);
+            intent.putExtra("fromNotification", true);
+            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
+
+            Notification.Builder builder = new Notification.Builder(context)
+                    .setContentTitle(numberOfTask + nameForAlways)
+                    .setContentText(childWithNames.substring(1, childWithNames.length()-1))
+                    .setSmallIcon(R.drawable.ic_active_tasks)
+                    .setContentIntent(contentIntent);
+
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                builder.setSmallIcon(R.drawable.ic_active_white);
+                builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_active_white));
+            }
+
+            Notification notification = builder.build();
+
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notification.flags |= Notification.FLAG_NO_CLEAR;
+            notificationManager.notify(0, notification);
+        } else {
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.cancel(0);
+        }
     }
 }
