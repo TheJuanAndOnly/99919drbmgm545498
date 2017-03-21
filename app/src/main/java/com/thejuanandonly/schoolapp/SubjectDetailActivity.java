@@ -1,5 +1,7 @@
 package com.thejuanandonly.schoolapp;
 
+import android.app.Activity;
+import android.app.Application;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -99,8 +101,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //TextView subjectName = (TextView) findViewById(R.id.subjectTv);
-        //subjectName.setText(subjectData.getSubject());
+        TextView subjectName = (TextView) findViewById(R.id.subjectTv);
+        subjectName.setText(subjectData.getSubject());
 
         setAvgTv();
 
@@ -1328,11 +1330,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
     }
 
     public void setPredictionListView(){
-        /*final RecyclerView gradeToGetRecycler = (RecyclerView) findViewById(R.id.grade_to_get_recycler);
-        gradeToGetRecycler.setHasFixedSize(true);
-
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        gradeToGetRecycler.setLayoutManager(layoutManager);*/
 
         final ListView listView = (ListView) findViewById(R.id.predictionListView);
 
@@ -1343,39 +1340,101 @@ public class SubjectDetailActivity extends AppCompatActivity {
         predictionThread = new Thread(predictionListViewImplementor);
         predictionThread.start();
 
-        LinearLayout gradeToGetLayout = (LinearLayout) findViewById(R.id.grade_to_get_layout);
-        gradeToGetLayout.removeAllViews();
+        if (subjectData.getGradeType() == SubjectData.TEN_GRADE){
 
-        for (int i = 0; i < (subjectData.getGradeType() == SubjectData.TEN_GRADE ? 10 : 5); i++){
-            final int gradeToGet = i;
+            findViewById(R.id.grade_to_get_layout).setVisibility(View.GONE);
+            findViewById(R.id.grade_to_get_scroll_view).setVisibility(View.VISIBLE);
 
-            View child = View.inflate(this, R.layout.grade_to_get_item, null);
-            ((TextView) child.findViewById(R.id.grade_to_get_text_view)).setText(String.valueOf(i+1));
+            LinearLayout gradeToGetLayout = (LinearLayout) findViewById(R.id.grade_to_get_scroll_layout);
+            gradeToGetLayout.removeAllViews();
 
-            child.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            while (true) {
-                                try {
-                                    if (predictionListViewImplementor.isDoneLoading()){
-                                        predictionListViewImplementor.display(gradeToGet);
-                                        break;
+            for (int i = 0; i < (subjectData.getGradeType() == SubjectData.TEN_GRADE ? 10 : 5); i++) {
+                final int gradeToGet = i;
+
+                View child = View.inflate(this, R.layout.grade_to_get_item, null);
+                ((TextView) child.findViewById(R.id.grade_to_get_text_view)).setText(String.valueOf(i + 1));
+
+                child.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                while (true) {
+                                    try {
+                                        if (predictionListViewImplementor.isDoneLoading()) {
+                                            predictionListViewImplementor.display(gradeToGet);
+                                            break;
+                                        }
+
+                                        Thread.sleep(500);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
                                     }
-
-                                    Thread.sleep(500);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
                                 }
                             }
-                        }
-                    }).start();
-                }
-            });
+                        }).start();
+                    }
+                });
 
-            gradeToGetLayout.addView(child);
+                gradeToGetLayout.addView(child);
+            }
+        }
+        else {
+            final View[] buttons = new View[]{
+                    findViewById(R.id.grade_to_get_1),
+                    findViewById(R.id.grade_to_get_2),
+                    findViewById(R.id.grade_to_get_3),
+                    findViewById(R.id.grade_to_get_4),
+                    findViewById(R.id.grade_to_get_5),
+            };
+
+            findViewById(R.id.grade_to_get_layout).setVisibility(View.VISIBLE);
+            findViewById(R.id.grade_to_get_scroll_view).setVisibility(View.GONE);
+
+            for (int i = 0; i < buttons.length; i++) {
+                final int gradeToGet = i;
+
+                ((ViewGroup) buttons[gradeToGet]).getChildAt(1).setVisibility(
+                        i == 0 ? View.VISIBLE : View.GONE
+                );
+
+                final Context context = this;
+
+                buttons[i].setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                ((Activity) context).runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        for (int i = 0; i < buttons.length; i++) {
+                                            ((ViewGroup) buttons[i]).getChildAt(1).setVisibility(View.GONE);
+                                        }
+                                        ((ViewGroup) buttons[gradeToGet]).getChildAt(1).setVisibility(View.VISIBLE);
+                                    }
+                                });
+
+                                while (true) {
+                                    try {
+                                        if (predictionListViewImplementor.isDoneLoading()) {
+                                            predictionListViewImplementor.display(gradeToGet);
+                                            break;
+                                        }
+
+                                        Thread.sleep(500);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }).start();
+                    }
+                });
+            }
         }
     }
 }

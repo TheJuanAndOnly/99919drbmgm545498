@@ -32,9 +32,9 @@
             android:gravity="center"
             android:text="Maths"
             android:textColor="@color/greyText"
-            android:textSize="24sp"/>
+            android:textSize="24sp"
+            android:id="@+id/subjectTv"/>
 
-        <!-- TODO: gulicka -->
         <FrameLayout
             android:layout_width="150dp"
             android:layout_marginTop="10dp"
@@ -187,8 +187,7 @@
                         android:background="@color/subjectDetailItem"
                         android:divider="@color/subjectDetailBG"
                         android:dividerHeight="2dp"
-                        android:visibility="gone"
-                        android:elevation="2dp">
+                        android:visibility="gone">
                     </ListView>
 
                 </LinearLayout>
@@ -212,8 +211,8 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:padding="8dp"
+                android:layout_height="50dp"
+                android:padding="12dp"
                 android:layout_marginTop="4dp"
                 android:id="@+id/prediction_small_layout"
                 android:background="@color/subjectDetailItem">
@@ -306,21 +305,164 @@
 
                     <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="50dp"
                         android:orientation="horizontal"
                         android:gravity="center"
-                        android:id="@+id/grade_to_get_layout">
+                        android:id="@+id/grade_to_get_scroll_layout">
 
                     </LinearLayout>
 
                 </HorizontalScrollView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="65dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_horizontal|top"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:id="@+id/grade_to_get_layout"
+                    android:layout_below="@id/grade_to_get_scroll_view"
+                    android:weightSum="5">
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:padding="4dp"
+                        android:layout_weight="1"
+                        android:onClick="onGradeToGetClick"
+                        android:id="@+id/grade_to_get_1">
+
+                        <TextView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/circle_blue"
+                            android:text="1"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:layout_centerHorizontal="true"/>
+
+                        <View
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:background="@drawable/arrow_triangle_dark"
+                            android:layout_centerHorizontal="true"
+                            android:layout_alignParentBottom="true"/>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:padding="4dp"
+                        android:layout_weight="1"
+                        android:onClick="onGradeToGetClick"
+                        android:id="@+id/grade_to_get_2">
+
+                        <TextView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/circle_blue"
+                            android:text="2"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:layout_centerHorizontal="true"/>
+
+                        <View
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:background="@drawable/arrow_triangle_dark"
+                            android:layout_centerHorizontal="true"
+                            android:layout_alignParentBottom="true"/>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:padding="4dp"
+                        android:layout_weight="1"
+                        android:onClick="onGradeToGetClick"
+                        android:id="@+id/grade_to_get_3">
+
+                        <TextView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/circle_blue"
+                            android:text="3"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:layout_centerHorizontal="true"/>
+
+                        <View
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:background="@drawable/arrow_triangle_dark"
+                            android:layout_centerHorizontal="true"
+                            android:layout_alignParentBottom="true"/>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:padding="4dp"
+                        android:layout_weight="1"
+                        android:onClick="onGradeToGetClick"
+                        android:id="@+id/grade_to_get_4">
+
+                        <TextView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/circle_blue"
+                            android:text="4"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:layout_centerHorizontal="true"/>
+
+                        <View
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:background="@drawable/arrow_triangle_dark"
+                            android:layout_centerHorizontal="true"
+                            android:layout_alignParentBottom="true"/>
+
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:padding="4dp"
+                        android:layout_weight="1"
+                        android:onClick="onGradeToGetClick"
+                        android:id="@+id/grade_to_get_5">
+
+                        <TextView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/circle_blue"
+                            android:text="5"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:layout_centerHorizontal="true"/>
+
+                        <View
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:background="@drawable/arrow_triangle_dark"
+                            android:layout_centerHorizontal="true"
+                            android:layout_alignParentBottom="true"/>
+
+                    </RelativeLayout>
+
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/prediction_loading"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/loading"
-                    android:layout_below="@id/grade_to_get_scroll_view"
+                    android:layout_below="@id/grade_to_get_layout"
                     android:layout_centerHorizontal="true"
                     android:visibility="gone"
                     android:textColor="@color/white"
@@ -331,7 +473,10 @@
                     android:layout_height="match_parent"
                     android:background="@color/subjectDetailBG"
                     android:layout_below="@id/prediction_loading"
-                    android:layout_margin="12dp">
+                    android:layout_marginLeft="12dp"
+                    android:layout_marginRight="12dp"
+                    android:layout_marginBottom="12dp"
+                    android:layout_marginTop="-4.5dp">
 
                     <ListView
                         android:layout_width="match_parent"
