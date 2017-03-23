@@ -982,48 +982,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
             dialog.show();
         }
     }
-    /*public void deleteOldCategory(String category, int pos){
-        SharedPreferences prefs = getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        JSONArray arrayOfCategories, arrayOfPercentages;
-        try {
-            arrayOfCategories = new JSONArray(prefs.getString("ListOfCategories", null));
-            arrayOfPercentages = new JSONArray(prefs.getString("ListOfPercentages", null));
-        }catch (JSONException e) {
-            arrayOfCategories = new JSONArray();
-            arrayOfPercentages = new JSONArray();
-        }
 
-        ArrayList<String> listC = new ArrayList<String>();
-        ArrayList<String> listP = new ArrayList<String>();
-
-        for (int i = 0; i < arrayOfCategories.length(); i++){
-            try {
-                listC.add(arrayOfCategories.getString(i));
-            }catch (JSONException e){}
-        }
-
-        for (int i = 0; i < arrayOfPercentages.length(); i++){
-            try {
-                listP.add(arrayOfPercentages.getString(i));
-            }catch (JSONException e){}
-        }
-
-        editor.remove(listC.get(pos) + "Grades");
-
-        listC.remove(pos);
-        listP.remove(pos);
-
-        JSONArray arrayToSendC = new JSONArray(listC);
-        JSONArray arrayToSendP = new JSONArray(listP);
-
-        editor.putString("ListOfCategories", arrayToSendC.toString());
-        editor.putString("ListOfPercentages", arrayToSendP.toString());
-        editor.apply();
-
-        doSetLv = true;
-        setListView();
-    }*/
 //////////////////////////////////////////////////////////////////////////
     public void settingsDialog(){
 
@@ -1348,15 +1307,26 @@ public class SubjectDetailActivity extends AppCompatActivity {
             LinearLayout gradeToGetLayout = (LinearLayout) findViewById(R.id.grade_to_get_scroll_layout);
             gradeToGetLayout.removeAllViews();
 
+            final List<LinearLayout> viewsFromTheSix = new ArrayList<>(10);
+
             for (int i = 0; i < (subjectData.getGradeType() == SubjectData.TEN_GRADE ? 10 : 5); i++) {
                 final int gradeToGet = i;
 
                 View child = View.inflate(this, R.layout.grade_to_get_item, null);
                 ((TextView) child.findViewById(R.id.grade_to_get_text_view)).setText(String.valueOf(i + 1));
 
+                viewsFromTheSix.add((LinearLayout) child);
+
                 child.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+
+                        for (LinearLayout v : viewsFromTheSix){
+                            v.getChildAt(0).setBackground(getResources().getDrawable(R.drawable.circle_blue));
+                        }
+
+                        ((LinearLayout) view).getChildAt(0).setBackground(getResources().getDrawable(R.drawable.circle_accentblue));
+
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
@@ -1411,8 +1381,8 @@ public class SubjectDetailActivity extends AppCompatActivity {
                                 ((Activity) context).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        for (int i = 0; i < buttons.length; i++) {
-                                            ((ViewGroup) buttons[i]).getChildAt(1).setVisibility(View.GONE);
+                                        for (View button : buttons) {
+                                            ((ViewGroup) button).getChildAt(1).setVisibility(View.GONE);
                                         }
                                         ((ViewGroup) buttons[gradeToGet]).getChildAt(1).setVisibility(View.VISIBLE);
                                     }

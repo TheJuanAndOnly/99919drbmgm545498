@@ -304,7 +304,7 @@
         jumboMode="true"
         optimize="true"
         revision="25.0.0"
-        sha1="bcfea9da5f7d7c6f93cca795e3763449e050d841">
+        sha1="695f2d1eb732093c35ed2c33e788890b235379a5">
         <dex dex="C:\AndroidStudio\99919drbmgm545498\app\build\intermediates\transforms\dex\debug\folders\1000\10\instant-run-bootstrap_2f411ff288c3074a11e77274ee6ec9215ac762ff\classes.dex" />
     </item>
     <item
