@@ -172,7 +172,11 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 return ((float) 10 - Float.parseFloat(subjectData.getAverage())) / ((float) 9);
 
             default:
-                return ((float) 5 - Float.parseFloat(subjectData.getAverage())) / ((float) 4);
+                try{
+                    return ((float) 5 - Float.parseFloat(subjectData.getAverage())) / ((float) 4);
+                }catch (NumberFormatException e){
+                    return 0;
+                }
         }
     }
 
@@ -1314,6 +1318,10 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
                 View child = View.inflate(this, R.layout.grade_to_get_item, null);
                 ((TextView) child.findViewById(R.id.grade_to_get_text_view)).setText(String.valueOf(i + 1));
+
+                if (i == 0){
+                    ((LinearLayout) child).getChildAt(0).setBackground(getResources().getDrawable(R.drawable.circle_accentblue));
+                }
 
                 viewsFromTheSix.add((LinearLayout) child);
 
