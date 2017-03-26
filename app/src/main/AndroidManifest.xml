@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.thejuanandonly.schoolapp">
+    package="com.thejuanandonly.gradeday">
 
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -29,11 +29,11 @@
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
 
         <activity
-            android:name=".TutikActivity"
+            android:name="com.thejuanandonly.gradeday.TutikActivity"
             android:theme="@style/Theme.Intro" />
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.thejuanandonly.gradeday.MainActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustNothing"
             android:theme="@style/AppTheme"
@@ -58,27 +58,27 @@
         </activity>
 
         <activity
-            android:name=".ScheduleActivity"
+            android:name="com.thejuanandonly.gradeday.ScheduleActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/AppTheme"
             android:label="@string/app_name"
             android:excludeFromRecents="true">
         </activity>
 
-        <activity android:name=".SubjectDetailActivity"
+        <activity android:name="com.thejuanandonly.gradeday.SubjectDetailActivity"
             android:label="@string/app_name"
             android:excludeFromRecents="true"
             android:screenOrientation="portrait">
         </activity>
 
-        <activity android:name=".NotesDetailActivity"
+        <activity android:name="com.thejuanandonly.gradeday.NotesDetailActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme"
             android:excludeFromRecents="true">
 
         </activity>
 
-        <receiver android:name=".NotificationRecieverActivity">
+        <receiver android:name="com.thejuanandonly.gradeday.NotificationRecieverActivity">
             <intent-filter>
                 <action android:name="android.intent.action.REBOOT"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
