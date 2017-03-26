@@ -153,8 +153,6 @@ public class OverviewFragment extends Fragment {
         ListView listView = (ListView) getView().findViewById(R.id.SubjectListView);
         listView.setAdapter(adapter);
 
-        theme();
-
         super.onResume();
     }
 
@@ -165,17 +163,6 @@ public class OverviewFragment extends Fragment {
 
         ListView listView = (ListView) v.findViewById(R.id.SubjectListView);
         listView.setAdapter(adapter);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void theme() {
-
-        Window window = getActivity().getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-        if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-            window.setStatusBarColor(getResources().getColor(R.color.black));
     }
 
     public void setQuote(final View view) {

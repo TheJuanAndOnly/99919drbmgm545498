@@ -110,22 +110,6 @@
             app:itemIconTint="@color/nav_item_state"
             app:menu="@menu/drawer_menu"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_weight="1">
-
-            <com.db.chart.view.LineChartView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/lcv_nav_chart"
-                android:layout_margin="8dp"
-                android:gravity="center"
-                android:layout_weight="1"/>
-
-        </LinearLayout>
-
     </LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>

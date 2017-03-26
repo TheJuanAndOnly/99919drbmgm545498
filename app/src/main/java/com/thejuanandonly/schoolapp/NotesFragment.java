@@ -97,7 +97,6 @@ public class NotesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.notes_layout, null);
         v = rootView;
 
-        theme();
         loadArrFromSP();
 
         MobileAds.initialize(getApplicationContext(), "ca-app-pub-4648715887566496~3996876969");
@@ -298,18 +297,6 @@ public class NotesFragment extends Fragment {
         listView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
-    }
-
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void theme() {
-
-        Window window = getActivity().getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-        if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-            window.setStatusBarColor(getResources().getColor(R.color.toolbar));
     }
 
 }

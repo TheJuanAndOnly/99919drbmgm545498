@@ -89,14 +89,12 @@ public class TasksFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView =  inflater.inflate(R.layout.tasks_layout, null);
 
-        theme();
-
         prefs = getActivity().getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
 
         MobileAds.initialize(getApplicationContext(), "ca-app-pub-4648715887566496~3996876969");
         AdView mAdView = (AdView) rootView.findViewById(R.id.adViewBanner);
 
-        if(hasNetworkConnection()) {
+        if (hasNetworkConnection()) {
             mAdView.setVisibility(View.VISIBLE);
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
@@ -729,16 +727,6 @@ public class TasksFragment extends Fragment {
         editor.apply();
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void theme() {
-
-        Window window = getActivity().getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-        if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-            window.setStatusBarColor(getResources().getColor(R.color.toolbar));
-    }
 
 }
 

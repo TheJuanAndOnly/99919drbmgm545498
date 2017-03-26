@@ -128,9 +128,6 @@ public class ScheduleActivity extends AppCompatActivity {
 
 
             imageView.setImageBitmap(BitmapScaled(picture, 800, 800));
-            if (imageView.getBackground() == null) {
-                Toast.makeText(this, "kappa", Toast.LENGTH_SHORT).show();
-            }
 
             savePath(picture);
 

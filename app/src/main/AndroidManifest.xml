@@ -1,5 +1,4 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     package="com.thejuanandonly.schoolapp">
 
 
@@ -37,6 +36,7 @@
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustNothing"
+            android:theme="@style/AppTheme"
             android:screenOrientation="portrait">
 
             <provider

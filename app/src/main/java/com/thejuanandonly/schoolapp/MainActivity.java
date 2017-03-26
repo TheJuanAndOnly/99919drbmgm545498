@@ -1,6 +1,7 @@
 package com.thejuanandonly.schoolapp;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.Notification;
@@ -83,11 +84,7 @@ public class MainActivity extends AppCompatActivity {
     public static int theme;
     public boolean willSend = false;
     public static boolean taskAdded = false;
-    android.support.v7.widget.Toolbar toolbar;
-    String reset;
     public String userNickname;
-
-    private LineChartView lineChartView;
 
     //Notes stuff
     private static int RESULT_LOAD_IMAGE = 1;
@@ -111,9 +108,7 @@ public class MainActivity extends AppCompatActivity {
         drawerFull = (LinearLayout) findViewById(R.id.drawerFull);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
 
-        lineChartView = (LineChartView) findViewById(R.id.lcv_nav_chart);
-
-        updateChart();
+        theme();
 
         checkStoragePermission();
         setLevel();
@@ -265,8 +260,6 @@ public class MainActivity extends AppCompatActivity {
             taskAdded = false;
         }
 
-        updateChart();
-
         super.onResume();
     }
 
@@ -330,316 +323,6 @@ public class MainActivity extends AppCompatActivity {
         this.count = count;
 
 
-    }
-
-    public void updateChart() {
-        String[] mLabels = getLabels();
-        float[] mValues = getValues();
-
-        try {
-            lineChartView.reset();
-
-            if (mValues.length > 5) {
-                String[] actual = new String[mLabels.length];
-
-                for (int a = 0; a < mLabels.length; a++) {
-                    actual[a] = mLabels[a];
-                    for (int b = 0; b < a; b++) {
-                        if (actual[b].equals(actual[a])) {
-                            actual[a] = "";
-                            b = a;
-                        }
-                    }
-                }
-
-                ArrayList<Integer> array = new ArrayList<>();
-                for (int a = 0; a < actual.length; a++) {
-                    if (actual[a].length() > 1) {
-                        array.add(a);
-                    }
-                }
-
-                //removing duplicates from each day
-                SharedPreferences prefs = getSharedPreferences("navChart", MODE_PRIVATE);
-                JSONArray jsonLabels, jsonValues, savedLabels;
-                try {
-                    savedLabels = new JSONArray(prefs.getString("labels", null));
-                } catch (Exception e) {
-                    savedLabels = new JSONArray();
-                }
-                jsonLabels = new JSONArray();
-                jsonValues = new JSONArray();
-
-                for (int a = 0; a < array.size(); a++) {
-                    int until;
-                    try {
-                        until = array.get(a + 1) - 1;
-                    } catch (Exception e) {
-                        until = mValues.length - 1;
-                    }
-
-                    try {
-                        jsonLabels.put(savedLabels.get(until));
-                    } catch (Exception e) {
-                    }
-                    jsonValues.put(mValues[until] + "");
-                }
-
-                prefs.edit().putString("labels", jsonLabels.toString()).apply();
-                prefs.edit().putString("values", jsonValues.toString()).apply();
-
-                if (array.size() > 30) {
-                    int months = 1;
-                    for (int a = 1; a < mLabels.length; a++) {
-                        if (!mLabels[a].substring(3, 11).equals(mLabels[a - 1].substring(3, 11)))
-                            months++;
-                    }
-
-                    if (months > 5) {
-                        float[] values = new float[5];
-                        String[] labels = new String[5];
-
-                        for (int a = 1; a < 6; a++) {
-                            float average = 0;
-                            int count = 0;
-                            int period = months / 5;
-
-                            for (int b = (a - 1) * period; b < a * period; b++) {
-                                average += mValues[b];
-                                count++;
-                            }
-
-                            values[a - 1] = average / count;
-                            labels[a - 1] = "";
-                        }
-                        labels[1] = "Last " + months + " months";
-
-                        mLabels = labels;
-                        mValues = values;
-                    } else if (months > 2 && months < 6) {
-                        float[] values = new float[months];
-                        String[] labels = new String[months];
-
-                        for (int a = 0; a < months; a++) {
-                            float average = 0;
-                            int count = 0;
-                            int month = 0;
-
-                            for (int b = 1; b < mValues.length; b++) {
-                                if (!mLabels[b].substring(3, 11).equals(mLabels[b - 1].substring(3, 11))) {
-                                    average += mValues[b - 1];
-                                    month = Integer.parseInt(mLabels[b - 1].substring(3, 5));
-                                    break;
-                                } else average += mValues[b - 1];
-
-                                count++;
-                            }
-
-                            values[a] = average / count;
-                            labels[a] = month + "";
-                        }
-
-                        mLabels = labels;
-                        mValues = values;
-                    } else {
-                        int period = mValues.length / 5;
-                        float[] values = new float[5];
-                        String[] labels = new String[5];
-
-                        for (int a = 1; a < 6; a++) {
-                            float average = 0;
-                            int count = 0;
-                            for (int b = (a - 1) * period; b < a * period; b++) {
-                                average += mValues[b];
-                                count++;
-                            }
-
-                            values[a - 1] = average / count;
-                            labels[a - 1] = "";
-                        }
-                        labels[1] = "Last 60 days";
-
-                        mLabels = labels;
-                        mValues = values;
-                    }
-                } else if (array.size() > 1 && array.size() < 31) {
-                    float[] values = new float[array.size()];
-                    String[] labels = new String[array.size()];
-
-                    for (int a = 0; a < array.size(); a++) {
-                        int until;
-                        try {
-                            until = array.get(a + 1) - 1;
-                        } catch (Exception e) {
-                            until = mValues.length - 1;
-                        }
-
-                        values[a] = mValues[until];
-
-                        if (array.size() > 1 && array.size() < 5)
-                            labels[a] = mLabels[array.get(a)].substring(0, 6);
-                        else labels[a] = mLabels[array.get(a)];
-                    }
-
-                    mLabels = labels;
-                    mValues = values;
-
-                    values = new float[5];
-                    labels = new String[5];
-                    if (array.size() > 5) {
-                        for (int a = 1; a < 6; a++) {
-                            float average = 0;
-                            int count = 0;
-                            int period = array.size() / 5;
-
-                            for (int b = (a - 1) * period; b < a * period; b++) {
-                                average += mValues[b];
-                                count++;
-                            }
-
-                            values[a - 1] = average / count;
-                            labels[a - 1] = "";
-                        }
-                        labels[1] = "Last 30 days";
-
-                        mLabels = labels;
-                        mValues = values;
-                    }
-                } else {
-                    return;
-                }
-            } else {
-                for (int a = 0; a < mLabels.length; a++) {
-                    mLabels[a] = mLabels[a].substring(0, 6);
-                }
-            }
-
-            LineSet dataset = new LineSet(mLabels, mValues);
-            dataset.setColor(Color.parseColor("#758cbb"))
-                    .setFill(Color.parseColor("#2d374c"))
-                    .setDotsColor(Color.parseColor("#758cbb"))
-                    .setThickness(4)
-                    .setDashed(new float[]{10f, 10f})
-                    .beginAt(mValues.length - 1);
-            lineChartView.addData(dataset);
-
-            dataset = new LineSet(mLabels, mValues);
-            dataset.setColor(Color.parseColor("#b3b5bb"))
-                    .setFill(Color.parseColor("#2d374c"))
-                    .setDotsColor(Color.parseColor("#ffc755"))
-                    .setThickness(4)
-                    .endAt(mValues.length);
-            lineChartView.addData(dataset);
-
-            float min = mValues[0];
-            for (int i = 1; i < mValues.length; i++) {
-                if (mValues[i] < min) {
-                    min = mValues[i];
-                }
-            }
-
-            min -= 0.5;
-
-            if (min < 1) min = 1;
-
-            lineChartView.setBorderSpacing(Tools.fromDpToPx(10))
-                    .setAxisBorderValues((int) min, 5)
-                    .setYLabels(AxisRenderer.LabelPosition.OUTSIDE)
-                    .setLabelsColor(Color.parseColor("#6a84c3"))
-                    .setXAxis(false)
-                    .setYAxis(false);
-
-            if (mValues.length > 1) {
-                lineChartView.show();
-            }
-        } catch (Exception e) {
-        }
-    }
-
-    private String[] getLabels() {
-        try {
-            String[] labels;
-
-            SharedPreferences prefs = getSharedPreferences("navChart", MODE_PRIVATE);
-            JSONArray jsonArray;
-            try {
-                jsonArray = new JSONArray(prefs.getString("labels", null));
-            } catch (Exception e) {
-                jsonArray = new JSONArray();
-            }
-
-            labels = new String[jsonArray.length() + 1];
-
-            for (int a = 0; a < jsonArray.length(); a++) {
-                try {
-                    labels[a] = jsonArray.getString(a);
-                } catch (Exception e) {
-                }
-            }
-
-            long actual;
-            if (setOverall().length() > 0) {
-                actual = System.currentTimeMillis();
-            } else {
-                return labels;
-            }
-
-            labels[labels.length - 1] = actual + "";
-            jsonArray.put(actual);
-
-            prefs.edit().putString("labels", jsonArray.toString()).apply();
-
-            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM. yyyy");
-            Calendar calendar = Calendar.getInstance();
-
-            for (int a = 0; a < labels.length; a++) {
-                calendar.setTimeInMillis(Long.parseLong(labels[a]));
-                labels[a] = formatter.format(calendar.getTime());
-            }
-
-            return labels;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    private float[] getValues() {
-        try {
-            float[] values;
-
-            SharedPreferences prefs = getSharedPreferences("navChart", MODE_PRIVATE);
-            JSONArray jsonArray;
-            try {
-                jsonArray = new JSONArray(prefs.getString("values", null));
-            } catch (Exception e) {
-                jsonArray = new JSONArray();
-            }
-
-            values = new float[jsonArray.length() + 1];
-
-            for (int a = 0; a < jsonArray.length(); a++) {
-                try {
-                    values[a] = Float.parseFloat(jsonArray.getString(a));
-                } catch (Exception e) {
-                }
-            }
-
-            float actual;
-            try {
-                actual = 6 - Float.parseFloat(setOverall().substring(9, setOverall().length()));
-            } catch (Exception e) {
-                return values;
-            }
-
-            values[values.length - 1] = actual;
-            jsonArray.put(actual + "");
-
-            prefs.edit().putString("values", jsonArray.toString()).apply();
-
-            return values;
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     public void alwaysOnScreen() {
@@ -1202,14 +885,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void notificationsClick(final View view) {
-        final SwitchCompat notificationsCheckBox, soundsCheckBox, vibrationsCheckBox, activeTasksCheckBox;
+        final SwitchCompat notificationsCheckBox, soundsCheckBox, vibrationsCheckBox;
         notificationsCheckBox = (SwitchCompat) findViewById(R.id.notificationsCheckBox);
         soundsCheckBox = (SwitchCompat) findViewById(R.id.soundsNotificationCheckBox);
         vibrationsCheckBox = (SwitchCompat) findViewById(R.id.vibrationsNotificationCheckBox);
 
         final boolean isChecked = notificationsCheckBox.isChecked();
-        soundsCheckBox.setChecked(isChecked);
-        vibrationsCheckBox.setChecked(isChecked);
+        if (isChecked) {
+            soundsCheckBox.setChecked(isChecked);
+            vibrationsCheckBox.setChecked(isChecked);
+        }
 
         Handler handler = new Handler();
 
@@ -1220,13 +905,13 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (!isChecked) {
-            handler.postDelayed(new Runnable() {
+            handler.post(new Runnable() {
                 @Override
                 public void run() {
                     soundsCheckBox.setVisibility(View.GONE);
                     vibrationsCheckBox.setVisibility(View.GONE);
                 }
-            }, 300);
+            });
 
         } else {
 
@@ -1287,21 +972,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void deleteDialogBox() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-
-
         builder.setTitle("Reset App");
-
         builder.setMessage("All your saved data will be deleted, are you sure you want to reset the app?")
 
                 .setPositiveButton("RESET", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int arg0) {
-
                         clearApplicationData();
-
                         Toast.makeText(MainActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
-
                         checkStoragePermission();
-
 
                         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                         notificationManager.cancel(0);
@@ -1312,6 +990,7 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 })
+
                 .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int arg0) {
                     }
@@ -1438,10 +1117,13 @@ public class MainActivity extends AppCompatActivity {
         OverviewFragment.reset(this);
     }
 
-    public void updateListTasks() {
-        FragmentManager mFragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void theme() {
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.toolbar));
     }
 
     public void checkStoragePermission() {

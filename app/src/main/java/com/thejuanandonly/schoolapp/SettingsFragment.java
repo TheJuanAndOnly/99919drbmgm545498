@@ -32,13 +32,6 @@ import org.w3c.dom.Text;
 public class SettingsFragment extends Fragment {
     int position;
     android.support.v7.widget.Toolbar toolbar;
-    private static int RESULT_LOAD_IMAGE = 1;
-    public static Uri avatarURI;
-    String picture, newUserName;
-    ImageView changeAvatar, userPhotoimgview;
-    EditText changeName;
-    TextView userNicktxtview;
-    Button set;
 
     @Nullable
     @Override
@@ -48,10 +41,7 @@ public class SettingsFragment extends Fragment {
 
     @Override
     public void onStart() {
-
-
         percentageListener();
-        theme();
 
         toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setTitle("Settings");
@@ -74,10 +64,13 @@ public class SettingsFragment extends Fragment {
         vibrationsCheckBox.setChecked(v);
         activeTasksCheckBox.setChecked(a);
 
+        TextView infoTextview = (TextView) getView().findViewById(R.id.textView4);
+
         if (!n) {
             soundsCheckBox.setVisibility(View.GONE);
             vibrationsCheckBox.setVisibility(View.GONE);
         } else {
+            infoTextview.setVisibility(View.GONE);
             soundsCheckBox.setVisibility(View.VISIBLE);
             vibrationsCheckBox.setVisibility(View.VISIBLE);
         }
@@ -107,29 +100,24 @@ public class SettingsFragment extends Fragment {
 
                 Handler handler = new Handler();
                 final TextView infoTextview = (TextView) getView().findViewById(R.id.textView4);
-                final AlphaAnimation fadeIn = new AlphaAnimation(0, 100);
-                final AlphaAnimation fadeOut = new AlphaAnimation(100, 0);
-
 
                 if (isChecked) {
-
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            infoTextview.startAnimation(fadeOut);
+                            infoTextview.setVisibility(View.GONE);
                             infoTextview.setVisibility(View.GONE);
                         }
                     });
 
                 } else {
-
-                    handler.postDelayed(new Runnable() {
+                    handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            infoTextview.startAnimation(fadeIn);
+                            infoTextview.setVisibility(View.VISIBLE);
                             infoTextview.setVisibility(View.VISIBLE);
                         }
-                    }, 290);
+                    });
 
 
                 }
@@ -243,17 +231,6 @@ public class SettingsFragment extends Fragment {
             layout.setVisibility(View.VISIBLE);
             button.setBackground(getResources().getDrawable(R.drawable.ic_arrow_drop_up_white_24dp));
         }
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public void theme() {
-
-        Window window = getActivity().getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
-        if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP)
-            window.setStatusBarColor(getResources().getColor(R.color.toolbar));
     }
 
 }

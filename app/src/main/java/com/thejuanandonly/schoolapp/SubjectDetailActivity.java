@@ -1,5 +1,6 @@
 package com.thejuanandonly.schoolapp;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Application;
 import android.app.Dialog;
@@ -75,6 +76,7 @@ public class SubjectDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.subject_detail_layout);
 
+        theme();
         // Obtain the shared Tracker instance.
 
         subjectData = new SubjectData(this, getSharedPreferences("Subject" + getIntent().getExtras().getString("subject", null), Context.MODE_PRIVATE));
@@ -88,14 +90,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
         waveProgress.setMaxProgress(100);
         waveProgress.setProgress((int)(100 * getGulickaPercentage()));
 
-
-        Window window = this.getWindow();
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.setStatusBarColor(getResources().getColor(android.R.color.black));
-        }
-
         toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.subjectDetailToolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -105,8 +99,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
         subjectName.setText(subjectData.getSubject());
 
         setAvgTv();
-
-        Toast.makeText(this, String.valueOf(getGulickaPercentage()), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -133,7 +125,6 @@ public class SubjectDetailActivity extends AppCompatActivity {
 
         subjectData.setAverage(String.valueOf(countAverage()));
         waveProgress.setProgress((int)(100 * getGulickaPercentage()));
-        Toast.makeText(this, "progress " + (int)(100 * getGulickaPercentage()), Toast.LENGTH_SHORT).show();
 
         TextView averageTV = (TextView) findViewById(R.id.averageTextView);
         String avg = subjectData.getAverage();
@@ -1414,5 +1405,14 @@ public class SubjectDetailActivity extends AppCompatActivity {
                 });
             }
         }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public void theme() {
+        Window window = getWindow();
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+
+        if (MainActivity.api >= android.os.Build.VERSION_CODES.LOLLIPOP) window.setStatusBarColor(getResources().getColor(R.color.toolbar));
     }
 }
