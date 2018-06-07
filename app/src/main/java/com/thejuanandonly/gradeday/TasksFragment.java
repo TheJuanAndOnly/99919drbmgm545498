@@ -19,7 +19,6 @@ import com.transitionseverywhere.TransitionManager;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -81,8 +80,8 @@ public class TasksFragment extends Fragment {
 
         prefs = getActivity().getSharedPreferences("ListOfTasks", Context.MODE_PRIVATE);
 
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-4648715887566496~3996876969");
-        AdView mAdView = (AdView) rootView.findViewById(R.id.adViewBanner);
+        MobileAds.initialize(getContext(), "ca-app-pub-4648715887566496~3996876969");
+        AdView mAdView = rootView.findViewById(R.id.adViewBanner);
 
         if (hasNetworkConnection()) {
             mAdView.setVisibility(View.VISIBLE);
@@ -92,10 +91,10 @@ public class TasksFragment extends Fragment {
             mAdView.setVisibility(View.GONE);
         }
 
-        toolbarMain = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbarMain = getActivity().findViewById(R.id.toolbar);
         toolbarMain.setVisibility(View.GONE);
 
-        toolbar = (Toolbar) rootView.findViewById(R.id.toolbar_head);
+        toolbar = rootView.findViewById(R.id.toolbar_head);
         toolbar.setContentInsetsAbsolute(0, 0);
         toolbar.setPadding(0, 0, 0, 0);
 
@@ -107,30 +106,30 @@ public class TasksFragment extends Fragment {
         ((MainActivity) getActivity()).mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
-        listView = (ListView) rootView.findViewById(R.id.lw_tasks);
+        listView = rootView.findViewById(R.id.lw_tasks);
 
-        list = (ViewGroup) rootView.findViewById(R.id.lw_tasks);
+        list = rootView.findViewById(R.id.lw_tasks);
 
-        head = (ViewGroup) rootView.findViewById(R.id.head);
+        head = rootView.findViewById(R.id.head);
 
-        etName = (EditText) rootView.findViewById(R.id.et_name);
-        etBody = (EditText) rootView.findViewById(R.id.et_body);
+        etName = rootView.findViewById(R.id.et_name);
+        etBody = rootView.findViewById(R.id.et_body);
 
-        btnTime = (Button) rootView.findViewById(R.id.btnTime);
-        btnDate = (Button) rootView.findViewById(R.id.btnDate);
-        btnSave = (Button) rootView.findViewById(R.id.btn_save);
+        btnTime = rootView.findViewById(R.id.btnTime);
+        btnDate = rootView.findViewById(R.id.btnDate);
+        btnSave = rootView.findViewById(R.id.btn_save);
 
-        ivTime = (ImageView) rootView.findViewById(R.id.iv_time);
-        ivDate = (ImageView) rootView.findViewById(R.id.iv_date);
-        ivAdd = (ImageView) rootView.findViewById(R.id.iv_add);
+        ivTime = rootView.findViewById(R.id.iv_time);
+        ivDate = rootView.findViewById(R.id.iv_date);
+        ivAdd = rootView.findViewById(R.id.iv_add);
 
-        tvTodo = (TextView) rootView.findViewById(R.id.tv_todo);
-        tvDone = (TextView) rootView.findViewById(R.id.tv_done);
+        tvTodo = rootView.findViewById(R.id.tv_todo);
+        tvDone = rootView.findViewById(R.id.tv_done);
 
         tvDone.setTypeface(null, Typeface.NORMAL);
         tvTodo.setTypeface(tvTodo.getTypeface(), Typeface.BOLD);
 
-        switchCurrent = (SwitchCompat) rootView.findViewById(R.id.switch_current);
+        switchCurrent = rootView.findViewById(R.id.switch_current);
         switchCurrent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -158,10 +157,10 @@ public class TasksFragment extends Fragment {
             }
         });
 
-        rlTime = (RelativeLayout) head.findViewById(R.id.rl_time);
+        rlTime = head.findViewById(R.id.rl_time);
 
-        rlSwitch = (RelativeLayout) head.findViewById(R.id.rl_switch);
-        main = (ViewGroup) rootView.findViewById(R.id.main);
+        rlSwitch = head.findViewById(R.id.rl_switch);
+        main = rootView.findViewById(R.id.main);
 
         time = new Date();
 
@@ -361,13 +360,13 @@ public class TasksFragment extends Fragment {
         dialog.setContentView(R.layout.dialog_set_time);
         dialog.setCancelable(true);
 
-        timePicker = (TimePicker) dialog.findViewById(R.id.timePicker);
+        timePicker = dialog.findViewById(R.id.timePicker);
         timePicker.setIs24HourView(true);
 
         timePicker.setCurrentHour(hour);
         timePicker.setCurrentMinute(minute);
 
-        Button button = (Button) dialog.findViewById(R.id.btnTime);
+        Button button = dialog.findViewById(R.id.btnTime);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -399,10 +398,10 @@ public class TasksFragment extends Fragment {
         dialog.setContentView(R.layout.dialog_set_date);
         dialog.setCancelable(true);
 
-        datePicker = (DatePicker) dialog.findViewById(R.id.datePicker);
+        datePicker = dialog.findViewById(R.id.datePicker);
         datePicker.updateDate(year, month, day);
 
-        Button button = (Button) dialog.findViewById(R.id.btnDate);
+        Button button = dialog.findViewById(R.id.btnDate);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -517,6 +516,7 @@ public class TasksFragment extends Fragment {
 
         ((MainActivity) getActivity()).setTasksCount();
         ((MainActivity) getActivity()).alwaysOnScreen();
+        ((MainActivity) getActivity()).reloadAlarm();
     }
 
     public void addTask(boolean edit, int position) {

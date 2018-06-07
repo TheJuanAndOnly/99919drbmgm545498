@@ -89,8 +89,8 @@ public class MainActivity extends AppCompatActivity {
 
         api = android.os.Build.VERSION.SDK_INT;
 
-        drawerFull = (LinearLayout) findViewById(R.id.drawerFull);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        drawerFull = findViewById(R.id.drawerFull);
+        mDrawerLayout = findViewById(R.id.drawerLayout);
 
         theme();
 
@@ -98,12 +98,12 @@ public class MainActivity extends AppCompatActivity {
         setLevel();
         levelTimer();
 
-        TextView overallTv = (TextView) findViewById(R.id.tv_overall);
+        TextView overallTv = findViewById(R.id.tv_overall);
         overallTv.setText(setOverall() + "");
 
         Locale.setDefault(Locale.US);
 
-        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+        mNavigationView = findViewById(R.id.nav_view);
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 mDrawerLayout.closeDrawers();
 
                 setLevel();
-                TextView overallTv = (TextView) findViewById(R.id.tv_overall);
+                TextView overallTv = findViewById(R.id.tv_overall);
                 overallTv.setText(setOverall());
 
                 if (menuItem.getItemId() == R.id.nav_item_overview) {
@@ -172,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-        android.support.v7.widget.Toolbar toolbar = (android.support.v7.widget.Toolbar) findViewById(R.id.toolbar);
+        android.support.v7.widget.Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name, R.string.app_name);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -197,18 +197,12 @@ public class MainActivity extends AppCompatActivity {
 
         alwaysOnScreen();
 
-        registerAlarm(getApplicationContext());
+        reloadAlarm();
     }
 
-    public static void registerAlarm(Context context) {
-        Intent i = new Intent(context, NotificationRecieverActivity.class);
-
-        PendingIntent sender = PendingIntent.getBroadcast(context, 0, i, 0);
-
-        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) am.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, sender);
-        else am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60000, sender);
+    public void reloadAlarm() {
+        Intent intent = new Intent(this, TasksNotificationReceiver.class);
+        sendBroadcast(intent);
     }
 
     @Override
@@ -237,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         if (actualFragment == 2 && taskAdded == true) {
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
-            PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, NotificationRecieverActivity.class), 0);
+            PendingIntent mAlarmSender = PendingIntent.getBroadcast(this, 0, new Intent(this, TasksNotificationReceiver.class), 0);
             alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), mAlarmSender);
             FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.containerView, new TasksFragment()).commit();
@@ -294,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
 
         mNavigationView.getMenu().findItem(R.id.nav_item_tasks).setActionView(R.layout.nav_tasks_counter);
 
-        TextView view = (TextView) mNavigationView.getMenu().findItem(R.id.nav_item_tasks).getActionView().findViewById(R.id.tv_count);
+        TextView view = mNavigationView.getMenu().findItem(R.id.nav_item_tasks).getActionView().findViewById(R.id.tv_count);
         view.setText(count + "");
     }
 
@@ -461,9 +455,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setLevel() {
-        TextView levelText = (TextView) findViewById(R.id.levelText);
-        ProgressBar bar = (ProgressBar) findViewById(R.id.levelProgress);
-        TextView xp = (TextView) findViewById(R.id.xpProgress);
+        TextView levelText = findViewById(R.id.levelText);
+        ProgressBar bar = findViewById(R.id.levelProgress);
+        TextView xp = findViewById(R.id.xpProgress);
 
         SharedPreferences arrayPrefs = getSharedPreferences("ListOfSubjects", Context.MODE_PRIVATE);
 
@@ -870,9 +864,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void notificationsClick(final View view) {
         final SwitchCompat notificationsCheckBox, soundsCheckBox, vibrationsCheckBox;
-        notificationsCheckBox = (SwitchCompat) findViewById(R.id.notificationsCheckBox);
-        soundsCheckBox = (SwitchCompat) findViewById(R.id.soundsNotificationCheckBox);
-        vibrationsCheckBox = (SwitchCompat) findViewById(R.id.vibrationsNotificationCheckBox);
+        notificationsCheckBox = findViewById(R.id.notificationsCheckBox);
+        soundsCheckBox = findViewById(R.id.soundsNotificationCheckBox);
+        vibrationsCheckBox = findViewById(R.id.vibrationsNotificationCheckBox);
 
         final boolean isChecked = notificationsCheckBox.isChecked();
         if (isChecked) {

@@ -44,8 +44,8 @@ public class OverviewFragment extends Fragment {
         v = rootView;
         overviewFragmentContext = getContext();
 
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-4648715887566496~3996876969");
-        AdView mAdView = (AdView) rootView.findViewById(R.id.adViewBannerOverview);
+        MobileAds.initialize(getContext(), "ca-app-pub-4648715887566496~3996876969");
+        AdView mAdView = rootView.findViewById(R.id.adViewBannerOverview);
 
         if (hasNetworkConnection()) {
             mAdView.setVisibility(View.VISIBLE);
@@ -55,10 +55,10 @@ public class OverviewFragment extends Fragment {
             mAdView.setVisibility(View.GONE);
         }
 
-        toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar = getActivity().findViewById(R.id.toolbar);
         toolbar.setVisibility(View.GONE);
 
-        toolbar = (android.support.v7.widget.Toolbar) rootView.findViewById(R.id.toolbar);
+        toolbar = rootView.findViewById(R.id.toolbar);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
         toolbar.setTitle("Overview");
@@ -68,19 +68,19 @@ public class OverviewFragment extends Fragment {
         ((MainActivity) getActivity()).mDrawerLayout.setDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
 
-        ImageView img = (ImageView) rootView.findViewById(R.id.overviewImg);
+        ImageView img = rootView.findViewById(R.id.overviewImg);
         img.setVisibility(View.VISIBLE);
 
-        TextView quote = (TextView) rootView.findViewById(R.id.quote);
+        TextView quote = rootView.findViewById(R.id.quote);
         quote.setVisibility(View.VISIBLE);
 
-        TextView author = (TextView) rootView.findViewById(R.id.author);
+        TextView author = rootView.findViewById(R.id.author);
         author.setVisibility(View.VISIBLE);
 
 
         setQuote(rootView);
 
-        lv = (ListView) rootView.findViewById(R.id.SubjectListView);
+        lv = rootView.findViewById(R.id.SubjectListView);
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -127,7 +127,7 @@ public class OverviewFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        toolbar = (android.support.v7.widget.Toolbar) getActivity().findViewById(R.id.toolbar);
+        toolbar = getActivity().findViewById(R.id.toolbar);
         toolbar.setVisibility(View.VISIBLE);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(toolbar);
@@ -146,7 +146,7 @@ public class OverviewFragment extends Fragment {
 
         CustomSubjectAdapter adapter = new CustomSubjectAdapter(getContext(), arrayOfSubjects);
 
-        ListView listView = (ListView) getView().findViewById(R.id.SubjectListView);
+        ListView listView = getView().findViewById(R.id.SubjectListView);
         listView.setAdapter(adapter);
 
         super.onResume();
@@ -157,13 +157,13 @@ public class OverviewFragment extends Fragment {
 
         CustomSubjectAdapter adapter = new CustomSubjectAdapter(context, arrayOfSubjects);
 
-        ListView listView = (ListView) v.findViewById(R.id.SubjectListView);
+        ListView listView = v.findViewById(R.id.SubjectListView);
         listView.setAdapter(adapter);
     }
 
     public void setQuote(final View view) {
-        TextView quoteTv = (TextView) view.findViewById(R.id.quote);
-        TextView authorTv = (TextView) view.findViewById(R.id.author);
+        TextView quoteTv = view.findViewById(R.id.quote);
+        TextView authorTv = view.findViewById(R.id.author);
 
         final String[] quotes = getResources().getStringArray(R.array.quotes);
         final String[] authors = getResources().getStringArray(R.array.authors);

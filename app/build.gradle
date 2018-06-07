@@ -2,15 +2,15 @@ apply plugin: 'com.android.application'
 
 
     android {
-        compileSdkVersion 25
-        buildToolsVersion '25.0.0'
+        compileSdkVersion 26
+        buildToolsVersion '27.0.3'
 
 
 
         defaultConfig {
             applicationId "com.thejuanandonly.gradeday"
             minSdkVersion 19
-            targetSdkVersion 25
+            targetSdkVersion 26
             multiDexEnabled true
             versionCode 1
             versionName "1.0"
@@ -26,20 +26,20 @@ apply plugin: 'com.android.application'
     }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    testCompile 'junit:junit:4.12'
-    compile 'com.facebook.android:facebook-android-sdk:4.8.0'
-    compile 'com.android.support:appcompat-v7:25.0.1'
-    compile 'com.android.support:design:25.0.1'
-    compile 'com.amirarcane.recent-images:recentimages:1.0.0'
-    compile 'com.davemorrissey.labs:subsampling-scale-image-view:3.4.1'
-    compile 'com.android.support:cardview-v7:25.0.1'
-    compile 'com.github.chrisbanes:PhotoView:1.3.0'
-    compile 'com.github.daimajia:AndroidSwipeLayout:f66ac6942b'
-    compile 'com.andkulikov:transitionseverywhere:1.7.0'
-    compile 'com.google.firebase:firebase-ads:10.0.1'
-    compile 'agency.tango.android:material-intro-screen:0.0.3'
-    compile 'com.diogobernardino:williamchart:2.3.0'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.facebook.android:facebook-android-sdk:4.8.0'
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.amirarcane.recent-images:recentimages:1.0.0'
+    implementation 'com.davemorrissey.labs:subsampling-scale-image-view:3.4.1'
+    implementation 'com.android.support:cardview-v7:26.1.0'
+    implementation 'com.github.chrisbanes:PhotoView:2.1.3'
+    implementation 'com.github.daimajia:AndroidSwipeLayout:f66ac6942b'
+    implementation 'com.andkulikov:transitionseverywhere:1.7.9'
+    implementation 'com.google.firebase:firebase-ads:15.0.1'
+    implementation 'agency.tango.android:material-intro-screen:0.0.3'
+    implementation 'com.diogobernardino:williamchart:2.3.0'
 }
 
 

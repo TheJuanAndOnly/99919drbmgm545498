@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.amirarcane.recent-images:recentimages-1.0.0">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.amirarcane.recent-images/recentimages/1.0.0/res" />
+      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.amirarcane.recent-images/recentimages/1.0.0/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.amirarcane.recent-images/recentimages/1.0.0/396e24fbb3a7c896429d14a96a1492eec72802d6/recentimages-1.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
