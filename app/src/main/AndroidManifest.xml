@@ -89,7 +89,7 @@
             </intent-filter>
         </receiver>
 
-        <service
+        <receiver
             android:name=".TasksNotificationService"
             android:enabled="true"
             android:exported="false"/>

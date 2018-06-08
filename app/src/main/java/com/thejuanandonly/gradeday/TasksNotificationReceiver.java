@@ -66,7 +66,7 @@ public class TasksNotificationReceiver extends BroadcastReceiver {
 
         if (closest == -1) {
             Intent intentTimer = new Intent(context, TasksNotificationService.class);
-            PendingIntent pendingIntent = PendingIntent.getService(context, 0, intentTimer, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intentTimer, PendingIntent.FLAG_UPDATE_CURRENT);
             if (alarmManager != null) alarmManager.cancel(pendingIntent);
 
             return;
@@ -97,7 +97,7 @@ public class TasksNotificationReceiver extends BroadcastReceiver {
         intentTimer.putExtra("what", what);
         intentTimer.putExtra("index", closest);
 
-        PendingIntent pendingIntent = PendingIntent.getService(context, 0, intentTimer, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intentTimer, PendingIntent.FLAG_UPDATE_CURRENT);
 
         if (alarmManager != null) {
             if (Build.VERSION.SDK_INT < 23) alarmManager.setExact(AlarmManager.RTC_WAKEUP, time, pendingIntent);
